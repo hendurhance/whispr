@@ -1,0 +1,90 @@
+name: 🚀 Feature Request
+description: Suggest a new feature or enhancement
+title: '[FEATURE] <insert title here>'
+labels: ["enhancement", "feature"]
+body:
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature Description
+      description: Describe the feature in detail
+      placeholder: What is the feature?
+    validations:
+      required: true
+  - type: textarea
+    id: feature-rationale
+    attributes:
+      label: Rationale
+      description: Describe the rationale for the feature
+      placeholder: Why should we add this feature?
+    validations:
+      required: true
+  - type: textarea
+    id: feature-acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Describe the acceptance criteria for the feature
+      placeholder: What are the acceptance criteria for this feature?
+    validations:
+      required: true
+  - type: textarea
+    id: feature-additional-info
+    attributes:
+      label: Additional Information
+      description: Add any other context about the feature here
+      placeholder: Add additional information here
+    validations:
+      required: false
+  - type: dropdown
+    id: feature-priority
+    attributes:
+      label: Priority
+      description: Select the priority of this feature
+      options:
+        - Low
+        - Medium
+        - High
+      placeholder: Select the priority of this feature
+    validations:
+      required: true
+   - type: checkboxes
+    id: no-duplicate-feature
+    attributes:
+      label: No Duplicate Feature
+      description: Check this box to confirm that this feature has not already been requested
+      options:
+        - label: This feature has not already been requested
+          required: true
+    validations:
+      required: true
+  - type: dropdown
+    id: bug-type
+    attributes:
+      label: Bug Type
+      description: Select the type of bug you are reporting
+      options:
+        - Bug
+        - Documentation
+        - Security
+        - Performance
+        - Accessibility
+        - Other
+      placeholder: Select the type of bug you are reporting
+    validations:
+      required: true
+  - type: checkboxes
+    id: read-contributing-guidelines
+    attributes:
+      label: Read Contributing Guidelines
+      description: Check this box to confirm that you have read the contributing guidelines
+      options:
+        - label: I have read the contributing guidelines
+          required: true
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        ## Contributing Guidelines
+
+        Please read the [contributing guidelines](CONTRIBUTING.md) before submitting this issue.

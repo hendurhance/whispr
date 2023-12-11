@@ -1,0 +1,101 @@
+name: 🐛 Bug
+description: Report a bug in the code or documentation
+labels: ["bug"]
+title: '[BUG] <insert title here>'
+body:
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Bug Description
+      description: Describe the bug in detail
+      placeholder: What is the bug?
+    validations:
+      required: true
+  - type: textarea
+    id: bug-steps
+    attributes:
+      label: Steps to Reproduce
+      description: Describe the steps to reproduce the bug
+      placeholder: How can we reproduce the bug?
+    validations:
+      required: true
+  - type: textarea
+    id: bug-expected
+    attributes:
+      label: Expected Behavior
+      description: Describe what you expected to happen
+      placeholder: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots to help explain your problem
+      placeholder: Add screenshots here
+    validations:
+      required: false
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Information
+      description: Add any other context about the problem here
+      placeholder: Add additional information here
+    validations:
+      required: false
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      description: Select the browser you are using
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Edge
+        - Internet Explorer
+        - Other
+      placeholder: Select the browser you are using
+    validations:
+      required: true
+  - type: checkboxes
+    id: no-duplicate-issue
+    attributes:
+      label: No Duplicate Issue
+      description: Check this box to confirm that this issue has not already been reported
+      options:
+        - label: This issue has not already been reported
+          required: true
+    validations:
+      required: true
+  - type: dropdown
+    id: bug-type
+    attributes:
+      label: Bug Type
+      description: Select the type of bug you are reporting
+      options:
+        - Bug
+        - Documentation
+        - Security
+        - Performance
+        - Accessibility
+        - Other
+      placeholder: Select the type of bug you are reporting
+    validations:
+      required: true
+  - type: checkboxes
+    id: read-contributing-guidelines
+    attributes:
+      label: Read Contributing Guidelines
+      description: Check this box to confirm that you have read the contributing guidelines
+      options:
+        - label: I have read the contributing guidelines
+          required: true
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        ## Contributing Guidelines
+
+        Please read the [contributing guidelines](CONTRIBUTING.md) before submitting this issue.

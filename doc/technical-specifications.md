@@ -11,6 +11,13 @@
   </tr>
 </table>
 
+### Frontend
+- **React** - Frontend framework
+- **Typescript** - Programming language
+- **Supabase** - Backend as a service
+- **Tailwind CSS** - CSS framework
+- **Vercel** - Hosting
+
 ## 👥 User Stories
 #### Landing Page
 - [ ] Users can view the landing page

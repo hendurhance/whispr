@@ -55,9 +55,6 @@ body:
         - Edge
         - Internet Explorer
         - Other
-      placeholder: Select the browser you are using
-    validations:
-      required: true
   - type: checkboxes
     id: no-duplicate-issue
     attributes:
@@ -66,8 +63,6 @@ body:
       options:
         - label: This issue has not already been reported
           required: true
-    validations:
-      required: true
   - type: dropdown
     id: bug-type
     attributes:
@@ -80,9 +75,6 @@ body:
         - Performance
         - Accessibility
         - Other
-      placeholder: Select the type of bug you are reporting
-    validations:
-      required: true
   - type: checkboxes
     id: read-contributing-guidelines
     attributes:
@@ -91,8 +83,6 @@ body:
       options:
         - label: I have read the contributing guidelines
           required: true
-    validations:
-      required: true
   - type: markdown
     attributes:
       value: |

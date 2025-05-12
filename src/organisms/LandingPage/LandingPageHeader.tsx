@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Logo from '../../atoms/Logo';
 import NavLink from '../../molecules/NavLink';
 import AuthButtons from '../../molecules/AuthButtons';
 import Button from '../../atoms/Button';
 
-
 const LandingPageHeader: React.FC = () => {
+  const navigate = useNavigate(); // Use the navigate function from React Router
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const [isBreakpointIssue, setIsBreakpointIssue] = useState<boolean>(false);
+  
   // Handle screen resize to detect problematic breakpoint range
   useEffect(() => {
     const handleResize = () => {
@@ -70,8 +72,8 @@ const LandingPageHeader: React.FC = () => {
           <li><NavLink href="#contact" onClick={() => setMenuOpen(false)}>Contact</NavLink></li>
         </ul>
         <div className="mt-6 flex flex-col gap-4 lg:hidden">
-            <Button variant="secondary" onClick={() => router.push('/login')}>Log In</Button>
-            <Button variant="primary" onClick={() => router.push('/signup')}>Sign Up</Button>
+            <Button variant="secondary" onClick={() => navigate('/login')}>Log In</Button>
+            <Button variant="primary" onClick={() => navigate('/signup')}>Sign Up</Button>
         </div>
       </nav>
       

@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 
-// Create style for animations
 const createAnimationStyles = () => {
   const styleSheet = document.createElement("style");
   styleSheet.innerText = `

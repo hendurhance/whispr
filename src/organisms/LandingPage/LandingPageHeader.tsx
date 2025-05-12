@@ -4,10 +4,10 @@ import NavLink from '../../molecules/NavLink';
 import AuthButtons from '../../molecules/AuthButtons';
 import Button from '../../atoms/Button';
 
+
 const LandingPageHeader: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const [isBreakpointIssue, setIsBreakpointIssue] = useState<boolean>(false);
-
   // Handle screen resize to detect problematic breakpoint range
   useEffect(() => {
     const handleResize = () => {
@@ -70,8 +70,8 @@ const LandingPageHeader: React.FC = () => {
           <li><NavLink href="#contact" onClick={() => setMenuOpen(false)}>Contact</NavLink></li>
         </ul>
         <div className="mt-6 flex flex-col gap-4 lg:hidden">
-          <Button variant="secondary" onClick={() => window.location.href = '/login'}>Log In</Button>
-          <Button variant="primary" onClick={() => window.location.href = '/signup'}>Sign Up</Button>
+            <Button variant="secondary" onClick={() => router.push('/login')}>Log In</Button>
+            <Button variant="primary" onClick={() => router.push('/signup')}>Sign Up</Button>
         </div>
       </nav>
       

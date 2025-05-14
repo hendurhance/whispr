@@ -20,15 +20,21 @@ const FloatingMessage: React.FC<FloatingMessageProps> = ({
   duration = 15,
   className = ''
 }) => {
-  const positionStyles = {
+  const mobileAdjustedPosition = {
     ...position,
+    left: position.left ? `max(5%, ${position.left})` : position.left,
+    right: position.right ? `max(5%, ${position.right})` : position.right
+  };
+
+   const positionStyles = {
+    ...mobileAdjustedPosition,
     animationDelay: `${delay}s`,
     animationDuration: `${duration}s`
   };
 
   return (
     <div 
-      className={`absolute max-w-xs p-4 rounded-2xl bg-white/10 backdrop-blur-lg shadow-lg text-sm animate-messageFloat z-10 ${className}`}
+      className={`absolute max-w-[150px] sm:max-w-xs p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/10 backdrop-blur-lg shadow-lg text-xs sm:text-sm animate-messageFloat z-10 ${className}`}
       style={positionStyles}
     >
       {content}

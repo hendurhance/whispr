@@ -10,7 +10,8 @@ import ProfileView from '../Shared/ProfileView';
 import FloatingShapes, { Shape } from '../../molecules/FloatingShapes';
 import IconButton from '../../atoms/IconButton';
 import FloatingMessagesContainer from '../../molecules/FloatingMessagesContainer';
-
+import { useNavigate } from 'react-router-dom';
+import DashboardImage from '../../assets/dashboard.png'
 
 const DownloadIcon = () => (
   <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" fill="currentColor">
@@ -40,38 +41,38 @@ const WebAccessIcon = () => (
 
 const LandingPageMainContent: React.FC = () => {
   const features = [
-    { icon: "💬", title: "Anonymous Messaging", description: "Send and receive messages without revealing your identity.", example: "I've always admired your creativity" },
-    { icon: "❓", title: "Anonymous Q&A", description: "Get honest answers to your questions or receive authentic questions.", example: "What inspired you to start your business?" },
-    { icon: "🌟", title: "Anonymous Compliments", description: "Spread positivity by sending genuine compliments.", example: "Your kindness makes everyone's day brighter" },
-    { icon: "💡", title: "Anonymous Advice", description: "Give or receive unbiased advice without judgment.", example: "Try focusing on one project at a time" },
-    { icon: "📊", title: "Anonymous Polls", description: "Create polls and get honest opinions from your audience.", example: "Which new feature should I develop next?" },
-    { icon: "🤫", title: "Anonymous Confessions", description: "Share your deepest thoughts or receive genuine confessions.", example: "I'm afraid of failing but too proud to admit it" },
-    { icon: "💬", title: "Anonymous Feedback", description: "Receive constructive feedback without fear of judgment.", example: "Your project could use more visuals" },
-    { icon: "📝", title: "Anonymous Suggestions", description: "Get creative ideas and suggestions from others anonymously.", example: "You should try hosting a live Q&A session" },
-    { icon: "🔒", title: "Anonymous Secrets", description: "Share or discover secrets in a secure, anonymous environment.", example: "I've always wanted to travel the world" },
-    { icon: "🗣️", title: "Anonymous Opinions", description: "Express your true thoughts or gather honest opinions.", example: "I think remote work is the future" },
+    { icon: "❓", title: "Anonymous Q&A", description: "Ask spicy questions or get raw, unfiltered answers.", example: "What's the most unhinged thing you've done for clout?", is_coming_soon: false },
+    { icon: "🌟", title: "Anonymous Compliments", description: "Drop some chaotic praise to hype someone up.", example: "Your vibe is like a glitter bomb of awesome.", is_coming_soon: false },
+    { icon: "🔥", title: "Anonymous Roasts", description: "Throw shade or get roasted with zero chill.", example: "Your tweets are so dry they need a hydration sponsor.", is_coming_soon: false },
+    { icon: "🤫", title: "Anonymous Confessions", description: "Spill your wildest secrets or hear juicy ones.", example: "I stalked your profile and now I'm obsessed.", is_coming_soon: false },
+    { icon: "🗣️", title: "Anonymous Rumors", description: "Start or hear spicy gossip without the trace.", example: "Heard you crashed a party with a rap battle.", is_coming_soon: false },
+    { icon: "💡", title: "Anonymous Suggestions", description: "Pitch chaotic ideas or get wild recommendations.", example: "Drop a thirst trap and break the internet.", is_coming_soon: false },
+    { icon: "🔒", title: "Anonymous Secrets", description: "Share or uncover hidden tea in a safe space.", example: "I'm secretly your biggest fan but here for the drama.", is_coming_soon: false },
+    { icon: "💥", title: "Anonymous Hot Takes", description: "Throw out bold opinions or hear unfiltered ones.", example: "Your content's overrated but I can't look away.", is_coming_soon: false },
+    { icon: "😈", title: "Anonymous Dares", description: "Challenge someone to chaos or take on a wild dare.", example: "Tweet a hot take so bad you get canceled by lunch.", is_coming_soon: false },
+    { icon: "📊", title: "Anonymous Polls", description: "Create or participate in wild polls for fun.", example: "Who's the biggest drama queen in our group?", is_coming_soon: true },
   ];
 
   const steps = [
-    { number: 1, title: "Sign Up", description: "Create an account in seconds. No personal details required—just a username to get started." },
-    { number: 2, title: "Share Your Link", description: "Get a unique link to share with your audience on social media, email, or anywhere else." },
-    { number: 3, title: "Receive Messages", description: "Start receiving anonymous messages, questions, compliments, and more from your audience." },
-    { number: 4, title: "Respond Anonymously", description: "Engage with your audience by responding anonymously, fostering honest conversations." },
+    { number: 1, title: "Sign Up", description: "Join the chaos in seconds. Just a username and email to create your account." },
+    { number: 2, title: "Share Your Link", description: "Get a unique link to blast on X, TikTok, or wherever you stir up trouble." },
+    { number: 3, title: "Receive Wild Messages", description: "Brace for unfiltered questions, roasts, dares, and more from your crew." },
+    { number: 4, title: "Respond Anonymously", description: "Clap back or escalate the chaos with anonymous replies." },
   ];
 
   const privacyFeatures = [
-    { icon: "🔒", title: "End-to-End Encryption", description: "All messages are encrypted, ensuring that only you and the recipient can read them." },
-    { icon: "🛡️", title: "No Data Tracking", description: "We don't track or store any identifiable data. Your anonymity is guaranteed." },
-    { icon: "🌐", title: "Open Source", description: "Whispr's code is open-source, allowing anyone to verify its security and privacy claims." },
-    { icon: "🚫", title: "No Ads", description: "Enjoy a clean, ad-free experience with no interruptions or data exploitation." },
+    { icon: "🔒", title: "Total Anonymity", description: "No names, no traces—just pure, unfiltered chaos with zero identifiable data." },
+    { icon: "🛡️", title: "No Data Tracking", description: "We don’t track jack. Your spicy secrets stay safe." },
+    { icon: "🌐", title: "Open Source", description: "Whispr’s code is public, so you can check it's as legit as your hottest take." },
+    { icon: "🚫", title: "No Ads", description: "No annoying ads, no data scams—just a clean playground for chaos." },
   ];
 
-  const profileData = {
+   const profileData = {
     username: 'username',
-    promptText: 'send me anonymous messages!',
-    placeholderText: 'send me anonymous messages...',
-    counterText: '366 people just tapped the button',
-    buttonText: 'Get your own messages!',
+    promptText: 'hit me with your wildest anonymous messages!',
+    placeholderText: 'drop some anonymous chaos...',
+    counterText: '666 people just unleashed the madness',
+    buttonText: 'Start your own chaos!',
     onButtonClick: () => console.log('Get your own link')
   };
 
@@ -104,6 +105,8 @@ const LandingPageMainContent: React.FC = () => {
   ];
 
   const [showComingSoon, setShowComingSoon] = useState(false);
+
+  const navigate = useNavigate();
 
   const shapesData: Shape[] = [
     {
@@ -141,30 +144,30 @@ const LandingPageMainContent: React.FC = () => {
     }
   ];
 
-  const floatingMessagesData = [
+    const floatingMessagesData = [
     {
       id: 'msg1',
-      content: 'I love your new haircut! It really suits you 😊',
+      content: 'Your energy is so chaotic, I\'m living for it 🔥',
       position: { top: '15%', left: '10%' },
       duration: 15
     },
     {
       id: 'msg2',
-      content: 'What\'s your favorite movie? I need recommendations!',
+      content: 'What\'s the wildest party you\'ve ever crashed?',
       position: { top: '30%', right: '10%' },
       delay: 3,
       duration: 15
     },
     {
       id: 'msg3',
-      content: 'Your presentation today was amazing, you really inspired me!',
+      content: 'I\'m secretly jealous of your clout, spill the tea!',
       position: { bottom: '20%', left: '15%' },
       delay: 6,
       duration: 15
     },
     {
       id: 'msg4',
-      content: 'Could you share your thoughts on climate change?',
+      content: 'Drop a hot take so spicy it gets you canceled 👀',
       position: { bottom: '30%', right: '15%' },
       delay: 9,
       duration: 15
@@ -186,49 +189,57 @@ const LandingPageMainContent: React.FC = () => {
   return (
     <main>
       {/* Hero Section */}
-      <section className="py-24 px-4 md:px-8 relative overflow-hidden text-center">
-        {/* Background floating shapes */}
-        <FloatingShapes shapes={shapesData} className="z-0" />
+      <section className="py-12 md:py-24 px-4 md:px-8 relative overflow-hidden text-center">
+        {/* Background floating shapes - reduced or simplified on mobile */}
+        <FloatingShapes
+          shapes={shapesData}
+          className="z-0 opacity-50 md:opacity-100"
+        />
 
-        {/* Hero content */}
-        <div className="relative z-10">
-          <h1 className="text-5xl md:text-7xl font-extrabold mb-5 bg-gradient-primary bg-clip-text text-transparent leading-tight">
+        {/* Hero content with improved mobile spacing */}
+        <div className="relative z-10 max-w-screen-xl mx-auto">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold mb-3 md:mb-5 bg-gradient-primary bg-clip-text text-transparent leading-tight">
             Be anonymous,<br />Be unstoppable
           </h1>
-          <p className="text-lg md:text-xl text-text-muted max-w-2xl mx-auto mb-10">
-            Welcome to Whispr, the open-source anonymous messaging platform where you can express yourself freely, gather honest feedback, and connect authentically without revealing your identity.
+          <p className="text-base sm:text-lg md:text-xl text-text-muted max-w-2xl mx-auto mb-6 md:mb-10 px-2">
+            Welcome to Whispr, the open-source anonymous Q&A platform that lets anyone send you questions, compliments, and honest feedback without revealing their identity. Share your link and discover what people really want to ask you.
           </p>
-          <div className="flex gap-4 justify-center flex-col sm:flex-row">
+          <div className="flex gap-3 md:gap-4 justify-center flex-col sm:flex-row px-4 sm:px-0">
             <IconButton
               icon={<DownloadIcon />}
               variant="primary"
               showAltText={showComingSoon}
               onClick={() => setShowComingSoon(true)}
               altText="Coming Soon"
+              className="w-full sm:w-auto text-sm md:text-base"
             >
               Download for mobile
             </IconButton>
             <IconButton
               icon={<WebAccessIcon />}
               variant="secondary"
-              onClick={() => window.location.href = '/signup'}
+              onClick={() => navigate('/auth')}
+              className="w-full sm:w-auto text-sm md:text-base"
             >
               Get web access
             </IconButton>
           </div>
         </div>
 
-        {/* App showcase with floating messages */}
-        <div className="relative mt-16 z-10">
-          {/* Floating messages around the app image */}
-          <FloatingMessagesContainer messages={floatingMessagesData} className="z-20" />
+        {/* App showcase with floating messages - improved for mobile */}
+        <div className="relative mt-10 md:mt-16 z-10">
+          {/* Hide some floating messages on small screens */}
+          <FloatingMessagesContainer
+            messages={floatingMessagesData}
+            className="z-20 hidden sm:block"
+          />
 
-          {/* App showcase image */}
-          <div className="relative z-10 mx-auto rounded-2xl overflow-hidden">
+          {/* App showcase image with better mobile display */}
+          <div className="relative z-10 mx-auto rounded-xl md:rounded-2xl overflow-hidden shadow-xl">
             <img
-              src="https://placehold.co/1000x500/000000/FFFFFF?text=Whispr+App+Interface"
+              src={DashboardImage}
               alt="Whispr App Interface"
-              className="w-full max-w-4xl mx-auto"
+              className="w-full max-w-full sm:max-w-2xl lg:max-w-4xl mx-auto"
             />
           </div>
         </div>
@@ -252,7 +263,7 @@ const LandingPageMainContent: React.FC = () => {
       <section className="py-24 px-4 md:px-8 relative bg-background-darker">
         <SectionTitle
           title="Designed for"
-          subtitle="Share your personal link on social media and receive anonymous messages while maintaining complete privacy."
+          subtitle="Share your personal link on social media and receive anonymous q&a while maintaining complete privacy."
           highlight="honest interaction"
         />
 

@@ -72,8 +72,8 @@ const LandingPageHeader: React.FC = () => {
           <li><NavLink href="#contact" onClick={() => setMenuOpen(false)}>Contact</NavLink></li>
         </ul>
         <div className="mt-6 flex flex-col gap-4 lg:hidden">
-            <Button variant="secondary" onClick={() => navigate('/login')}>Log In</Button>
-            <Button variant="primary" onClick={() => navigate('/signup')}>Sign Up</Button>
+            <Button variant="secondary" onClick={() => navigate('/auth')}>Log In</Button>
+            <Button variant="primary" onClick={() => navigate('/auth')}>Sign Up</Button>
         </div>
       </nav>
       

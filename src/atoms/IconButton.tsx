@@ -5,9 +5,9 @@ interface IconButtonProps {
   children: ReactNode;
   variant?: 'primary' | 'secondary';
   onClick?: () => void;
-  altText?: string; // Alternative text for "Coming Soon" state
+  altText?: string;
   className?: string;
-  showAltText?: boolean; // Control to show alt text (e.g., Coming Soon)
+  showAltText?: boolean;
 }
 
 const IconButton: React.FC<IconButtonProps> = ({
@@ -20,12 +20,12 @@ const IconButton: React.FC<IconButtonProps> = ({
   className = ''
 }) => {
   const [showAlt, setShowAlt] = useState(showAltText);
-  
-  const baseStyles = "px-5 py-3 rounded-full font-semibold cursor-pointer transition-all duration-300 flex items-center gap-2 justify-center";
-  
+
+  const baseStyles = "px-4 sm:px-5 py-3 rounded-full font-semibold cursor-pointer transition-all duration-300 flex items-center gap-2 justify-center";
+
   const variantStyles = variant === "primary"
-    ? "bg-gradient-primary text-white hover:-translate-y-1 hover:shadow-glow"
-    : "bg-background-card text-text hover:bg-background-highlight hover:-translate-y-1";
+    ? "bg-gradient-primary text-white hover:-translate-y-1 hover:shadow-glow active:translate-y-0"
+    : "bg-background-card text-text hover:bg-background-highlight hover:-translate-y-1 active:translate-y-0";
 
   const handleClick = () => {
     if (onClick) {
@@ -36,11 +36,11 @@ const IconButton: React.FC<IconButtonProps> = ({
   };
 
   return (
-    <button 
-      className={`${baseStyles} ${variantStyles} ${className}`} 
+    <button
+      className={`${baseStyles} ${variantStyles} ${className}`}
       onClick={handleClick}
     >
-      <span className="flex items-center justify-center w-5 h-5">
+      <span className="flex items-center justify-center w-4 sm:w-5 h-4 sm:h-5">
         {icon}
       </span>
       <span>{showAlt ? altText : children}</span>

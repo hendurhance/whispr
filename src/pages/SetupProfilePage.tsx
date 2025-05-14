@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../lib/supabase';
@@ -160,9 +158,10 @@ const SetupProfilePage: React.FC = () => {
 
       // Redirect to dashboard on success
       navigate('/dashboard', { replace: true });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to set up profile. Please try again.';
       console.error('Error setting up profile:', error);
-      setError(error.message || 'Failed to set up profile. Please try again.');
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

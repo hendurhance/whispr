@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { createContext, useEffect, useState, useRef } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { Profile } from '../../types';
@@ -10,7 +9,7 @@ interface AuthContextType {
   user: User | null;
   profile: Profile | null;
   isLoading: boolean;
-  signIn: (email: string) => Promise<{ error: any | null }>;
+  signIn: (email: string) => Promise<{ error: unknown | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<Profile | null>;
 }

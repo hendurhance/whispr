@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// AuthPage.tsx (Updated)
 import React, { useState, useEffect, useRef } from 'react';
 import AuthTemplate from '../templates/AuthTemplate';
 import { useNavigate } from 'react-router-dom';
@@ -68,9 +66,10 @@ const AuthPage: React.FC = () => {
       }
       
       setIsEmailSent(true);
-    } catch (error: any) {
-      console.error('Error sending magic link:', error);
-      setError(error.message || 'Failed to send magic link. Please try again.');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send magic link. Please try again.';
+      console.error('Error sending magic link:', errorMessage);
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

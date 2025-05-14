@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, useRef } from 'react';
 import DashboardTemplate from '../templates/DashboardTemplate';
 import { useAuth } from '../context/auth';
@@ -198,9 +197,10 @@ const SettingsPage: React.FC = () => {
       setTimeout(() => {
         setSuccessMessage(null);
       }, 3000);
-    } catch (error: any) {
-      console.error('Error updating profile:', error);
-      setError(error.message || 'Failed to update profile. Please try again.');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update profile. Please try again.';
+      console.error('Error updating profile:', errorMessage);
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -269,9 +269,10 @@ const SettingsPage: React.FC = () => {
       await signOut();
 
       navigate('/');
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete account. Please try again.';
       console.error('Error deleting account:', error);
-      setError(error.message || 'Failed to delete account. Please try again.');
+      setError(errorMessage);
       setIsDeleting(false);
     }
   };

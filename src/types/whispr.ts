@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface Whispr {
   id: string;
   content: string;
@@ -6,7 +5,7 @@ export interface Whispr {
   createdAt: string; // ISO date string
   isRead: boolean;
   metadata?: {
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 

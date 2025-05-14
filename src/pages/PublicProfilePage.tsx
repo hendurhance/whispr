@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import supabase from '../lib/supabase';
@@ -254,8 +253,9 @@ const PublicProfilePage: React.FC = () => {
   };
   
   // Handle error in whispr submission
-  const handleSubmitError = (error: any) => {
-    toast.error('Failed to send whispr');
+  const handleSubmitError = (error: unknown) => {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to send whispr';
+    toast.error(errorMessage);
     console.error('Whispr submission error:', error);
   };
   

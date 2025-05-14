@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import DashboardTemplate from '../templates/DashboardTemplate';
 import DashboardHeader from '../molecules/DashboardHeader';

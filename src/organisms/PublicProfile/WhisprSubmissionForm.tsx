@@ -1,15 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useRef, useEffect } from 'react';
 import supabase from '../../lib/supabase';
-import { getWhisprTypeIcon, getWhisprTypeLabel, WhisprType } from '../../types/whispr';
+import { getWhisprTypeIcon, getWhisprTypeLabel, Whispr, WhisprType } from '../../types/whispr';
 
 interface WhisprSubmissionFormProps {
   username: string;
   onSuccess?: () => void;
-  onError?: (error: Error | any) => void;
+  onError?: (error: Error) => void;
   className?: string;
-  submitWhispr?: (username: string, content: string, type: string) => Promise<any>;
+  submitWhispr?: (username: string, content: string, type: string) => Promise<Whispr>;
 }
 
 const WhisprSubmissionForm: React.FC<WhisprSubmissionFormProps> = ({
@@ -183,7 +181,7 @@ const WhisprSubmissionForm: React.FC<WhisprSubmissionFormProps> = ({
         await submitWhispr(username, content.trim(), selectedType);
       } else {
         // Fallback to using RPC function directly
-        const { data, error } = await supabase.rpc('submit_anonymous_whispr', {
+        const { error } = await supabase.rpc('submit_anonymous_whispr', {
           recipient_username: username,
           whispr_content: content.trim(),
           whispr_type: selectedType
@@ -201,7 +199,7 @@ const WhisprSubmissionForm: React.FC<WhisprSubmissionFormProps> = ({
       if (onSuccess) onSuccess();
     } catch (error) {
       console.error('Error in handleSubmit:', error);
-      if (onError) onError(error);
+      if (onError) onError(error as Error);
     } finally {
       setIsSubmitting(false);
     }

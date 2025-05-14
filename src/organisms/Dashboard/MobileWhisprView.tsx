@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
-import { ViewMode, Whispr, WhisprStats } from '../../types/whispr';
+import { ViewMode, Whispr, WhisprStats, WhisprType } from '../../types/whispr';
 import WhisprCard from '../../molecules/WhisprCard';
 import EmptyState from '../../atoms/EmptyState';
 import MobileNavigationTabs from '../../molecules/MobileNavigationTabs';
@@ -37,7 +36,7 @@ const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
   const typeOptions = [
     { type: 'all', count: stats.total },
     ...Object.entries(stats.byType).map(([type, count]) => ({
-      type: type as any,
+      type: type as WhisprType,
       count
     }))
   ];

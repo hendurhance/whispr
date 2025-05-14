@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// AuthCallbackPage.tsx (Updated)
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../lib/supabase';
@@ -47,11 +45,12 @@ const AuthCallbackPage = () => {
           // Redirect to profile setup
           navigate('/setup-profile', { replace: true });
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : "Authentication failed";
         console.error("AuthCallback: Error processing callback", error);
-        setError(error.message || "Authentication failed");
+        setError(errorMessage);
         // Redirect to auth page with error
-        navigate(`/auth?error=auth_callback_error&error_description=${encodeURIComponent(error.message || "Authentication failed")}`, { replace: true });
+        navigate(`/auth?error=auth_callback_error&error_description=${encodeURIComponent(errorMessage || "Authentication failed")}`, { replace: true });
       }
     };
     

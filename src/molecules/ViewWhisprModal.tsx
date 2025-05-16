@@ -5,6 +5,7 @@ import html2canvas from 'html2canvas-pro';
 import { toast } from 'react-hot-toast';
 import GenericModal from '../atoms/GenericModal';
 import { APP_LOGO_URI } from '../types';
+import { APP_URL_CLEAN } from '../configs';
 
 interface ViewWhisprModalProps {
     whispr: Whispr;
@@ -101,7 +102,7 @@ const ViewWhisprModal: React.FC<ViewWhisprModalProps> = ({
 
         // Domain text
         const domainText = document.createElement('span');
-        domainText.textContent = 'trywhispr.me';
+        domainText.textContent = APP_URL_CLEAN;
         Object.assign(domainText.style, {
             fontSize: '18px',
             fontWeight: 'bold',
@@ -256,7 +257,7 @@ const ViewWhisprModal: React.FC<ViewWhisprModalProps> = ({
             width: '100%',
             boxSizing: 'border-box',
         });
-        footer.textContent = `Want to send your own anonymous message? Visit ${profileUrl || 'trywhispr.me/' + username}`;
+        footer.textContent = `Want to send your own anonymous message? Visit ${profileUrl || APP_URL_CLEAN + username}`;
 
         // Add all elements to container
         container.appendChild(header);

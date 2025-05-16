@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import supabase from '../lib/supabase';
 import DashboardTemplate from '../templates/DashboardTemplate';
 import { useAuth } from '../context/auth';
+import { getUsernameLink } from '../hooks/getUsernameLink';
 
 const SetupProfilePage: React.FC = () => {
   const navigate = useNavigate();
@@ -239,7 +240,7 @@ const SetupProfilePage: React.FC = () => {
               <p className="text-sm text-text-muted">
                 Your Whispr link will be:
                 <span className="ml-1 text-text-bright">
-                  trywhispr.me/{username || 'yourname'}
+                  ${getUsernameLink(username || 'yourname')}
                 </span>
               </p>
             </div>

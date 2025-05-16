@@ -90,7 +90,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                       <span>{item.label}</span>
                     </div>
                     {item.badge && (
-                      <Badge count={item.badge} variant={isActive(item.path) ? 'muted' : 'accent'} />
+                      <Badge count={item.badge} variant={isActive(item.path) ? 'primary' : 'accent'} />
                     )}
                   </Link>
                 </li>

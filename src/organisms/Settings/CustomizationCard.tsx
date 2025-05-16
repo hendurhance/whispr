@@ -56,17 +56,11 @@ const CustomizationCard: React.FC<CustomizationCardProps> = ({ className = '' })
   // Fetch weekly stats from the database
   const fetchWeeklyStats = async (userId: string) => {
     try {
-      // Get last 7 days of stats
-      const endDate = new Date();
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 6); // 7 days including today
-      
+      // Get data for checking
       const { data, error } = await supabase
         .from('weekly_stats')
         .select('date, whisprs')
         .eq('user_id', userId)
-        .gte('date', startDate.toISOString().split('T')[0])
-        .lte('date', endDate.toISOString().split('T')[0])
         .order('date', { ascending: true });
       
       if (error) {
@@ -74,27 +68,25 @@ const CustomizationCard: React.FC<CustomizationCardProps> = ({ className = '' })
         return;
       }
       
-      // Convert to array of last 7 days
-      const statsMap = new Map<string, number>();
+      // Initialize array with zeros for all days (Monday = 0, Sunday = 6)
+      const weekData = [0, 0, 0, 0, 0, 0, 0];
       
-      // Initialize with zeros for all days in range
-      for (let i = 0; i < 7; i++) {
-        const date = new Date(startDate);
-        date.setDate(date.getDate() + i);
-        const dateStr = date.toISOString().split('T')[0];
-        statsMap.set(dateStr, 0);
-      }
-      
-      // Fill in actual data
-      if (data) {
+      // Fill in data where available
+      if (data && data.length > 0) {
         data.forEach(item => {
-          statsMap.set(item.date, item.whisprs);
+          const date = new Date(item.date);
+          // JavaScript getDay(): 0 = Sunday, 1 = Monday, etc.
+          const dayOfWeek = date.getDay();
+          
+          // Convert to our array index (0 = Monday, 6 = Sunday)
+          const displayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+          
+          // Set the value
+          weekData[displayIndex] = item.whisprs;
         });
       }
       
-      // Convert map to array of values
-      const weeklyValues = Array.from(statsMap.values());
-      setWeeklyData(weeklyValues);
+      setWeeklyData(weekData);
       
     } catch (error) {
       console.error('Error in fetchWeeklyStats:', error);

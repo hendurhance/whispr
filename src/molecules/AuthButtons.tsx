@@ -13,14 +13,14 @@ const AuthButtons: React.FC<AuthButtonsProps> = ({ className = '' }) => {
     <div className={`flex gap-4 ${className}`}>
       <Button 
         variant="secondary" 
-        onClick={() => navigate('/login')}
+        onClick={() => navigate('/auth')}
         className="px-5 py-2"
       >
         Log In
       </Button>
       <Button 
         variant="primary" 
-        onClick={() => navigate('/signup')}
+        onClick={() => navigate('/auth')}
         className="px-5 py-2"
       >
         Sign Up

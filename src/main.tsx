@@ -24,7 +24,6 @@ const createAnimationStyles = () => {
   document.head.appendChild(styleSheet);
 };
 
-// Initialize animations
 createAnimationStyles();
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(

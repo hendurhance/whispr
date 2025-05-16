@@ -55,7 +55,7 @@ const LandingPageFooter: React.FC = () => {
   
   // Social links data
   const socialLinks: SocialLinkData[] = [
-    { icon: "🐙", href: "https://github.com/whispr", label: "GitHub" },
+    { icon: "🐙", href: "https://github.com/hendurhance/whispr", label: "GitHub" },
     { icon: "🐦", href: "https://twitter.com/whispr", label: "Twitter" },
     { icon: "💬", href: "https://discord.gg/whispr", label: "Discord" }
   ];

@@ -1,8 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
+import CONFIGURATIONS from '../configs';
 
 // Environment variables for Supabase configuration
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = CONFIGURATIONS.API_URL;
+const supabaseAnonKey = CONFIGURATIONS.ANON_KEY;
 
 // Early exit with a more useful default for development
 if (!supabaseUrl || !supabaseAnonKey) {
@@ -10,7 +11,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 // Create a client with session handling configuration
-console.log('Creating Supabase client with URL:', supabaseUrl);
 const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
@@ -26,7 +26,6 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   }
 });
 
-// Print initial authentication state (for debugging)
 supabase.auth.onAuthStateChange((event, session) => {
   console.log(`Auth state changed: ${event}`, session ? 'User is authenticated' : 'No user');
 });

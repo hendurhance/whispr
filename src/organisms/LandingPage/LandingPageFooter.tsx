@@ -29,11 +29,11 @@ const LandingPageFooter: React.FC = () => {
     {
       title: "Links",
       links: [
-        { text: "Features", href: "#features" },
-        { text: "How It Works", href: "#how-it-works" },
-        { text: "Privacy", href: "#privacy" },
-        { text: "FAQ", href: "#faq" },
-        { text: "Contact", href: "#contact" }
+        { text: "Features", href: "/#features" },
+        { text: "How It Works", href: "/#how-it-works" },
+        { text: "Privacy", href: "/#privacy" },
+        { text: "FAQ", href: "/#faq" },
+        { text: "Contact", href: "/#contact" }
       ]
     },
     {

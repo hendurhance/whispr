@@ -5,13 +5,7 @@ import { toast } from 'react-hot-toast';
 import Logo from '../atoms/Logo';
 import FooterSimple from '../organisms/Shared/FooterSimple';
 import WhisprSubmissionForm from '../organisms/PublicProfile/WhisprSubmissionForm';
-
-// Define API endpoints for edge functions
-const API_ENDPOINTS = {
-  updateViews: `${import.meta.env.VITE_SUPABASE_FUNCTIONS_URL}/update-profile-views`,
-  updateWhisprCount: `${import.meta.env.VITE_SUPABASE_FUNCTIONS_URL}/update-whispr-count`,
-  submitWhispr: `${import.meta.env.VITE_SUPABASE_FUNCTIONS_URL}/submit-whispr`
-};
+import CONFIGURATIONS from '../configs';
 
 interface PublicProfileData {
   username: string;
@@ -66,7 +60,7 @@ const PublicProfilePage: React.FC = () => {
   // Update profile views when page loads
   const updateProfileViews = async (username: string) => {
     try {
-      const response = await fetch(API_ENDPOINTS.updateViews, {
+      const response = await fetch(CONFIGURATIONS.FUNCTIONS.UPDATE_PROFILE_VIEWS, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username })
@@ -89,7 +83,7 @@ const PublicProfilePage: React.FC = () => {
   // Update whispr count after submission
   const updateWhisprCount = async (username: string) => {
     try {
-      const response = await fetch(API_ENDPOINTS.updateWhisprCount, {
+      const response = await fetch(CONFIGURATIONS.FUNCTIONS.UPDATE_WHISPR_COUNTS, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username })
@@ -113,7 +107,7 @@ const PublicProfilePage: React.FC = () => {
   // Submit a whispr via edge function
   const submitWhispr = async (username: string, content: string, type: string) => {
     try {
-      const response = await fetch(API_ENDPOINTS.submitWhispr, {
+      const response = await fetch(CONFIGURATIONS.FUNCTIONS.SUBMIT_WHISPR, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, content, type })

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getUsernameLink } from '../../hooks/getUsernameLink';
 
 interface ProfileFormProps {
   username: string;
@@ -111,7 +112,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
             )}
           </div>
           <div className="mt-1 text-xs text-text-muted">
-            Your Whispr link: trywhispr.me/{username || 'username'}
+            Your Whispr link: {getUsernameLink(username || 'username')}
           </div>
         </div>
 

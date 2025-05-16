@@ -7,6 +7,7 @@ import ProfileLinkCard from '../molecules/ProfileLinkCard';
 import ProfileHeader from '../organisms/Profile/ProfileHeader';
 import CustomizationCard from '../organisms/Settings/CustomizationCard';
 import { useNavigate } from 'react-router-dom';
+import { getUsernameLink } from '../hooks/getUsernameLink';
 
 const ProfilePage: React.FC = () => {
   const { user, profile } = useAuth();
@@ -19,7 +20,7 @@ const ProfilePage: React.FC = () => {
   const bio = profile?.bio || '';
   
   // Profile link
-  const profileLink = `https://trywhispr.me/${username}`;
+  const profileLink = getUsernameLink(username);
   
   // Check if mobile view
   useEffect(() => {

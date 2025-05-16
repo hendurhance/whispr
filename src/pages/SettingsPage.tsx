@@ -8,6 +8,7 @@ import ProfileForm from '../organisms/Profile/ProfileForm';
 import EmailSettings from '../organisms/Settings/EmailSettings';
 import AccountManagement from '../organisms/Settings/AccountManagement';
 import { useNavigate } from 'react-router-dom';
+import CONFIGURATIONS from '../configs';
 
 const SettingsPage: React.FC = () => {
   const { user, profile, refreshProfile, signOut } = useAuth();
@@ -242,10 +243,9 @@ const SettingsPage: React.FC = () => {
         throw new Error('Not authenticated');
       }
 
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 
       const response = await fetch(
-        `${supabaseUrl}/functions/v1/delete-user`,
+        CONFIGURATIONS.FUNCTIONS.DELETE_USER,
         {
           headers: {
             'Content-Type': 'application/json',

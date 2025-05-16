@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { ViewMode, Whispr, WhisprStats, WhisprType } from '../../types/whispr';
+import React, { useState, useEffect, useRef } from 'react';
+import { ViewMode, Whispr, WhisprStats, WhisprType, SortOption } from '../../types/whispr';
 import WhisprCard from '../../molecules/WhisprCard';
 import EmptyState from '../../atoms/EmptyState';
 import MobileNavigationTabs from '../../molecules/MobileNavigationTabs';
 import Badge from '../../atoms/Badge';
+import FilterControls from '../../molecules/FilterControl';
 
 interface MobileWhisprViewProps {
   whisprs: Whispr[];
@@ -16,8 +17,8 @@ interface MobileWhisprViewProps {
   className?: string;
 }
 
-const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({ 
-  whisprs, 
+const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
+  whisprs,
   stats,
   displayName,
   avatarUrl,
@@ -27,37 +28,50 @@ const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
   className = ''
 }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('list');
-  const [selectedType, setSelectedType] = useState<string>('all');
-  const [sortOption, setSortOption] = useState<string>('newest');
+  const [selectedType, setSelectedType] = useState<WhisprType | 'all'>('all');
+  const [sortOption, setSortOption] = useState<SortOption['value']>('newest');
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredWhisprs, setFilteredWhisprs] = useState<Whispr[]>(whisprs);
-  
+
+  // For card swiping
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [swiping, setSwiping] = useState(false);
+  const [, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+  const swipeContainerRef = useRef<HTMLDivElement>(null);
+
   // Generate type options from stats
   const typeOptions = [
-    { type: 'all', count: stats.total },
+    { type: 'all' as const, count: stats.total },
     ...Object.entries(stats.byType).map(([type, count]) => ({
       type: type as WhisprType,
-      count
+      count: count
     }))
   ];
-  
+
+  // Reset current card index when filtered whisprs change
+  useEffect(() => {
+    setCurrentCardIndex(0);
+  }, [filteredWhisprs]);
+
   // Filter and sort whisprs
   useEffect(() => {
     let filtered = [...whisprs];
-    
+
     // Filter by type
     if (selectedType !== 'all') {
       filtered = filtered.filter(whispr => whispr.type === selectedType);
     }
-    
+
     // Filter by search term
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(whispr => 
+      filtered = filtered.filter(whispr =>
         whispr.content.toLowerCase().includes(term)
       );
     }
-    
+
     // Sort
     switch (sortOption) {
       case 'newest':
@@ -72,10 +86,91 @@ const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
       default:
         break;
     }
-    
+
     setFilteredWhisprs(filtered);
   }, [whisprs, selectedType, sortOption, searchTerm]);
-  
+
+  // Calculate swipe distance
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+    setSwiping(true);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (!swiping) return;
+    setTouchEnd(e.targetTouches[0].clientX);
+
+    // Calculate swipe direction and distance for animation
+    if (touchStart !== null && touchEnd !== null) {
+      const distance = touchEnd - touchStart;
+      if (distance < 0) {
+        setSwipeDirection('left');
+      } else {
+        setSwipeDirection('right');
+      }
+
+      // Apply transform during swipe
+      if (swipeContainerRef.current) {
+        const maxTranslate = 100; // Max pixels to translate
+        const translate = Math.min(Math.abs(distance), maxTranslate) * (distance < 0 ? -1 : 1);
+        swipeContainerRef.current.style.transform = `translateX(${translate}px)`;
+        swipeContainerRef.current.style.opacity = `${1 - Math.abs(translate) / (maxTranslate * 2)}`;
+      }
+    }
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd || !swiping) {
+      // Reset swipe animation
+      if (swipeContainerRef.current) {
+        swipeContainerRef.current.style.transform = 'translateX(0)';
+        swipeContainerRef.current.style.opacity = '1';
+      }
+      setSwiping(false);
+      setSwipeDirection(null);
+      return;
+    }
+
+    const distance = touchEnd - touchStart;
+    const isLeftSwipe = distance < -minSwipeDistance;
+    const isRightSwipe = distance > minSwipeDistance;
+
+    // Reset swipe animation first
+    if (swipeContainerRef.current) {
+      swipeContainerRef.current.style.transform = 'translateX(0)';
+      swipeContainerRef.current.style.opacity = '1';
+    }
+
+    if (isLeftSwipe && currentCardIndex < filteredWhisprs.length - 1) {
+      // Go to next card
+      setCurrentCardIndex(currentCardIndex + 1);
+    } else if (isRightSwipe && currentCardIndex > 0) {
+      // Go to previous card
+      setCurrentCardIndex(currentCardIndex - 1);
+    }
+
+    setSwiping(false);
+    setSwipeDirection(null);
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+
+  // Handle manual navigation between cards
+  const goToPrevCard = () => {
+    if (currentCardIndex > 0) {
+      setCurrentCardIndex(currentCardIndex - 1);
+    }
+  };
+
+  const goToNextCard = () => {
+    if (currentCardIndex < filteredWhisprs.length - 1) {
+      setCurrentCardIndex(currentCardIndex + 1);
+    }
+  };
+
   return (
     <div className={`flex flex-col h-full bg-background-lighter ${className}`}>
       {/* Header */}
@@ -93,9 +188,9 @@ const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
           <div>
             <div className="font-semibold text-text-bright">{displayName}</div>
             <div className="text-xs text-text-muted flex items-center gap-1">
-            {stats.unread > 0 ? (
+              {stats.unread > 0 ? (
                 <>
-                  <Badge count={stats.unread} variant="accent" className="text-[10px] h-4 min-w-[16px]" /> 
+                  <Badge count={stats.unread} variant="accent" className="text-[10px] h-4 min-w-[16px]" />
                   new whisprs
                 </>
               ) : (
@@ -105,105 +200,81 @@ const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
           </div>
         </div>
       </div>
-      
-      {/* Filter Section */}
-      <div className="p-3 border-b border-background-highlight space-y-3">
-        <div className="relative">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search whisprs..."
-            className="w-full pl-9 pr-3 py-2 text-sm rounded-lg bg-background-darkest border border-overlay-light text-text-bright placeholder-text-muted"
-          />
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-muted">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {typeOptions.map((option) => (
-            <button
-              key={option.type}
-              onClick={() => setSelectedType(option.type)}
-              className={`px-3 py-1 rounded-full text-xs whitespace-nowrap flex items-center gap-1 ${
-                selectedType === option.type
-                  ? 'bg-gradient-primary text-white'
-                  : 'bg-background-highlight text-text-muted'
-              }`}
-            >
-              {option.type === 'all' ? 'All' : option.type}
-              <span className="bg-black/30 rounded-full px-1.5 min-w-[20px] text-center text-xs">
-                {option.count}
-              </span>
-            </button>
-          ))}
-        </div>
-        
-        <div className="flex justify-between items-center">
-          <div className="text-xs text-text-muted">
-            {filteredWhisprs.length} {filteredWhisprs.length === 1 ? 'whispr' : 'whisprs'}
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <select
-              value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
-              className="bg-background-darkest border border-overlay-light text-text-bright text-xs rounded-lg py-1 px-2"
-            >
-              <option value="newest">Newest</option>
-              <option value="oldest">Oldest</option>
-              <option value="type">By Type</option>
-            </select>
-            
-            <div className="flex bg-background-darkest rounded-lg p-0.5">
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-1 rounded-md ${viewMode === 'list' ? 'bg-gradient-primary text-white' : 'text-text-muted'}`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </button>
-              <button
-                onClick={() => setViewMode('card')}
-                className={`p-1 rounded-md ${viewMode === 'card' ? 'bg-gradient-primary text-white' : 'text-text-muted'}`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      
+
+      {/* Filter Section - Now using the unified FilterControls component */}
+      <FilterControls
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        selectedType={selectedType}
+        setSelectedType={setSelectedType}
+        sortOption={sortOption}
+        setSortOption={setSortOption}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        typeOptions={typeOptions}
+        isMobile={true}
+      />
+
       {/* Message List */}
-      <div className="flex-1 overflow-y-auto p-3">
+      <div className="flex-1 overflow-y-auto p-3 pb-20">
         {filteredWhisprs.length > 0 ? (
           viewMode === 'card' ? (
-            // Card View (one card at a time)
-            <div className="h-full flex items-center justify-center">
-              {filteredWhisprs.map((whispr, index) => (
-                <div 
-                  key={whispr.id} 
-                  className={index === 0 ? 'block w-full' : 'hidden'}
-                >
-                  <WhisprCard
-                    whispr={whispr}
-                    viewMode="card"
-                    onView={onView}
-                    onShare={onShare}
-                    onDelete={onDelete}
-                  />
-                  
-                  <div className="mt-4 text-center text-text-muted text-sm">
-                    1 of {filteredWhisprs.length}
+            // Card View with swipe functionality
+            <div className="h-full flex flex-col items-center justify-center">
+              <div
+                ref={swipeContainerRef}
+                className="w-full transition-transform duration-300"
+                onTouchStart={onTouchStart}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
+              >
+                {filteredWhisprs.map((whispr, index) => (
+                  <div
+                    key={whispr.id}
+                    className={index === currentCardIndex ? 'block w-full' : 'hidden'}
+                  >
+                    <WhisprCard
+                      whispr={whispr}
+                      viewMode="card"
+                      onView={onView}
+                      onShare={onShare}
+                      onDelete={onDelete}
+                    />
                   </div>
+                ))}
+              </div>
+
+              <div className="mt-4 flex items-center justify-center gap-4">
+                {/* Card navigation arrows */}
+                <button
+                  onClick={goToPrevCard}
+                  disabled={currentCardIndex === 0}
+                  className={`p-2 rounded-full ${currentCardIndex === 0 ? 'text-text-muted' : 'text-text-bright'}`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+
+                <div className="text-center text-text-muted text-sm">
+                  {currentCardIndex + 1} of {filteredWhisprs.length}
                 </div>
-              ))}
+
+                <button
+                  onClick={goToNextCard}
+                  disabled={currentCardIndex === filteredWhisprs.length - 1}
+                  className={`p-2 rounded-full ${currentCardIndex === filteredWhisprs.length - 1 ? 'text-text-muted' : 'text-text-bright'}`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Swipe hint */}
+              <div className="mt-2 text-xs text-text-muted text-center">
+                Swipe left or right to navigate
+              </div>
             </div>
           ) : (
             // List View
@@ -225,13 +296,13 @@ const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
             icon={searchTerm ? "🔍" : "📭"}
             title={searchTerm ? "No results found" : "No whisprs yet"}
             description={
-              searchTerm 
+              searchTerm
                 ? `No whisprs match your search for "${searchTerm}"`
                 : "Share your unique link with friends to start receiving anonymous whisprs"
             }
             action={
               searchTerm ? (
-                <button 
+                <button
                   onClick={() => setSearchTerm('')}
                   className="px-3 py-1.5 bg-gradient-primary text-white rounded-lg text-sm"
                 >
@@ -246,9 +317,11 @@ const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
           />
         )}
       </div>
-      
-      {/* Navigation Tabs */}
-      <MobileNavigationTabs unreadCount={stats.unread} />
+
+      {/* Fixed Navigation Tabs */}
+      <div className="fixed bottom-0 left-0 right-0 z-10">
+        <MobileNavigationTabs unreadCount={stats.unread} />
+      </div>
     </div>
   );
 };

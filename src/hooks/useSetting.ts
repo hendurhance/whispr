@@ -96,7 +96,7 @@ export const useSetting = () => {
             checkUsernameAvailability(value);
         }, 500);
 
-        return () => clearTimeout(timer);
+       clearTimeout(timer);
     };
 
     // Save profile changes

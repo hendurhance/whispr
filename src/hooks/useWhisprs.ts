@@ -82,7 +82,7 @@ export const useWhisprs = ({ user, username }: UseWhisprsProps) => {
     try {
       const { data, error } = await supabase
         .rpc('mark_whispr_read', {
-          whispr_id: whisprId as unknown as Record<string, unknown>
+          whispr_id: whisprId,
         });
 
       if (error) {

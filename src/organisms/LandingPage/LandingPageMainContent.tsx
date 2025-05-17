@@ -106,6 +106,9 @@ const LandingPageMainContent: React.FC = () => {
   ];
 
   const [showComingSoon, setShowComingSoon] = useState(false);
+  const handleMobileDownloadClick = () => {
+    setShowComingSoon(true);
+  };
 
   const navigate = useNavigate();
 
@@ -214,7 +217,7 @@ const LandingPageMainContent: React.FC = () => {
               icon={<DownloadIcon />}
               variant="primary"
               showAltText={showComingSoon}
-              onClick={() => setShowComingSoon(true)}
+              onClick={handleMobileDownloadClick}
               altText="Coming Soon"
               className="w-full sm:w-auto text-sm md:text-base"
             >
@@ -319,7 +322,7 @@ const LandingPageMainContent: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <CTASection 
+      <CTASection
         title="Ready to Whispr?"
         description="Join thousands of users who are connecting authentically and anonymously. Cause chaos or spread love—the choice is yours."
         buttonText="Get your free link"

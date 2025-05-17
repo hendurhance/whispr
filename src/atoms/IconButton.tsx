@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
 
 interface IconButtonProps {
   icon: ReactNode;
@@ -19,8 +19,6 @@ const IconButton: React.FC<IconButtonProps> = ({
   showAltText = false,
   className = ''
 }) => {
-  const [showAlt, setShowAlt] = useState(showAltText);
-
   const baseStyles = "px-4 sm:px-5 py-3 rounded-full font-semibold cursor-pointer transition-all duration-300 flex items-center gap-2 justify-center";
 
   const variantStyles = variant === "primary"
@@ -30,8 +28,6 @@ const IconButton: React.FC<IconButtonProps> = ({
   const handleClick = () => {
     if (onClick) {
       onClick();
-    } else if (!showAlt) {
-      setShowAlt(true);
     }
   };
 
@@ -43,7 +39,7 @@ const IconButton: React.FC<IconButtonProps> = ({
       <span className="flex items-center justify-center w-4 sm:w-5 h-4 sm:h-5">
         {icon}
       </span>
-      <span>{showAlt ? altText : children}</span>
+      <span>{showAltText ? altText : children}</span>
     </button>
   );
 };

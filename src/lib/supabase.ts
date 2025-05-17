@@ -4,8 +4,8 @@ import CONFIGURATIONS from '../configs';
 // Environment variables for Supabase configuration
 const supabaseUrl = CONFIGURATIONS.API_URL;
 const supabaseAnonKey = CONFIGURATIONS.ANON_KEY;
+const environment = CONFIGURATIONS.APP_ENV;
 
-// Early exit with a more useful default for development
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Supabase configuration is incomplete. Check your environment variables.');
 }
@@ -19,7 +19,7 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
   global: {
     fetch: (...args) => fetch(...args).then(res => {
-      res.ok && console.log(`Supabase fetch: ${args[0] as string}`);
+      res.ok && environment === 'development' && console.log('Request:', args[0]);
       return res;
     }),
     headers: { 'x-application-name': 'whispr' }
@@ -27,7 +27,9 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 });
 
 supabase.auth.onAuthStateChange((event, session) => {
-  console.log(`Auth state changed: ${event}`, session ? 'User is authenticated' : 'No user');
+  if (environment === 'development') {
+    console.log(`Auth state changed: ${event}`, session ? 'User is authenticated' : 'No user');
+  }
 });
 
 export default supabase;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import DeleteAccountModal from '../../molecules/DeleteAccountModal';
-import supabase from '../../lib/supabase';
 import SignOutEverywhereModal from '../../molecules/SignoutEverywhere';
+import { useAccountManagement } from '../../hooks/useAccountManagement';
 
 interface AccountManagementProps {
   onSignOutEverywhere: () => void;
@@ -16,49 +16,46 @@ const AccountManagement: React.FC<AccountManagementProps> = ({
   isDeleting = false,
   className = ''
 }) => {
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false);
-  const [isSigningOut, setIsSigningOut] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
-  const handleDeleteRequest = () => {
-    setIsDeleteModalOpen(true);
-  };
+  const {
+    // Modal states
+    isDeleteModalOpen,
+    isSignOutModalOpen,
+    isSigningOut,
+    
+    // Delete account methods
+    openDeleteModal,
+    closeDeleteModal,
+    confirmDelete,
+    
+    // Sign out methods
+    openSignOutModal,
+    closeSignOutModal,
+    confirmSignOut
+  } = useAccountManagement({
+    onSignOutEverywhere,
+    onDeleteAccount
+  });
   
-  const handleDeleteConfirm = () => {
-    onDeleteAccount();
-    // Modal will be closed after the delete operation completes
-  };
-  
-  const handleDeleteCancel = () => {
-    setIsDeleteModalOpen(false);
-  };
-
-  const handleSignOutRequest = () => {
-    setIsSignOutModalOpen(true);
-  };
-
+  // Handle sign out confirmation with error handling
   const handleSignOutConfirm = async () => {
-    setIsSigningOut(true);
-    try {
-      // Sign out from all devices using the global scope
-      await supabase.auth.signOut({ scope: 'global' });
-      onSignOutEverywhere();
-      setIsSignOutModalOpen(false);
-    } catch (error) {
-      console.error('Error signing out from all devices:', error);
-      alert('Failed to sign out from all devices. Please try again.');
-    } finally {
-      setIsSigningOut(false);
+    const signOutError = await confirmSignOut();
+    if (signOutError) {
+      setError(signOutError.message);
+      setTimeout(() => setError(null), 5000); // Clear error after 5 seconds
     }
-  };
-
-  const handleSignOutCancel = () => {
-    setIsSignOutModalOpen(false);
   };
 
   return (
     <div className={`bg-background-card rounded-xl border border-overlay-light p-6 ${className}`}>
       <h2 className="text-xl font-semibold text-text-bright mb-4">Account Management</h2>
+
+      {error && (
+        <div className="mb-4 p-3 bg-accent-pink/10 text-accent-pink rounded-lg text-sm" role="alert">
+          {error}
+        </div>
+      )}
 
       <div className="space-y-6">
         <div>
@@ -67,8 +64,9 @@ const AccountManagement: React.FC<AccountManagementProps> = ({
             This will log you out from all devices where you're currently signed in.
           </p>
           <button
-            className="text-primary hover:text-primary-light transition-colors font-medium"
-            onClick={handleSignOutRequest}
+            className="text-primary hover:text-primary-light transition-colors font-medium focus:outline-none focus:underline"
+            onClick={openSignOutModal}
+            aria-label="Sign out from all devices"
           >
             Sign out everywhere
           </button>
@@ -80,8 +78,9 @@ const AccountManagement: React.FC<AccountManagementProps> = ({
             Permanently delete your account and all associated data. This action cannot be undone.
           </p>
           <button
-            className="text-accent-pink hover:text-accent-pink/80 transition-colors font-medium"
-            onClick={handleDeleteRequest}
+            className="text-accent-pink hover:text-accent-pink/80 transition-colors font-medium focus:outline-none focus:underline"
+            onClick={openDeleteModal}
+            aria-label="Delete my account"
           >
             Delete my account
           </button>
@@ -90,15 +89,15 @@ const AccountManagement: React.FC<AccountManagementProps> = ({
       
       {isDeleteModalOpen && (
         <DeleteAccountModal
-          onCancel={handleDeleteCancel}
-          onConfirm={handleDeleteConfirm}
+          onCancel={closeDeleteModal}
+          onConfirm={confirmDelete}
           isDeleting={isDeleting}
         />
       )}
 
       {isSignOutModalOpen && (
         <SignOutEverywhereModal
-          onClose={handleSignOutCancel}
+          onClose={closeSignOutModal}
           onConfirm={handleSignOutConfirm}
           isLoading={isSigningOut}
         />

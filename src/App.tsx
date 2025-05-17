@@ -11,8 +11,10 @@ import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
 import PublicProfilePage from './pages/PublicProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
-import AuthCallbackPage from './molecules/AuthCallbackPage';
+import AuthCallbackPage from './pages/AuthCallbackPage';
 import { AuthProvider, useAuth } from './context/auth';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
 
 // LoadingSpinner component for reuse
 const LoadingSpinner = () => (
@@ -86,6 +88,8 @@ const App: React.FC = () => {
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/auth/callback" element={<AuthCallbackPage />} />
           <Route path="/:username" element={<PublicProfilePage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
           
           {/* Profile setup route */}
           <Route 

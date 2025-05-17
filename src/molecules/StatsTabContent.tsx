@@ -14,11 +14,9 @@ interface StatsTabContentProps {
 const StatsTabContent: React.FC<StatsTabContentProps> = ({ stats }) => {
   const [showModal, setShowModal] = useState(false);
   
-  // Fixed day labels in the original order
   const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   
-  // Get the max value for percentage calculation
-  const maxValue = Math.max(...stats.weeklyData, 1); // Use at least 1 to avoid division by zero
+  const maxValue = Math.max(...stats.weeklyData, 1);
   
   return (
     <div className="space-y-4">

@@ -3,7 +3,7 @@ import TabBar from '../../molecules/TabBar';
 import WhisprCard from '../../molecules/WhisprCard';
 import { Whispr } from '../../types/whispr';
 
-interface MessagesViewProps {
+interface DashboardViewProps {
   whispr: Whispr[];
   unreadCount?: number;
   username?: string;
@@ -14,7 +14,7 @@ interface MessagesViewProps {
   onTabChange?: (tabId: string) => void;
 }
 
-const MessagesView: React.FC<MessagesViewProps> = ({
+const DashboardView: React.FC<DashboardViewProps> = ({
   whispr,
   unreadCount = 0,
   username = 'My Messages',
@@ -83,4 +83,4 @@ const MessagesView: React.FC<MessagesViewProps> = ({
   );
 };
 
-export default MessagesView;
+export default DashboardView;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import DashboardTemplate from '../templates/DashboardTemplate';
 import { useAuth } from '../context/auth';
 import MobilePageContainer from '../molecules/MobilePageContainer';
@@ -8,10 +8,11 @@ import ProfileHeader from '../organisms/Profile/ProfileHeader';
 import CustomizationCard from '../organisms/Settings/CustomizationCard';
 import { useNavigate } from 'react-router-dom';
 import { getUsernameLink } from '../hooks/getUsernameLink';
+import { useResponsive } from '../hooks/useResponsive';
 
 const ProfilePage: React.FC = () => {
   const { user, profile } = useAuth();
-  const [isMobile, setIsMobile] = useState(false);
+  const { isMobile } = useResponsive();
   
   // Default display name and avatar fallbacks if profile is loading
   const displayName = profile?.display_name || user?.user_metadata?.username || 'User';
@@ -22,20 +23,6 @@ const ProfilePage: React.FC = () => {
   // Profile link
   const profileLink = getUsernameLink(username);
   
-  // Check if mobile view
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => {
-      window.removeEventListener('resize', checkMobile);
-    };
-  }, []);
-
   const navigate = useNavigate();
 
   // Handle navigation to settings

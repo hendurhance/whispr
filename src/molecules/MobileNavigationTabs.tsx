@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Badge from '../atoms/Badge';
+import useLinks from '../hooks/useLinks';
 
 interface NavigationTabProps {
   icon: string;
@@ -47,24 +48,24 @@ const MobileNavigationTabs: React.FC<MobileNavigationTabsProps> = ({
   unreadCount = 0 
 }) => {
   const location = useLocation();
+  const { mobileNavItems } = useLinks();
   
-  // Navigation items
-  const navItems = [
-    { label: 'Whisprs', path: '/dashboard', icon: '📨' },
-    { label: 'My Link', path: '/profile', icon: '🔗' },
-    { label: 'Settings', path: '/settings', icon: '⚙️' }
-  ];
+  // Prepare navigation items with badge counts where needed
+  const navItemsWithBadges = mobileNavItems.map(item => ({
+    ...item,
+    badgeCount: item.badgeKey === 'unreadCount' ? unreadCount : undefined
+  }));
   
   return (
     <div className="bg-background-card border-t border-overlay-light flex">
-      {navItems.map((item) => (
+      {navItemsWithBadges.map((item) => (
         <NavigationTab
           key={item.path}
           icon={item.icon}
           label={item.label}
           path={item.path}
           isActive={location.pathname === item.path}
-          badgeCount={item.path === '/dashboard' ? unreadCount : undefined}
+          badgeCount={item.badgeCount}
         />
       ))}
     </div>

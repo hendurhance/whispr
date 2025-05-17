@@ -5,7 +5,7 @@ import { toast } from 'react-hot-toast';
 import Logo from '../atoms/Logo';
 import FooterSimple from '../organisms/Shared/FooterSimple';
 import WhisprSubmissionForm from '../organisms/PublicProfile/WhisprSubmissionForm';
-import CONFIGURATIONS from '../configs';
+import CONFIGURATIONS, { FUNCTIONS } from '../configs';
 
 interface PublicProfileData {
   username: string;
@@ -60,7 +60,7 @@ const PublicProfilePage: React.FC = () => {
   // Update profile views when page loads
   const updateProfileViews = async (username: string) => {
     try {
-      const response = await fetch(CONFIGURATIONS.FUNCTIONS.UPDATE_PROFILE_VIEWS, {
+      const response = await fetch(FUNCTIONS.UPDATE_PROFILE_VIEWS, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username })

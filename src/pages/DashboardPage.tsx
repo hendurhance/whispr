@@ -16,6 +16,7 @@ import WhisprSwipeCard from '../molecules/WhisprSwipeCard';
 import FilterControls from '../molecules/FilterControl';
 import ViewWhisprModal from '../molecules/ViewWhisprModal';
 import { toast } from 'react-hot-toast';
+import { FUNCTIONS } from '../configs';
 
 const DashboardPage: React.FC = () => {
   const { user, profile } = useAuth();
@@ -202,21 +203,27 @@ const DashboardPage: React.FC = () => {
     // Open view modal with share intent
     setSelectedWhispr(whispr);
     setViewModalOpen(true);
-    
-    // After a slight delay, trigger the share function in the modal
-    // This is handled within the ViewWhisprModal component
   };
   
   // Handle delete whispr - using the new modal confirmation
   const handleDelete = async (whisprId: string) => {
     try {
-      const { error } = await supabase
-        .from('whisprs')
-        .delete()
-        .eq('id', whisprId);
+      // Call the edge function to delete the whispr
+      const response = await fetch(FUNCTIONS.DELETE_USER, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          whispr_id: whisprId,
+          user_id: user?.id
+        }),
+      });
       
-      if (error) {
-        console.error('Error deleting whispr:', error);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        console.error('Error deleting whispr:', data.error);
         toast.error('Failed to delete whispr');
         return;
       }

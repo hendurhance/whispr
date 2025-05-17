@@ -163,6 +163,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Sign in with magic link
   const signIn = async (email: string) => {
     try {
+      const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      
+      if (!email || !emailRegex.test(email.toLowerCase())) {
+        return { error: new Error('Please enter a valid email address') };
+      }
+      
       console.log("AuthProvider: Sending magic link to:", email);
       const { error } = await supabase.auth.signInWithOtp({
         email,

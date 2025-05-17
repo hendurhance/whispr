@@ -7,7 +7,7 @@ interface WhisprSubmissionFormProps {
   onSuccess?: () => void;
   onError?: (error: Error) => void;
   className?: string;
-  submitWhispr?: (username: string, content: string, type: string) => Promise<Whispr>;
+  submitWhispr?: (username: string, content: string, type: string) => Promise<Whispr> | void;
 }
 
 const WhisprSubmissionForm: React.FC<WhisprSubmissionFormProps> = ({
@@ -205,6 +205,10 @@ const WhisprSubmissionForm: React.FC<WhisprSubmissionFormProps> = ({
     }
   };
 
+  // Get the border color and the background from the className prop
+  const borderColor = className.includes('border-') ? className.split('border-')[1].split(' ')[0] : 'overlay-light';
+  const backgroundColor = className.includes('bg-') ? className.split('bg-')[1].split(' ')[0] : 'background-darkest';
+
   return (
     <div className={`bg-background-card rounded-xl border border-overlay-light p-4 ${className}`}>
       <h2 className="text-lg font-semibold text-text-bright mb-4">
@@ -228,7 +232,7 @@ const WhisprSubmissionForm: React.FC<WhisprSubmissionFormProps> = ({
                 onClick={() => setSelectedType(type)}
                 className={`px-3 py-1.5 rounded-full text-sm flex items-center gap-1 transition-colors whitespace-nowrap ${isMobile ? 'flex-shrink-0 snap-start' : 'mb-2'} ${selectedType === type
                   ? 'bg-gradient-primary text-white'
-                  : 'bg-background-highlight text-text-muted hover:text-text-bright'
+                  : `bg-${backgroundColor} text-text-muted hover:text-text-bright border border-${borderColor} hover:bg-opacity-70`
                   }`}
               >
                 <span>{getWhisprTypeIcon(type)} {getWhisprTypeLabel(type)}</span>
@@ -242,14 +246,14 @@ const WhisprSubmissionForm: React.FC<WhisprSubmissionFormProps> = ({
           <label htmlFor="whispr-content" className="block text-text-muted text-sm mb-2">
             Your message
           </label>
-          <div className="relative">
+            <div className="relative">
             <textarea
               id="whispr-content"
               value={content}
               onChange={handleContentChange}
               placeholder={`Write your anonymous ${getWhisprTypeLabel(selectedType)} here...`}
               rows={4}
-              className="w-full px-4 py-3 rounded-lg bg-background-darkest border border-overlay-light text-text-bright placeholder-text-muted focus:border-primary focus:ring-1 focus:ring-primary transition-colors resize-none"
+              className={`w-full px-4 py-3 rounded-lg bg-${backgroundColor} border border-${borderColor} text-text-bright placeholder-text-muted focus:border-primary focus:ring-1 focus:ring-primary transition-colors resize-none`}
               required
             />
 
@@ -258,14 +262,14 @@ const WhisprSubmissionForm: React.FC<WhisprSubmissionFormProps> = ({
               type="button"
               onClick={generateSuggestion}
               disabled={isDiceRolling}
-              className="absolute bottom-3 right-3 text-text-muted hover:text-text-bright transition-colors disabled:opacity-50 bg-background-darkest bg-opacity-70 p-1 rounded"
+              className={`absolute bottom-3 right-3 text-text-muted hover:text-text-bright transition-colors disabled:opacity-50 bg-${backgroundColor} bg-opacity-70 p-1 rounded`}
               title="Get a random suggestion"
             >
               <div className={`text-lg ${isDiceRolling ? 'animate-bounce' : ''}`}>
-                🎲
+              🎲
               </div>
             </button>
-          </div>
+            </div>
 
           {/* Character count */}
           <div className="flex justify-end text-xs text-text-muted mt-1">

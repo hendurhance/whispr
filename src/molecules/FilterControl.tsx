@@ -42,16 +42,36 @@ const FilterControls: React.FC<FilterControlsProps> = ({
       : 'text-text-muted';
   };
   
+  // Get the "All" count correctly by only counting non-all type options once
+  // This is the key fix that prevents double-counting
+  const getAllCount = () => {
+    // Find if there's already an 'all' option with a count
+    const allOption = typeOptions.find(opt => opt.type === 'all');
+    if (allOption) {
+      return allOption.count;
+    }
+    
+    // Otherwise sum the individual type counts
+    return typeOptions
+      .filter(opt => opt.type !== 'all')
+      .reduce((sum, option) => sum + option.count, 0);
+  };
+  
   // For mobile, we need to format the type options differently
-  const formattedTypeOptions = isMobile 
-    ? [
-        { type: 'all', count: typeOptions.reduce((sum, option) => sum + (option.type === 'all' ? 0 : option.count), 0) },
-        ...typeOptions.filter(opt => opt.type !== 'all')
-      ]
-    : [
-        { type: 'all', count: typeOptions.reduce((sum, option) => sum + (option.type === 'all' ? 0 : option.count), 0) },
-        ...typeOptions.filter(opt => opt.type !== 'all')
-      ];
+  const formattedTypeOptions = [
+    { type: 'all', count: getAllCount() }, // Use the corrected count calculation
+    ...typeOptions.filter(opt => opt.type !== 'all')
+  ];
+  
+  // Get the current count for display in the bottom row
+  const getCurrentCount = () => {
+    if (selectedType === 'all') {
+      return getAllCount();
+    } else {
+      const option = typeOptions.find(opt => opt.type === selectedType);
+      return option ? option.count : 0;
+    }
+  };
   
   // Mobile view filter controls
   if (isMobile) {
@@ -96,16 +116,10 @@ const FilterControls: React.FC<FilterControlsProps> = ({
           ))}
         </div>
         
-        {/* Bottom Row - Count and Controls */}
+        {/* Bottom Row - Count and Controls - FIXED COUNT DISPLAY */}
         <div className="flex justify-between items-center">
           <div className="text-xs text-text-muted">
-            {typeOptions.reduce((sum, option) => 
-              option.type === selectedType || selectedType === 'all' ? sum + option.count : sum, 0)
-            } {typeOptions.reduce((sum, option) => 
-              option.type === selectedType || selectedType === 'all' ? sum + option.count : sum, 0) === 1 
-              ? 'whispr' 
-              : 'whisprs'
-            }
+            {getCurrentCount()} {getCurrentCount() === 1 ? 'whispr' : 'whisprs'}
           </div>
           
           <div className="flex items-center gap-2">

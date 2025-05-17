@@ -240,7 +240,7 @@ const SetupProfilePage: React.FC = () => {
               <p className="text-sm text-text-muted">
                 Your Whispr link will be:
                 <span className="ml-1 text-text-bright">
-                  ${getUsernameLink(username || 'yourname')}
+                  {getUsernameLink(username || 'yourname')}
                 </span>
               </p>
             </div>

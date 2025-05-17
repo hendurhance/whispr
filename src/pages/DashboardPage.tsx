@@ -33,9 +33,25 @@ const DashboardPage: React.FC = () => {
   // Base URL for the profile (for sharing)
   const baseProfileUrl = window.location.origin;
   
-  // Calculate stats
+  // Calculate stats with CORRECTED total count - IMPORTANT FIX
+  const calculateTypeCountTotal = () => {
+    // Count the total number from the byType counts to match the "All" filter badge
+    if (whisprs.length === 0) return 0;
+    
+    const typeCount = Object.values(
+      whisprs.reduce((acc, whispr) => {
+        acc[whispr.type] = (acc[whispr.type] || 0) + 1;
+        return acc;
+      }, {} as Record<WhisprType, number>)
+    ).reduce((sum, count) => sum + count, 0);
+    
+    return typeCount;
+  };
+  
+  // Calculate stats with the corrected total that matches the sum of individual type counts
   const stats: WhisprStats = {
-    total: whisprs.length,
+    // Use the actual number of whisprs
+    total: calculateTypeCountTotal(),
     unread: whisprs.filter(w => !w.isRead).length,
     byType: whisprs.reduce((acc, whispr) => {
       acc[whispr.type] = (acc[whispr.type] || 0) + 1;
@@ -191,14 +207,9 @@ const DashboardPage: React.FC = () => {
     // This is handled within the ViewWhisprModal component
   };
   
-  // Handle delete whispr
+  // Handle delete whispr - using the new modal confirmation
   const handleDelete = async (whisprId: string) => {
     try {
-      // Show confirmation dialog
-      if (!window.confirm('Are you sure you want to delete this whispr?')) {
-        return;
-      }
-      
       const { error } = await supabase
         .from('whisprs')
         .delete()
@@ -231,11 +242,11 @@ const DashboardPage: React.FC = () => {
       <>
         <div className="md:hidden h-screen">
           <MobileWhisprView
-            whisprs={filteredWhisprs}
+            whisprs={whisprs}
             stats={stats}
             displayName={displayName}
             avatarUrl={avatarUrl}
-            onView={handleView}  // Changed from onReply to onView
+            onView={handleView}
             onShare={handleShare}
             onDelete={handleDelete}
           />
@@ -285,7 +296,7 @@ const DashboardPage: React.FC = () => {
             {viewMode === 'card' ? (
               <WhisprSwipeCard
                 whisprs={filteredWhisprs}
-                onView={handleView}  // Changed from onReply to onView
+                onView={handleView}
                 onShare={handleShare}
                 onDelete={handleDelete}
               />
@@ -293,11 +304,12 @@ const DashboardPage: React.FC = () => {
               <WhisprList
                 whisprs={filteredWhisprs}
                 viewMode={viewMode}
-                onView={handleView}  // Changed from onReply to onView
+                onView={handleView}
                 onShare={handleShare}
                 onDelete={handleDelete}
                 isLoading={isLoading}
                 searchTerm={searchTerm}
+                totalWhisprs={stats.total}
               />
             )}
           </div>

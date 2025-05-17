@@ -257,7 +257,7 @@ const ViewWhisprModal: React.FC<ViewWhisprModalProps> = ({
             width: '100%',
             boxSizing: 'border-box',
         });
-        footer.textContent = `Want to send your own anonymous message? Visit ${profileUrl || APP_URL_CLEAN + username}`;
+        footer.textContent = `Want to send your own anonymous message? Visit ${profileUrl || `${APP_URL_CLEAN}/${username}`}`;
 
         // Add all elements to container
         container.appendChild(header);

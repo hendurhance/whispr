@@ -1,9 +1,5 @@
 import React from 'react';
-
-interface ThemeOption {
-  id: string;
-  className: string;
-}
+import useProfileTheme from '../hooks/useProfileTheme';
 
 interface AppearanceTabContentProps {
   selectedTheme: string;
@@ -20,31 +16,47 @@ const AppearanceTabContent: React.FC<AppearanceTabContentProps> = ({
   onBackgroundChange,
   isLoading = false
 }) => {
-  const themeOptions: ThemeOption[] = [
-    { id: 'purple-pink', className: 'bg-gradient-to-r from-purple-500 to-pink-500' },
-    { id: 'blue-teal', className: 'bg-gradient-to-r from-blue-500 to-teal-500' },
-    { id: 'orange-red', className: 'bg-gradient-to-r from-orange-500 to-red-500' }
+  // Use the hook to get theme functions
+  const { getThemeGradient, getBackgroundColor } = useProfileTheme({
+    theme: selectedTheme,
+    background: selectedBackground
+  });
+
+  // Theme options using the hook's getThemeGradient function
+  const themeOptions = [
+    { id: 'purple-pink', className: getThemeGradient('purple-pink') },
+    { id: 'blue-teal', className: getThemeGradient('blue-teal') },
+    { id: 'orange-red', className: getThemeGradient('orange-red') },
+    { id: 'green-cyan', className: getThemeGradient('green-cyan') },
+    { id: 'indigo-purple', className: getThemeGradient('indigo-purple') }
   ];
 
-  const backgroundOptions: ThemeOption[] = [
-    { id: 'black', className: 'bg-black' },
-    { id: 'gray', className: 'bg-gray-900' },
-    { id: 'indigo', className: 'bg-indigo-900' }
+  // Background options using the hook's getBackgroundColor function
+  const backgroundOptions = [
+    { id: 'black', className: getBackgroundColor('black') },
+    { id: 'dark-gray', className: getBackgroundColor('dark-gray') },
+    { id: 'navy', className: getBackgroundColor('navy') },
+    { id: 'dark-purple', className: getBackgroundColor('dark-purple') },
+    { id: 'default', className: getBackgroundColor('default') }
   ];
 
   return (
     <div className="space-y-6">
       <div>
         <h3 className="text-text-bright font-medium mb-2">Theme</h3>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-3 md:grid-cols-5">
           {themeOptions.map(theme => (
             <button 
               key={theme.id}
-              className={`h-12 rounded-lg ${theme.className} ${selectedTheme === theme.id ? 'border-2 border-white' : ''} ${
+              className={`h-12 rounded-lg ${theme.className} ${
+                selectedTheme === theme.id ? 'border-2 border-white' : 'border border-transparent'
+              } ${
                 isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:opacity-90'
               }`}
               onClick={() => !isLoading && onThemeChange(theme.id)}
               disabled={isLoading}
+              aria-label={`Select ${theme.id} theme`}
+              title={`${theme.id.replace('-', ' ')} theme`}
             />
           ))}
         </div>
@@ -52,23 +64,29 @@ const AppearanceTabContent: React.FC<AppearanceTabContentProps> = ({
       
       <div>
         <h3 className="text-text-bright font-medium mb-2">Page Background</h3>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-3 md:grid-cols-5">
           {backgroundOptions.map(bg => (
             <button 
               key={bg.id}
-              className={`h-12 rounded-lg ${bg.className} ${selectedBackground === bg.id ? 'border-2 border-white' : ''} ${
+              className={`h-12 rounded-lg ${bg.className} ${
+                selectedBackground === bg.id ? 'border-2 border-white' : 'border border-transparent'
+              } ${
                 isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:opacity-90'
               }`}
               onClick={() => !isLoading && onBackgroundChange(bg.id)}
               disabled={isLoading}
+              aria-label={`Select ${bg.id} background`}
+              title={`${bg.id.replace('-', ' ')} background`}
             />
           ))}
         </div>
       </div>
       
-      <p className="text-text-muted text-sm">
-        Upgrade to Whispr Pro to unlock more themes and customization options.
-      </p>
+      <div className="pt-2">
+        <p className="text-text-muted text-sm">
+          Upgrade to Whispr Pro to unlock more themes and customization options.
+        </p>
+      </div>
     </div>
   );
 };

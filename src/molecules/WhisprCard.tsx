@@ -13,6 +13,9 @@ interface WhisprCardProps {
   forShowcase?: boolean;
 }
 
+/**
+ * WhisprCard component that renders a whispr in different view modes
+ */
 const WhisprCard: React.FC<WhisprCardProps> = ({ 
   whispr, 
   viewMode,
@@ -22,198 +25,177 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
   className = '',
   forShowcase = false
 }) => {
-  // Add state for delete confirmation modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Function to handle delete confirmation
-  const handleDeleteConfirm = () => {
+  /**
+   * Handles delete confirmation and executes delete action
+   */
+  const handleDeleteConfirm = async () => {
     if (onDelete) {
-      setIsDeleting(true);
-      // Call the onDelete function and close the modal
-      onDelete(whispr.id);
-      setIsDeleting(false);
-      setShowDeleteModal(false);
+      try {
+        setIsDeleting(true);
+        await onDelete(whispr.id);
+      } finally {
+        setIsDeleting(false);
+        setShowDeleteModal(false);
+      }
     }
   };
 
-  // Different layout based on view mode
-  if (viewMode === 'list') {
-    return (
-      <>
-        <div className={`p-4 bg-background-card rounded-xl border ${whispr.isRead ? 'border-overlay-light' : 'border-primary'} transition-all hover:shadow-sm ${className}`}>
-          <div className="flex items-start gap-3">
-              {!forShowcase && (
-              <div className="bg-background-darkest rounded-lg p-2 text-xl">
-                {getWhisprTypeIcon(whispr.type)}
-              </div>
-              )}
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-1">
-                <TypeBadge type={whispr.type} />
-                <span className="text-xs text-text-muted">{formatDate(whispr.createdAt, forShowcase)}</span>
-              </div>
-              <p className="text-text-bright mb-3">{whispr.content}</p>
-              <div className="flex gap-2">
-                {onView && (
-                  <button 
-                    onClick={() => onView(whispr)}
-                    className="text-xs px-3 py-1 rounded-full bg-accent-purple/10 text-accent-purple hover:bg-accent-purple/20 transition-colors"
-                  >
-                    View
-                  </button>
-                )}
-                {onShare && (
-                  <button 
-                    onClick={() => onShare(whispr)}
-                    className="text-xs px-3 py-1 rounded-full bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/20 transition-colors"
-                  >
-                    Share
-                  </button>
-                )}
-                {onDelete && (
-                  <button 
-                    onClick={() => setShowDeleteModal(true)} // Open delete modal instead of direct delete
-                    className="text-xs px-3 py-1 rounded-full bg-accent-pink/10 text-accent-pink hover:bg-accent-pink/20 transition-colors ml-auto"
-                  >
-                    Delete
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+  /**
+   * Get border color based on read status
+   */
+  const getBorderClass = () => {
+    return whispr.isRead ? 'border-overlay-light' : 'border-primary';
+  };
 
-        {/* Delete Confirmation Modal */}
-        {showDeleteModal && (
-          <GenericModal
-            title="Delete Whispr"
-            titleColor="text-accent-pink"
-            onCancel={() => setShowDeleteModal(false)}
-            onConfirm={handleDeleteConfirm}
-            confirmText="Delete"
-            confirmButtonClass="bg-accent-pink hover:bg-accent-pink-light"
-            isConfirmLoading={isDeleting}
-          >
-            <p className="text-text-normal">
-              Are you sure you want to delete this whispr? This action cannot be undone.
-            </p>
-          </GenericModal>
-        )}
-      </>
-    );
-  }
-  
-  if (viewMode === 'grid') {
-    return (
-      <>
-        <div className={`p-4 bg-background-card rounded-xl border ${whispr.isRead ? 'border-overlay-light' : 'border-primary'} h-full flex flex-col transition-all hover:shadow-sm ${className}`}>
-          <div className="flex items-center justify-between mb-3">
-            <TypeBadge type={whispr.type} />
-            <span className="text-xs text-text-muted">{formatDate(whispr.createdAt)}</span>
-          </div>
-          <p className="text-text-bright mb-4 flex-1">{whispr.content}</p>
-          <div className="flex gap-2 mt-auto">
-            {onView && (
-              <button 
-                onClick={() => onView(whispr)}
-                className="flex-1 text-xs px-3 py-1 rounded-full bg-accent-purple/10 text-accent-purple hover:bg-accent-purple/20 transition-colors"
-              >
-                View
-              </button>
-            )}
-            {onShare && (
-              <button 
-                onClick={() => onShare(whispr)}
-                className="flex-1 text-xs px-3 py-1 rounded-full bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/20 transition-colors"
-              >
-                Share
-              </button>
-            )}
-            {onDelete && (
-              <button 
-                onClick={() => setShowDeleteModal(true)} // Open delete modal instead of direct delete
-                className="text-xs px-2 py-1 rounded-full bg-accent-pink/10 text-accent-pink hover:bg-accent-pink/20 transition-colors"
-              >
-                ×
-              </button>
-            )}
-          </div>
-        </div>
+  /**
+   * Delete confirmation modal
+   */
+  const DeleteConfirmationModal = () => (
+    <GenericModal
+      title="Delete Whispr"
+      titleColor="text-accent-pink"
+      onCancel={() => setShowDeleteModal(false)}
+      onConfirm={handleDeleteConfirm}
+      confirmText="Delete"
+      confirmButtonClass="bg-accent-pink hover:bg-accent-pink-light"
+      isConfirmLoading={isDeleting}
+    >
+      <p className="text-text-normal">
+        Are you sure you want to delete this whispr? This action cannot be undone.
+      </p>
+    </GenericModal>
+  );
 
-        {/* Delete Confirmation Modal */}
-        {showDeleteModal && (
-          <GenericModal
-            title="Delete Whispr"
-            titleColor="text-accent-pink"
-            onCancel={() => setShowDeleteModal(false)}
-            onConfirm={handleDeleteConfirm}
-            confirmText="Delete"
-            confirmButtonClass="bg-accent-pink hover:bg-accent-pink-light"
-            isConfirmLoading={isDeleting}
+  /**
+   * Content header with type badge and date
+   */
+  const ContentHeader = ({ className = '' }) => (
+    <div className={`flex items-center justify-between ${className}`}>
+      <TypeBadge type={whispr.type} />
+      <span className="text-xs text-text-muted">
+        {formatDate(whispr.createdAt, forShowcase)}
+      </span>
+    </div>
+  );
+
+  /**
+   * Action buttons for view, share, delete
+   */
+  const ActionButtons = ({ variant }: { variant: 'list' | 'grid' | 'card' }) => {
+    // Style variants for different view modes
+    const buttonStyles = {
+      list: {
+        container: 'flex gap-2',
+        view: 'text-xs px-3 py-1 rounded-full bg-accent-purple/10 text-accent-purple hover:bg-accent-purple/20 transition-colors',
+        share: 'text-xs px-3 py-1 rounded-full bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/20 transition-colors',
+        delete: 'text-xs px-3 py-1 rounded-full bg-accent-pink/10 text-accent-pink hover:bg-accent-pink/20 transition-colors ml-auto'
+      },
+      grid: {
+        container: 'flex gap-2 mt-auto',
+        view: 'flex-1 text-xs px-3 py-1 rounded-full bg-accent-purple/10 text-accent-purple hover:bg-accent-purple/20 transition-colors',
+        share: 'flex-1 text-xs px-3 py-1 rounded-full bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/20 transition-colors',
+        delete: 'text-xs px-2 py-1 rounded-full bg-accent-pink/10 text-accent-pink hover:bg-accent-pink/20 transition-colors'
+      },
+      card: {
+        container: 'flex gap-3 mt-auto',
+        view: 'flex-1 py-2 rounded-lg bg-accent-purple/10 text-accent-purple hover:bg-accent-purple/20 transition-colors',
+        share: 'flex-1 py-2 rounded-lg bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/20 transition-colors',
+        delete: 'py-2 px-3 rounded-lg bg-accent-pink/10 text-accent-pink hover:bg-accent-pink/20 transition-colors'
+      }
+    };
+
+    const style = buttonStyles[variant];
+    const deleteLabel = variant === 'grid' ? '×' : 'Delete';
+
+    return (
+      <div className={style.container}>
+        {onView && (
+          <button 
+            onClick={() => onView(whispr)}
+            className={style.view}
+            aria-label="View whispr"
           >
-            <p className="text-text-normal">
-              Are you sure you want to delete this whispr? This action cannot be undone.
-            </p>
-          </GenericModal>
+            View
+          </button>
         )}
-      </>
+        
+        {onShare && (
+          <button 
+            onClick={() => onShare(whispr)}
+            className={style.share}
+            aria-label="Share whispr"
+          >
+            Share
+          </button>
+        )}
+        
+        {onDelete && (
+          <button 
+            onClick={() => setShowDeleteModal(true)}
+            className={style.delete}
+            aria-label="Delete whispr"
+          >
+            {deleteLabel}
+          </button>
+        )}
+      </div>
     );
-  }
-  
-  // Card view (swipe card)
-  return (
-    <>
-      <div className={`p-6 bg-background-card rounded-xl border ${whispr.isRead ? 'border-overlay-light' : 'border-primary'} flex flex-col shadow-md max-w-md mx-auto transition-all ${className}`}>
-        <div className="flex items-center justify-between mb-4">
-          <TypeBadge type={whispr.type} />
-          <span className="text-xs text-text-muted">{formatDate(whispr.createdAt)}</span>
-        </div>
-        <p className="text-text-bright text-lg mb-6 flex-1">{whispr.content}</p>
-        <div className="flex gap-3 mt-auto">
-          {onView && (
-            <button 
-              onClick={() => onView(whispr)}
-              className="flex-1 py-2 rounded-lg bg-accent-purple/10 text-accent-purple hover:bg-accent-purple/20 transition-colors"
-            >
-              View
-            </button>
-          )}
-          {onShare && (
-            <button 
-              onClick={() => onShare(whispr)}
-              className="flex-1 py-2 rounded-lg bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/20 transition-colors"
-            >
-              Share
-            </button>
-          )}
-          {onDelete && (
-            <button 
-              onClick={() => setShowDeleteModal(true)} // Open delete modal instead of direct delete
-              className="py-2 px-3 rounded-lg bg-accent-pink/10 text-accent-pink hover:bg-accent-pink/20 transition-colors"
-            >
-              Delete
-            </button>
-          )}
+  };
+
+  /**
+   * List view layout
+   */
+  const ListViewLayout = () => (
+    <div className={`p-4 bg-background-card rounded-xl border ${getBorderClass()} transition-all hover:shadow-sm ${className}`}>
+      <div className="flex items-start gap-3">
+        {!forShowcase && (
+          <div className="bg-background-darkest rounded-lg p-2 text-xl">
+            {getWhisprTypeIcon(whispr.type)}
+          </div>
+        )}
+        <div className="flex-1">
+          <ContentHeader className="mb-1" />
+          <p className="text-text-bright mb-3">{whispr.content}</p>
+          <ActionButtons variant="list" />
         </div>
       </div>
+    </div>
+  );
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <GenericModal
-          title="Delete Whispr"
-          titleColor="text-accent-pink"
-          onCancel={() => setShowDeleteModal(false)}
-          onConfirm={handleDeleteConfirm}
-          confirmText="Delete"
-          confirmButtonClass="bg-accent-pink hover:bg-accent-pink-light"
-          isConfirmLoading={isDeleting}
-        >
-          <p className="text-text-normal">
-            Are you sure you want to delete this whispr? This action cannot be undone.
-          </p>
-        </GenericModal>
-      )}
+  /**
+   * Grid view layout
+   */
+  const GridViewLayout = () => (
+    <div className={`p-4 bg-background-card rounded-xl border ${getBorderClass()} h-full flex flex-col transition-all hover:shadow-sm ${className}`}>
+      <ContentHeader className="mb-3" />
+      <p className="text-text-bright mb-4 flex-1">{whispr.content}</p>
+      <ActionButtons variant="grid" />
+    </div>
+  );
+
+  /**
+   * Card view layout (swipe card)
+   */
+  const CardViewLayout = () => (
+    <div className={`p-6 bg-background-card rounded-xl border ${getBorderClass()} flex flex-col shadow-md max-w-md mx-auto transition-all ${className}`}>
+      <ContentHeader className="mb-4" />
+      <p className="text-text-bright text-lg mb-6 flex-1">{whispr.content}</p>
+      <ActionButtons variant="card" />
+    </div>
+  );
+
+  // Render the appropriate layout based on view mode
+  return (
+    <>
+      {viewMode === 'list' && <ListViewLayout />}
+      {viewMode === 'grid' && <GridViewLayout />}
+      {viewMode === 'card' && <CardViewLayout />}
+      
+      {/* Delete Confirmation Modal (common for all layouts) */}
+      {showDeleteModal && <DeleteConfirmationModal />}
     </>
   );
 };

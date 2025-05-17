@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import Button from '../../atoms/Button';
 import FeatureCard from '../../molecules/FeatureCard';
 import StepCard from '../../molecules/StepCard';
 import PrivacyCard from '../../molecules/PrivacyCard';
 import SectionTitle from '../../molecules/SectionTitle';
 import PhoneMockup from '../../atoms/PhoneMockup';
-import MessagesView from '../Shared/MessageView';
+import DashboardView from '../Shared/DashboardView';
 import ProfileView from '../Shared/ProfileView';
 import FloatingShapes, { Shape } from '../../molecules/FloatingShapes';
 import IconButton from '../../atoms/IconButton';
 import FloatingMessagesContainer from '../../molecules/FloatingMessagesContainer';
+import CTASection from '../../molecules/CTASection';
 import { useNavigate } from 'react-router-dom';
 import DashboardImage from '../../assets/dashboard.png'
 import { Whispr } from '../../types/whispr';
@@ -39,7 +39,6 @@ const WebAccessIcon = () => (
   </svg>
 );
 
-
 const LandingPageMainContent: React.FC = () => {
   const features = [
     { icon: "❓", title: "Anonymous Q&A", description: "Ask spicy questions or get raw, unfiltered answers.", example: "What's the most unhinged thing you've done for clout?", is_coming_soon: false },
@@ -57,17 +56,16 @@ const LandingPageMainContent: React.FC = () => {
   const steps = [
     { number: 1, title: "Sign Up", description: "Join the chaos in seconds. Just a username and email to create your account." },
     { number: 2, title: "Share Your Link", description: "Get a unique link to blast on X, TikTok, or wherever you stir up trouble." },
-    { number: 3, title: "Receive Wild Messages", description: "Brace for unfiltered questions, roasts, dares, and more from your crew." },
+    { number: 3, title: "Receive Wild Messages", description: "Brace for unfiltered questions, roasts, dares, and more from your friends." },
     { number: 4, title: "Respond Anonymously", description: "Clap back or escalate the chaos with anonymous replies." },
   ];
 
   const privacyFeatures = [
     { icon: "🔒", title: "Total Anonymity", description: "No names, no traces—just pure, unfiltered chaos with zero identifiable data." },
-    { icon: "🛡️", title: "No Data Tracking", description: "We don’t track jack. Your spicy secrets stay safe." },
-    { icon: "🌐", title: "Open Source", description: "Whispr’s code is public, so you can check it's as legit as your hottest take." },
+    { icon: "🛡️", title: "No Data Tracking", description: "We don't track jack. Your spicy secrets stay safe." },
+    { icon: "🌐", title: "Open Source", description: "Whispr's code is public, so you can check it's as legit as your hottest take." },
     { icon: "🚫", title: "No Ads", description: "No annoying ads, no data scams—just a clean playground for chaos." },
   ];
-
 
   const whispr: Whispr[] = [
     {
@@ -147,7 +145,7 @@ const LandingPageMainContent: React.FC = () => {
     }
   ];
 
-    const floatingMessagesData = [
+  const floatingMessagesData = [
     {
       id: 'msg1',
       content: 'Your energy is so chaotic, I\'m living for it 🔥',
@@ -203,7 +201,7 @@ const LandingPageMainContent: React.FC = () => {
           className="z-0 opacity-50 md:opacity-100"
         />
 
-        {/* Hero content with improved mobile spacing */}
+        {/* Hero content */}
         <div className="relative z-10 max-w-screen-xl mx-auto">
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold mb-3 md:mb-5 bg-gradient-primary bg-clip-text text-transparent leading-tight">
             Be anonymous,<br />Be unstoppable
@@ -233,7 +231,7 @@ const LandingPageMainContent: React.FC = () => {
           </div>
         </div>
 
-        {/* App showcase with floating messages - improved for mobile */}
+        {/* App showcase with floating messages */}
         <div className="relative mt-10 md:mt-16 z-10">
           {/* Hide some floating messages on small screens */}
           <FloatingMessagesContainer
@@ -241,7 +239,7 @@ const LandingPageMainContent: React.FC = () => {
             className="z-20 hidden sm:block"
           />
 
-          {/* App showcase image with better mobile display */}
+          {/* App screenshot showcase */}
           <div className="relative z-10 mx-auto rounded-xl md:rounded-2xl overflow-hidden shadow-xl">
             <img
               src={DashboardImage}
@@ -275,14 +273,14 @@ const LandingPageMainContent: React.FC = () => {
         />
 
         <div className="flex flex-col md:flex-row items-center justify-center gap-16 mt-16">
-          {/* Share Link Phone */}
+          {/* Public Profile Phone */}
           <PhoneMockup>
             <ProfileView />
           </PhoneMockup>
 
-          {/* Messages Phone */}
+          {/* Dashboard Phone */}
           <PhoneMockup className="mt-12 md:mt-0">
-            <MessagesView
+            <DashboardView
               whispr={whispr}
               unreadCount={whispr.length}
               onView={handleView}
@@ -321,91 +319,12 @@ const LandingPageMainContent: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <div className="px-4 md:px-8 my-24">
-        <section className="py-24 px-4 md:px-16 text-center bg-background-lighter rounded-3xl relative overflow-visible">
-          {/* Animated shapes - positioned relative to the section but extending outside */}
-          <div className="absolute inset-0 w-full h-full">
-            {/* Top left shape */}
-            <div
-              className="absolute -top-10 -left-10 w-28 h-28 rounded-xl bg-gradient-primary rotate-12 opacity-90"
-              style={{
-                animation: 'float 13s ease-in-out infinite',
-                zIndex: 1
-              }}
-            ></div>
-
-            {/* Top right shape */}
-            <div
-              className="absolute -top-6 right-[15%] w-16 h-16 rounded-full bg-accent-green opacity-80"
-              style={{
-                animation: 'float 17s ease-in-out infinite alternate',
-                animationDelay: '1s',
-                zIndex: 1
-              }}
-            ></div>
-
-            {/* Bottom left shape - triangle */}
-            <div
-              className="absolute -bottom-8 left-[20%] w-24 h-24 bg-accent-yellow opacity-80"
-              style={{
-                clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
-                animation: 'float 15s ease-in-out infinite',
-                animationDelay: '2s',
-                zIndex: 1
-              }}
-            ></div>
-
-            {/* Bottom right shape - blob */}
-            <div
-              className="absolute -bottom-12 -right-8 w-32 h-32 opacity-90"
-              style={{
-                borderRadius: '30% 70% 70% 30% / 30% 30% 70% 70%',
-                background: 'linear-gradient(135deg, #ff6b8b 0%, #7A31FF 100%)',
-                animation: 'float 20s ease-in-out infinite alternate',
-                animationDelay: '3s',
-                zIndex: 1
-              }}
-            ></div>
-
-            {/* Extra floating elements for more depth */}
-            <div
-              className="absolute top-[40%] left-[10%] w-8 h-8 rounded-full bg-primary-light opacity-30"
-              style={{
-                animation: 'float 25s ease-in-out infinite alternate',
-                zIndex: 0
-              }}
-            ></div>
-
-            <div
-              className="absolute top-[60%] right-[25%] w-12 h-12 rounded-md rotate-45 bg-secondary-light opacity-40"
-              style={{
-                animation: 'float 22s ease-in-out infinite',
-                animationDelay: '4s',
-                zIndex: 0
-              }}
-            ></div>
-          </div>
-
-          {/* Content with higher z-index to ensure it's above the shapes */}
-          <div className="relative z-10">
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-5 text-text-bright">
-              Ready to <span className="bg-gradient-primary bg-clip-text text-transparent">Whispr?</span>
-            </h2>
-            <p className="text-lg md:text-xl text-text-muted max-w-xl mx-auto mb-10">
-              Join thousands of users who are connecting authentically and anonymously. Cause chaos or spread love—the choice is yours.
-            </p>
-            <div className="flex gap-4 justify-center flex-col sm:flex-row">
-              <Button
-                variant="primary"
-                className="px-8 py-4 text-lg shadow-glow"
-                onClick={() => console.log('Get started')}
-              >
-                Get your free link
-              </Button>
-            </div>
-          </div>
-        </section>
-      </div>
+      <CTASection 
+        title="Ready to Whispr?"
+        description="Join thousands of users who are connecting authentically and anonymously. Cause chaos or spread love—the choice is yours."
+        buttonText="Get your free link"
+        buttonAction={() => navigate('/auth')}
+      />
     </main>
   );
 };

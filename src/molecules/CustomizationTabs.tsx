@@ -1,6 +1,6 @@
 import React from 'react';
+import { TabType } from '../types';
 
-export type TabType = 'settings' | 'appearance' | 'social' | 'stats';
 
 interface CustomizationTabsProps {
   activeTab: TabType;

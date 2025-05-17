@@ -35,16 +35,18 @@ export const useShareLink = () => {
         try {
             setShareError(null);
 
+            const fixedUrl = url.replace(/(https?:\/\/[^\/]+)\/\1/, '$1');
+
             // Check if Web Share API is available
             if (navigator.share) {
                 await navigator.share({
                     title,
                     text,
-                    url
+                    url: fixedUrl
                 });
                 return true;
             } else if (copyFallback) {
-                return await copyToClipboard(url);
+                return await copyToClipboard(fixedUrl);
             } else {
                 setShareError('Sharing not supported on this device');
                 setTimeout(() => setShareError(null), 3000);

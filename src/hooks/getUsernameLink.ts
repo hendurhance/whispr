@@ -1,7 +1,7 @@
-import { APP_URL } from "../configs";
+import { APP_URL_CLEAN } from "../configs";
 
 export function getUsernameLink(username: string): string {
-  const baseUrl = APP_URL;
+  const baseUrl = APP_URL_CLEAN;
 
   return `${baseUrl}/${username}`;
 }

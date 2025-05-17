@@ -8,7 +8,7 @@ import ProfileForm from '../organisms/Profile/ProfileForm';
 import EmailSettings from '../organisms/Settings/EmailSettings';
 import AccountManagement from '../organisms/Settings/AccountManagement';
 import { useNavigate } from 'react-router-dom';
-import CONFIGURATIONS from '../configs';
+import { FUNCTIONS } from '../configs';
 
 const SettingsPage: React.FC = () => {
   const { user, profile, refreshProfile, signOut } = useAuth();
@@ -245,7 +245,7 @@ const SettingsPage: React.FC = () => {
 
 
       const response = await fetch(
-        CONFIGURATIONS.FUNCTIONS.DELETE_USER,
+        FUNCTIONS.DELETE_USER,
         {
           headers: {
             'Content-Type': 'application/json',

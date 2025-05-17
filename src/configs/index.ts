@@ -10,7 +10,7 @@ const CONFIGURATIONS = {
     },
     APP_URL: import.meta.env.VITE_APP_URL || process.env.VITE_APP_URL,
     get APP_URL_CLEAN() {
-        return this.APP_URL.replace('https://', '').replace('http://', '').replace(/\/$/, '');
+        return this.APP_URL ? this.APP_URL.replace('https://', '').replace('http://', '').replace(/\/$/, '') : '';
     }
 };
  

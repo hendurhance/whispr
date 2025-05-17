@@ -35,7 +35,7 @@ export const useShareLink = () => {
         try {
             setShareError(null);
 
-            const fixedUrl = url.replace(/(https?:\/\/[^\/]+)\/\1/, '$1');
+            const fixedUrl = url.replace(/(https?:\/\/[^/]+)\/\1/, '$1');
 
             // Check if Web Share API is available
             if (navigator.share) {

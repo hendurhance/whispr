@@ -1,30 +1,27 @@
 import React from 'react';
 import TabBar from '../../molecules/TabBar';
-import AnonymousMessage from '../../molecules/AnonymousMessage';
-
-interface Message {
-  id: string;
-  content: string;
-  timestamp?: string;
-}
+import WhisprCard from '../../molecules/WhisprCard';
+import { Whispr } from '../../types/whispr';
 
 interface MessagesViewProps {
-  messages: Message[];
+  whispr: Whispr[];
   unreadCount?: number;
   username?: string;
   profileLetter?: string;
-  onReply?: (messageId: string) => void;
+  onView?: (messageId: string) => void;
   onShare?: (messageId: string) => void;
+  onDelete?: (messageId: string) => void;
   onTabChange?: (tabId: string) => void;
 }
 
 const MessagesView: React.FC<MessagesViewProps> = ({
-  messages,
+  whispr,
   unreadCount = 0,
   username = 'My Messages',
   profileLetter = 'W',
-  onReply,
+  onView,
   onShare,
+  onDelete,
   onTabChange
 }) => {
   // Tab data
@@ -54,32 +51,25 @@ const MessagesView: React.FC<MessagesViewProps> = ({
       </div>
       
       {/* Messages List */}
-      <div className="flex-1 overflow-y-auto p-3">
-        {messages.length > 0 ? (
-          messages.map((message) => (
-            <AnonymousMessage 
-              key={message.id}
-              content={message.content}
-              timestamp={message.timestamp}
-              className="mb-3"
-              actions={[
-                { 
-                  label: 'Reply', 
-                  color: 'accent-purple',
-                  onClick: () => onReply && onReply(message.id)
-                },
-                { 
-                  label: 'Share', 
-                  color: 'accent-pink',
-                  onClick: () => onShare && onShare(message.id)
-                }
-              ]}
-            />
-          ))
+      <div className="flex-1 overflow-y-auto p-4">
+        {whispr.length > 0 ? (
+          <div className="grid grid-cols-1 gap-4">
+        {whispr.map((message) => (
+          <WhisprCard 
+            key={message.id}
+            whispr={message}
+            viewMode='list'
+            onView={ () => onView && onView(message.id) }
+            onShare={ () => onShare && onShare(message.id) }
+            onDelete={ () => onDelete && onDelete(message.id) }
+            forShowcase={true}
+          />
+        ))}
+          </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-text-muted">
-            <div className="text-4xl mb-3">📭</div>
-            <p>No messages yet</p>
+        <div className="text-4xl mb-3">📭</div>
+        <p>No messages yet</p>
           </div>
         )}
       </div>

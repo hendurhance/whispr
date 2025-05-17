@@ -12,6 +12,7 @@ import IconButton from '../../atoms/IconButton';
 import FloatingMessagesContainer from '../../molecules/FloatingMessagesContainer';
 import { useNavigate } from 'react-router-dom';
 import DashboardImage from '../../assets/dashboard.png'
+import { Whispr } from '../../types/whispr';
 
 const DownloadIcon = () => (
   <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" fill="currentColor">
@@ -67,40 +68,42 @@ const LandingPageMainContent: React.FC = () => {
     { icon: "🚫", title: "No Ads", description: "No annoying ads, no data scams—just a clean playground for chaos." },
   ];
 
-   const profileData = {
-    username: 'username',
-    promptText: 'hit me with your wildest anonymous messages!',
-    placeholderText: 'drop some anonymous chaos...',
-    counterText: '666 people just unleashed the madness',
-    buttonText: 'Start your own chaos!',
-    onButtonClick: () => console.log('Get your own link')
-  };
 
-  const messagesData = [
+  const whispr: Whispr[] = [
     {
       id: '1',
       content: 'Your presentation today changed my perspective completely',
-      timestamp: '2:45 PM'
+      type: 'compliment',
+      createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+      isRead: false
     },
     {
       id: '2',
       content: 'What\'s your secret to staying so positive all the time?',
-      timestamp: '1:32 PM'
+      type: 'question',
+      createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(), // 3 hours ago
+      isRead: false
     },
     {
       id: '3',
       content: 'I\'ve always been inspired by your creativity',
-      timestamp: '11:20 AM'
+      type: 'compliment',
+      createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
+      isRead: false
     },
     {
       id: '4',
       content: 'Would you consider mentoring someone like me?',
-      timestamp: '10:05 AM'
+      type: 'question',
+      createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
+      isRead: false
     },
     {
       id: '5',
       content: 'Your work ethic is truly admirable',
-      timestamp: 'Yesterday'
+      type: 'compliment',
+      createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+      isRead: false
     }
   ];
 
@@ -174,13 +177,17 @@ const LandingPageMainContent: React.FC = () => {
     }
   ];
 
-  const handleReply = (messageId: string) => {
-    console.log(`Replying to message ${messageId}`);
+  const handleView = (messageId: string) => {
+    console.log(`Viewing message ${messageId}`);
   };
 
   const handleShare = (messageId: string) => {
     console.log(`Sharing message ${messageId}`);
   };
+
+  const handleDelete = (messageId: string) => {
+    console.log(`Deleting message ${messageId}`);
+  }
 
   const handleTabChange = (tabId: string) => {
     console.log(`Changed to tab ${tabId}`);
@@ -270,16 +277,17 @@ const LandingPageMainContent: React.FC = () => {
         <div className="flex flex-col md:flex-row items-center justify-center gap-16 mt-16">
           {/* Share Link Phone */}
           <PhoneMockup>
-            <ProfileView {...profileData} />
+            <ProfileView />
           </PhoneMockup>
 
           {/* Messages Phone */}
           <PhoneMockup className="mt-12 md:mt-0">
             <MessagesView
-              messages={messagesData}
-              unreadCount={15}
-              onReply={handleReply}
+              whispr={whispr}
+              unreadCount={whispr.length}
+              onView={handleView}
               onShare={handleShare}
+              onDelete={handleDelete}
               onTabChange={handleTabChange}
             />
           </PhoneMockup>

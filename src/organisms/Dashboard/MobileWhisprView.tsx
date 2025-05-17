@@ -41,9 +41,9 @@ const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
   const [, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const swipeContainerRef = useRef<HTMLDivElement>(null);
 
-  // Generate type options from stats
+  // Generate type options from stats - DIRECTLY FORCE THE CORRECT TOTAL
   const typeOptions = [
-    { type: 'all' as const, count: stats.total },
+    { type: 'all' as const, count: whisprs.length },
     ...Object.entries(stats.byType).map(([type, count]) => ({
       type: type as WhisprType,
       count: count
@@ -201,7 +201,7 @@ const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
         </div>
       </div>
 
-      {/* Filter Section - Now using the unified FilterControls component */}
+      {/* Filter Section */}
       <FilterControls
         viewMode={viewMode}
         setViewMode={setViewMode}

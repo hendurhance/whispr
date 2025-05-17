@@ -26,16 +26,18 @@ export interface SortOption {
   value: 'newest' | 'oldest' | 'type';
 }
 
-export const formatDate = (dateString: string): string => {
+export const formatDate = (dateString: string, forShowcase = false): string => {
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true
-  }).format(date);
+  return forShowcase 
+    ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date)
+    : new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true
+      }).format(date);
 };
 
 export const getTimeOfDay = (): string => {

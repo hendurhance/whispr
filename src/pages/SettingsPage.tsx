@@ -38,9 +38,6 @@ const SettingsPage: React.FC = () => {
     handleDeleteAccount
   } = useSetting();
 
-  // Empty handler for email change - will be handled by EmailSettings component
-  const handleChangeEmail = () => {};
-  
   // Empty handler for sign out everywhere - will be handled by AccountManagement component
   const handleSignOutEverywhere = () => {};
 
@@ -72,7 +69,6 @@ const SettingsPage: React.FC = () => {
             email={user?.email || ''}
             enableNotifications={emailNotifications}
             onToggleNotifications={handleToggleNotifications}
-            onChangeEmail={handleChangeEmail}
             userId={user?.id}
           />
 
@@ -113,7 +109,6 @@ const SettingsPage: React.FC = () => {
           email={user?.email || ''}
           enableNotifications={emailNotifications}
           onToggleNotifications={handleToggleNotifications}
-          onChangeEmail={handleChangeEmail}
           userId={user?.id}
         />
 

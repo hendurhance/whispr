@@ -86,7 +86,7 @@ export const getWhisprTypeColor = (type: WhisprType): string => {
     case 'confession': return 'accent-blue';
     case 'rumor': return 'accent-teal';
     case 'suggestion': return 'accent-orange';
-    case 'secret': return 'accent-indigo';
+    case 'secret': return 'accent-lime';
     case 'hot_take': return 'accent-pink';
     case 'dare': return 'accent-yellow';
     default: return 'primary';

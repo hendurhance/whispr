@@ -48,7 +48,7 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({
       {/* Email Display and Change Button */}
       <div className="mb-6">
         <p className="text-text-muted mb-2">Your account email</p>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-center">
           <p className="text-text-bright truncate mr-2" title={email}>
             {email || 'Loading...'}
           </p>

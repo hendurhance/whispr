@@ -40,6 +40,9 @@ export default {
           blue: '#56ccff', // Adding a blue accent for variety
           green: '#56ffb2', // Success color
           yellow: '#ffcb56', // Warning color
+          red: '#ff5656', // Error color
+          teal: '#4dd0e1', // Teal for additional accent
+          lime: '#c4ff56', // Lime for additional accent
         },
         overlay: {
           dark: 'rgba(12, 12, 29, 0.8)', // For modal backgrounds

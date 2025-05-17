@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Whispr, formatDate, getWhisprTypeIcon } from '../types/whispr';
 import TypeBadge from '../atoms/TypeBadge';
 import GenericModal from '../atoms/GenericModal';
+import { useWhisprCard } from '../hooks/useWhisprCard';
 
 interface WhisprCardProps {
   whispr: Whispr;
@@ -16,8 +17,8 @@ interface WhisprCardProps {
 /**
  * WhisprCard component that renders a whispr in different view modes
  */
-const WhisprCard: React.FC<WhisprCardProps> = ({ 
-  whispr, 
+const WhisprCard: React.FC<WhisprCardProps> = ({
+  whispr,
   viewMode,
   onView,
   onShare,
@@ -25,30 +26,14 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
   className = '',
   forShowcase = false
 }) => {
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  /**
-   * Handles delete confirmation and executes delete action
-   */
-  const handleDeleteConfirm = async () => {
-    if (onDelete) {
-      try {
-        setIsDeleting(true);
-        await onDelete(whispr.id);
-      } finally {
-        setIsDeleting(false);
-        setShowDeleteModal(false);
-      }
-    }
-  };
-
-  /**
-   * Get border color based on read status
-   */
-  const getBorderClass = () => {
-    return whispr.isRead ? 'border-overlay-light' : 'border-primary';
-  };
+  const {
+    showDeleteModal,
+    isDeleting,
+    openDeleteModal,
+    closeDeleteModal,
+    handleDeleteConfirm,
+    getBorderClass
+  } = useWhisprCard({ whispr, onDelete });
 
   /**
    * Delete confirmation modal
@@ -57,10 +42,10 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
     <GenericModal
       title="Delete Whispr"
       titleColor="text-accent-pink"
-      onCancel={() => setShowDeleteModal(false)}
+      onCancel={closeDeleteModal}
       onConfirm={handleDeleteConfirm}
       confirmText="Delete"
-      confirmButtonClass="bg-accent-pink hover:bg-accent-pink-light"
+      confirmButtonClass="bg-accent-pink hover:bg-accent-pink/80"
       isConfirmLoading={isDeleting}
     >
       <p className="text-text-normal">
@@ -72,7 +57,7 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
   /**
    * Content header with type badge and date
    */
-  const ContentHeader = ({ className = '' }) => (
+  const ContentHeader = ({ className = '' }: { className?: string }) => (
     <div className={`flex items-center justify-between ${className}`}>
       <TypeBadge type={whispr.type} />
       <span className="text-xs text-text-muted">
@@ -85,25 +70,31 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
    * Action buttons for view, share, delete
    */
   const ActionButtons = ({ variant }: { variant: 'list' | 'grid' | 'card' }) => {
+    const baseButtonStyles = {
+      view: 'bg-accent-purple/10 text-accent-purple hover:bg-accent-purple/20',
+      share: 'bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/20',
+      delete: 'bg-accent-pink/10 text-accent-pink hover:bg-accent-pink/20'
+    };
+
     // Style variants for different view modes
     const buttonStyles = {
       list: {
         container: 'flex gap-2',
-        view: 'text-xs px-3 py-1 rounded-full bg-accent-purple/10 text-accent-purple hover:bg-accent-purple/20 transition-colors',
-        share: 'text-xs px-3 py-1 rounded-full bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/20 transition-colors',
-        delete: 'text-xs px-3 py-1 rounded-full bg-accent-pink/10 text-accent-pink hover:bg-accent-pink/20 transition-colors ml-auto'
+        view: `text-xs px-3 py-1 rounded-full ${baseButtonStyles.view} transition-colors`,
+        share: `text-xs px-3 py-1 rounded-full ${baseButtonStyles.share} transition-colors`,
+        delete: `text-xs px-3 py-1 rounded-full ${baseButtonStyles.delete} transition-colors ml-auto`
       },
       grid: {
         container: 'flex gap-2 mt-auto',
-        view: 'flex-1 text-xs px-3 py-1 rounded-full bg-accent-purple/10 text-accent-purple hover:bg-accent-purple/20 transition-colors',
-        share: 'flex-1 text-xs px-3 py-1 rounded-full bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/20 transition-colors',
-        delete: 'text-xs px-2 py-1 rounded-full bg-accent-pink/10 text-accent-pink hover:bg-accent-pink/20 transition-colors'
+        view: `flex-1 text-xs px-3 py-1 rounded-full ${baseButtonStyles.view} transition-colors`,
+        share: `flex-1 text-xs px-3 py-1 rounded-full ${baseButtonStyles.share} transition-colors`,
+        delete: `text-xs px-2 py-1 rounded-full ${baseButtonStyles.delete} transition-colors`
       },
       card: {
         container: 'flex gap-3 mt-auto',
-        view: 'flex-1 py-2 rounded-lg bg-accent-purple/10 text-accent-purple hover:bg-accent-purple/20 transition-colors',
-        share: 'flex-1 py-2 rounded-lg bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/20 transition-colors',
-        delete: 'py-2 px-3 rounded-lg bg-accent-pink/10 text-accent-pink hover:bg-accent-pink/20 transition-colors'
+        view: `flex-1 py-2 rounded-lg ${baseButtonStyles.view} transition-colors`,
+        share: `flex-1 py-2 rounded-lg ${baseButtonStyles.share} transition-colors`,
+        delete: `py-2 px-3 rounded-lg ${baseButtonStyles.delete} transition-colors`
       }
     };
 
@@ -113,7 +104,7 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
     return (
       <div className={style.container}>
         {onView && (
-          <button 
+          <button
             onClick={() => onView(whispr)}
             className={style.view}
             aria-label="View whispr"
@@ -121,9 +112,9 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
             View
           </button>
         )}
-        
+
         {onShare && (
-          <button 
+          <button
             onClick={() => onShare(whispr)}
             className={style.share}
             aria-label="Share whispr"
@@ -131,10 +122,10 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
             Share
           </button>
         )}
-        
+
         {onDelete && (
-          <button 
-            onClick={() => setShowDeleteModal(true)}
+          <button
+            onClick={openDeleteModal}
             className={style.delete}
             aria-label="Delete whispr"
           >
@@ -193,7 +184,7 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
       {viewMode === 'list' && <ListViewLayout />}
       {viewMode === 'grid' && <GridViewLayout />}
       {viewMode === 'card' && <CardViewLayout />}
-      
+
       {/* Delete Confirmation Modal (common for all layouts) */}
       {showDeleteModal && <DeleteConfirmationModal />}
     </>

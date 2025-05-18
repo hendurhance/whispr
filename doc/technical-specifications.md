@@ -140,34 +140,33 @@ erDiagram
         timestamp updated_at
     }
     WHISPRS {
-      uuid id PK "DEFAULT uuid_generate_v4()"
-      uuid user_id FK "references auth.users(id)"
-      text content "NOT NULL"
-      text type "CHECK (type IN ('question', 'compliment', 'roast', 'confession', 'rumor', 'suggestion', 'secret', 'hot_take', 'dare'))"
-      boolean is_read "DEFAULT FALSE"
+      uuid id PK
+      uuid user_id
+      text content
+      text type
+      boolean is_read
       text ip_address
-      jsonb metadata "DEFAULT '{}'::jsonb"
-      timestamp created_at "WITH TIME ZONE DEFAULT NOW()"
-      timestamp updated_at "WITH TIME ZONE DEFAULT NOW()"
+      jsonb metadata
+      timestamp created_at
+      timestamp updated_at
     }
     SOCIAL_LINKS {
-        uuid id PK "DEFAULT uuid_generate_v4()"
-        uuid user_id FK "references auth.users(id) ON DELETE CASCADE NOT NULL"
-        text platform "NOT NULL"
-        text url "NOT NULL"
-        integer display_order "DEFAULT 0"
-        timestamp created_at "WITH TIME ZONE DEFAULT NOW()"
-        timestamp updated_at "WITH TIME ZONE DEFAULT NOW()"
+        uuid id PK
+        uuid user_id
+        text platform
+        text url
+        integer display_order
+        timestamp created_at
+        timestamp updated_at
     }
     WEEKLY_STATS {
-      uuid id PK "DEFAULT uuid_generate_v4()"
-      uuid user_id FK "references auth.users(id) ON DELETE CASCADE NOT NULL"
-      date date "NOT NULL"
-      integer views "DEFAULT 0"
-      integer whisprs "DEFAULT 0"
-      timestamp created_at "WITH TIME ZONE DEFAULT NOW()"
-      timestamp updated_at "WITH TIME ZONE DEFAULT NOW()"
-      constraint "UNIQUE(user_id, date)"
+      uuid id PK
+      uuid user_id FK
+      date date
+      integer views
+      integer whisprs
+      timestamp created_a
+      timestamp updated_at
     }
 ```
 

@@ -13,6 +13,9 @@ export const useShareLink = () => {
     // Copy text to clipboard
     const copyToClipboard = useCallback(async (text: string): Promise<boolean> => {
         try {
+            if (!text.startsWith('http://') && !text.startsWith('https://')) {
+                text = 'https://' + text;
+            }
             await navigator.clipboard.writeText(text);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);

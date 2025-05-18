@@ -141,7 +141,7 @@ Some ways you can contribute:
 Please note we have a Code of Conduct to ensure a respectful, harassment-free experience for everyone. By participating, you agree to abide by it
 
 ## 📝 License
-Distributed under the [MIT License](/LICENSE).You are free to use, modify, and distribute this software. See the LICENSE file for the full license text.
+Distributed under the [AGPL-3.0 License](/LICENSE).You are free to use, modify, and distribute this software. See the LICENSE file for the full license text.
 
 ## 🙏🏽 Support
 If you like this project, please consider supporting it by starring ⭐ and sharing it with your friends! You can also [sponsor](https://github.com/sponsors/hendurhance) me or [buy me a coffee](https://www.buymeacoffee.com/hendurhance) to help me continue developing it. Thanks for your support!

@@ -40,6 +40,18 @@ const ProfileLinkCard: React.FC<ProfileLinkCardProps> = ({
     });
   };
 
+  // Open profile link in a new tab
+  const openProfileLink = (link: string) => {
+    try {
+      const urlString = link.startsWith('http://') || link.startsWith('https://') ? link : `https://${link}`;
+      const url = new URL(urlString);
+      window.open(url.href, '_blank');
+    } catch (error) {
+      console.error('Invalid URL:', link);
+      window.open(link, '_blank');
+    }
+  };
+
   return (
     <div className={`bg-background-card rounded-xl border border-overlay-light p-6 ${className}`}>
       <div className="flex flex-col items-center mb-6">
@@ -104,7 +116,7 @@ const ProfileLinkCard: React.FC<ProfileLinkCardProps> = ({
           </button>
 
           <button
-            onClick={() => window.open(profileLink, '_blank')}
+            onClick={() => openProfileLink(profileLink)}
             className="flex items-center justify-center gap-2 px-3 py-3 bg-background-highlight hover:bg-overlay-light transition-colors text-text-bright rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
             aria-label="Open profile in new tab"
           >

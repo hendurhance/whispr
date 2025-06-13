@@ -25,6 +25,8 @@ export const useSetting = () => {
 
     // Keep track of previous avatar URL to detect changes
     const prevAvatarUrlRef = useRef('');
+    // Store debounce timer for username availability check
+    const usernameDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Initialize form with profile data
     useEffect(() => {
@@ -91,12 +93,14 @@ export const useSetting = () => {
     const handleUsernameChange = (value: string) => {
         setUsername(value);
 
-        // Debounce check
-        const timer = setTimeout(() => {
+        // Debounce check - clear previous timer then set a new one
+        if (usernameDebounceRef.current) {
+            clearTimeout(usernameDebounceRef.current);
+        }
+
+        usernameDebounceRef.current = setTimeout(() => {
             checkUsernameAvailability(value);
         }, 500);
-
-       clearTimeout(timer);
     };
 
     // Save profile changes

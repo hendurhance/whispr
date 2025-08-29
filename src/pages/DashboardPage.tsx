@@ -1,7 +1,7 @@
 import React from 'react';
 import DashboardTemplate from '../templates/DashboardTemplate';
 import DashboardHeader from '../molecules/DashboardHeader';
-import { useAuth } from '../context/auth';
+import { useStableAuth } from '../hooks/useStableAuth';
 import MobileWhisprView from '../organisms/Dashboard/MobileWhisprView';
 import WhisprList from '../organisms/Dashboard/WhisprList';
 import WhisprSwipeCard from '../molecules/WhisprSwipeCard';
@@ -17,8 +17,8 @@ import { APP_URL_CLEAN } from '../configs';
 import { Whispr } from '../types/whispr';
 
 const DashboardPage: React.FC = () => {
-  // Authentication context
-  const { user, profile } = useAuth();
+  // Use stable authentication context to prevent tab focus issues
+  const { user, profile } = useStableAuth();
   
   // Profile information
   const displayName = profile?.display_name || user?.user_metadata?.username || 'User';

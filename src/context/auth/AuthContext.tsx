@@ -25,6 +25,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fetchedProfileRef = useRef<boolean>(false);
+  const lastUserIdRef = useRef<string | null>(null);
+  const initialLoadRef = useRef<boolean>(true);
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -108,6 +110,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (session?.user) {
           console.log("AuthProvider: User found in session, fetching profile");
+          lastUserIdRef.current = session.user.id;
           // Fetch user profile
           await fetchProfile(session.user.id);
         } else {
@@ -118,12 +121,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } finally {
         console.log("AuthProvider: Initial auth check complete");
         setIsLoading(false);
+        initialLoadRef.current = false;
       }
     };
 
     timeoutRef.current = setTimeout(() => {
       console.log("AuthProvider: Loading timeout triggered");
       setIsLoading(false);
+      initialLoadRef.current = false;
     }, 3000);
 
     getInitialSession();
@@ -132,19 +137,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log(`AuthProvider: Auth state changed: ${event}`);
+        
+        // Skip processing if this is a session refresh from tab focus and user hasn't changed
+        const currentUserId = session?.user?.id;
+        const isTabRefresh = event === 'SIGNED_IN' && !initialLoadRef.current && 
+                           currentUserId && lastUserIdRef.current === currentUserId;
+        
+        if (isTabRefresh) {
+          console.log("AuthProvider: Skipping tab focus session refresh for same user");
+          return;
+        }
+        
         setSession(session);
         setUser(session?.user ?? null);
 
         if (event === 'SIGNED_IN' && session?.user) {
           console.log("AuthProvider: User signed in, fetching profile");
-          setIsLoading(true);
+          lastUserIdRef.current = session.user.id;
+          
+          // Only set loading if this is not a tab focus refresh or initial load
+          if (initialLoadRef.current || lastUserIdRef.current !== session.user.id) {
+            setIsLoading(true);
+          }
+          
           await fetchProfile(session.user.id);
-          setIsLoading(false);
+          
+          if (initialLoadRef.current || lastUserIdRef.current !== session.user.id) {
+            setIsLoading(false);
+          }
         }
 
         if (event === 'SIGNED_OUT') {
           console.log("AuthProvider: User signed out, clearing profile");
           setProfile(null);
+          lastUserIdRef.current = null;
           localStorage.removeItem('profile_setup');
         }
       }

@@ -11,6 +11,7 @@ const AuthPage: React.FC = () => {
   const [isEmailSent, setIsEmailSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const redirectChecked = useRef(false);
+  const lastRedirectUser = useRef<string | null>(null);
   
   // Handle the case where user is redirected here from an expired link
   const queryParams = new URLSearchParams(window.location.search);
@@ -26,8 +27,6 @@ const AuthPage: React.FC = () => {
   
   // If user is already logged in, redirect to appropriate page
   useEffect(() => {
-    if (redirectChecked.current) return;
-    
     // Skip redirect check if we're displaying an error from query params
     if (redirectError) {
       redirectChecked.current = true;
@@ -37,7 +36,14 @@ const AuthPage: React.FC = () => {
     // Only check for redirect once loading is complete
     if (isLoading) return;
     
+    // Prevent multiple redirects for the same user (tab focus issue)
+    const currentUserId = user?.id || null;
+    if (redirectChecked.current && lastRedirectUser.current === currentUserId) {
+      return;
+    }
+    
     redirectChecked.current = true;
+    lastRedirectUser.current = currentUserId;
     console.log("AuthPage: Redirect check, user:", !!user, "profile:", !!profile);
     
     if (user) {

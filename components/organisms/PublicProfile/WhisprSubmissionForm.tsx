@@ -143,7 +143,7 @@ const WhisprSubmissionForm: React.FC<WhisprSubmissionFormProps> = ({
 
         {/* Privacy note */}
         <p className="text-xs text-text-muted text-center mt-3">
-          Your identity will remain anonymous. We don't store personal information that can identify you.
+          Your identity will remain anonymous. We don&apos;t store personal information that can identify you.
         </p>
       </form>
     </div>

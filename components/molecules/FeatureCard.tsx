@@ -30,7 +30,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
     <p className="text-text-muted flex-grow">{description}</p>
     {example && (
       <div className="mt-4 w-full bg-background-darkest rounded-xl p-3 text-sm text-text-muted">
-        "{example}"
+        &quot;{example}&quot;
       </div>
     )}
   </div>

@@ -24,7 +24,7 @@ const SignOutEverywhereModal: React.FC<SignOutEverywhereModalProps> = ({
     >
       <div className="space-y-4">
         <p className="text-text-bright">
-          This will sign you out from all devices where you're currently logged in, including:
+          This will sign you out from all devices where you&apos;re currently logged in, including:
         </p>
         
         <ul className="list-disc list-inside text-text-muted space-y-2">

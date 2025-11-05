@@ -77,7 +77,7 @@ const ProfileLinkCard: React.FC<ProfileLinkCardProps> = ({
 
         <div className="text-center">
           <p className="text-sm text-text-muted mb-1">Scan to access</p>
-          <p className="text-text-bright font-medium">{username}'s Whispr</p>
+          <p className="text-text-bright font-medium">{username}&apos;s Whispr</p>
         </div>
       </div>
 

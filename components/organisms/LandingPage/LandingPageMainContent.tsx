@@ -245,6 +245,7 @@ const LandingPageMainContent: React.FC = () => {
 
           {/* App screenshot showcase */}
           <div className="relative z-10 mx-auto rounded-xl md:rounded-2xl overflow-hidden shadow-xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/dashboard.png"
               alt="Whispr App Interface"

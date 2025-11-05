@@ -26,6 +26,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
       <div className="flex items-center gap-4 mb-6">
         <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
           {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full bg-gradient-primary flex items-center justify-center text-white text-xl font-medium">

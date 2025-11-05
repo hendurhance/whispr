@@ -180,7 +180,7 @@ const PrivacyPage: React.FC = () => {
           <section>
             <h2 className="text-2xl font-semibold text-text-bright mb-4">9. California Privacy Rights</h2>
             <p className="mb-4">
-              California Civil Code Section 1798.83, also known as the "Shine The Light" law, permits our users who are California residents to request and obtain from us, once a year and free of charge, information about categories of personal information (if any) we disclosed to third parties for direct marketing purposes and the names and addresses of all third parties with which we shared personal information in the immediately preceding calendar year.
+              California Civil Code Section 1798.83, also known as the &quot;Shine The Light&quot; law, permits our users who are California residents to request and obtain from us, once a year and free of charge, information about categories of personal information (if any) we disclosed to third parties for direct marketing purposes and the names and addresses of all third parties with which we shared personal information in the immediately preceding calendar year.
             </p>
             <p>
               If you are a California resident and would like to make such a request, please submit your request in writing to us using the contact information provided below.

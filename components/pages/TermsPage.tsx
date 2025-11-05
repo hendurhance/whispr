@@ -30,7 +30,7 @@ const TermsPage: React.FC = () => {
                     <section>
                         <p className="mb-4">Last Updated: May 17, 2025</p>
                         <p>
-                            Welcome to Whispr. Please read these Terms of Service ("Terms") carefully as they contain important information about your legal rights, remedies, and obligations. By accessing or using the Whispr platform, you agree to comply with and be bound by these Terms.
+                            Welcome to Whispr. Please read these Terms of Service (&quot;Terms&quot;) carefully as they contain important information about your legal rights, remedies, and obligations. By accessing or using the Whispr platform, you agree to comply with and be bound by these Terms.
                         </p>
                     </section>
 
@@ -71,7 +71,7 @@ const TermsPage: React.FC = () => {
                             <li>Send or promote content that is illegal, harmful, threatening, abusive, harassing, defamatory, vulgar, obscene, invasive of privacy, or otherwise objectionable</li>
                             <li>Impersonate any person or entity or falsely state or misrepresent your affiliation with a person or entity</li>
                             <li>Engage in any activity that could disable, overburden, or impair the proper functioning of the service</li>
-                            <li>Attempt to access any other user's account or personal information</li>
+                            <li>Attempt to access any other user&apos;s account or personal information</li>
                             <li>Use the service for any illegal purpose or in violation of any local, state, national, or international law</li>
                             <li>Collect or store personal data about other users without their explicit consent</li>
                             <li>Engage in bullying, harassment, or any form of harmful behavior towards other users</li>
@@ -118,7 +118,7 @@ const TermsPage: React.FC = () => {
                     <section>
                         <h2 className="text-2xl font-semibold text-text-bright mb-4">9. Disclaimer of Warranties</h2>
                         <p className="mb-4">
-                            THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
+                            THE SERVICE IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
                         </p>
                         <p>
                             We do not guarantee that the service will be uninterrupted, secure, or error-free, or that defects will be corrected. We are not responsible for the content, accuracy, or opinions expressed in any user-generated content.

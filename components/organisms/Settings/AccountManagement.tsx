@@ -63,7 +63,7 @@ const AccountManagement: React.FC<AccountManagementProps> = ({
         <div>
           <h3 className="text-text-bright font-medium mb-1">Log out from all devices</h3>
           <p className="text-text-muted text-sm mb-3">
-            This will log you out from all devices where you're currently signed in.
+            This will log you out from all devices where you&apos;re currently signed in.
           </p>
           <button
             className="text-primary hover:text-primary-light transition-colors font-medium focus:outline-none focus:underline"

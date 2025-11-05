@@ -22,7 +22,7 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
         </p>
         <ul className="list-disc list-inside text-text-muted mb-6 space-y-1">
           <li>Delete your profile and all settings</li>
-          <li>Delete all whisprs you've received</li>
+          <li>Delete all whisprs you&apos;ve received</li>
           <li>Make your username available for others to use</li>
           <li>Permanently end your access to your account</li>
         </ul>

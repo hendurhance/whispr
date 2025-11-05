@@ -101,6 +101,7 @@ const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-full overflow-hidden">
           {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full bg-gradient-primary flex items-center justify-center text-white">

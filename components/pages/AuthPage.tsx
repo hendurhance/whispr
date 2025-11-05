@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import AuthTemplate from '@/components/templates/AuthTemplate';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/auth';
@@ -129,8 +130,8 @@ const AuthPage: React.FC = () => {
           <div className="mt-8 pt-6 border-t border-overlay-light text-center">
             <p className="text-text-muted text-sm">
               By continuing, you agree to our{' '}
-              <a href="/terms" className="text-primary hover:underline">Terms of Service</a> and{' '}
-              <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a>.
+              <Link href="/terms" className="text-primary hover:underline">Terms of Service</Link> and{' '}
+              <Link href="/privacy" className="text-primary hover:underline">Privacy Policy</Link>.
             </p>
           </div>
         </>
@@ -145,11 +146,11 @@ const AuthPage: React.FC = () => {
           <h2 className="text-2xl font-semibold text-text-bright">Check your inbox</h2>
           
           <p className="text-text-muted">
-            We've sent a magic link to <span className="text-text-bright font-medium">{email}</span>
+            We&apos;ve sent a magic link to <span className="text-text-bright font-medium">{email}</span>
           </p>
           
           <p className="text-text-muted text-sm">
-            Click the link in the email to sign in to your account. If you don't see it, check your spam folder.
+            Click the link in the email to sign in to your account. If you don&apos;t see it, check your spam folder.
           </p>
           
           <button

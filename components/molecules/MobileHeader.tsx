@@ -18,6 +18,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       <div className="flex items-center gap-3">
         <div className="w-12 h-12 rounded-full overflow-hidden">
           {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full bg-gradient-primary flex items-center justify-center text-white font-medium">

@@ -127,7 +127,7 @@ const PublicProfilePage: React.FC<PublicProfilePageProps> = ({ initialProfile, u
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-white p-6" style={backgroundStyle}>
         <h1 className="text-2xl font-bold mb-4">Profile Not Found</h1>
-        <p className="text-gray-400 mb-6">This username doesn't exist or has been removed.</p>
+        <p className="text-gray-400 mb-6">This username doesn&apos;t exist or has been removed.</p>
         <button 
           onClick={() => router.push('/')}
           className="px-4 py-2 bg-white text-black rounded-lg font-medium"

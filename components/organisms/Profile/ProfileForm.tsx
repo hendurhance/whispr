@@ -145,6 +145,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
             {/* Avatar Preview */}
             <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-overlay-light bg-background-card flex items-center justify-center">
               {avatarPreview ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={avatarPreview}
                   alt="Avatar preview"

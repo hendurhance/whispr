@@ -85,6 +85,7 @@ const PublicProfileCard: React.FC<PublicProfileCardProps> = ({
         <div className="absolute -top-10 left-6">
           <div className={`w-20 h-20 rounded-full border-4 ${styles.avatar} overflow-hidden`}>
             {avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img src={avatarUrl} alt={displayName || username} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-2xl text-white">

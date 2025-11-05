@@ -209,7 +209,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log("AuthProvider: Sending magic link to:", email);
       
       // Get the redirect URL from config or fallback to window.location.origin (client-side only)
-      const redirectUrl = CONFIGURATIONS.APP_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+      let redirectUrl = CONFIGURATIONS.APP_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+      
+      // Ensure the URL has a protocol
+      if (redirectUrl && !redirectUrl.startsWith('http://') && !redirectUrl.startsWith('https://')) {
+        redirectUrl = `https://${redirectUrl}`;
+      }
       
       const { error } = await supabase.auth.signInWithOtp({
         email,

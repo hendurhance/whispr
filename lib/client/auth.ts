@@ -40,10 +40,16 @@ export async function signInWithMagicLink(email: string, redirectUrl: string): P
     
     const supabase = createClient();
     
+    // Ensure the redirect URL has a protocol
+    let finalRedirectUrl = redirectUrl;
+    if (finalRedirectUrl && !finalRedirectUrl.startsWith('http://') && !finalRedirectUrl.startsWith('https://')) {
+      finalRedirectUrl = `https://${finalRedirectUrl}`;
+    }
+    
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: redirectUrl,
+        emailRedirectTo: finalRedirectUrl,
       },
     });
 

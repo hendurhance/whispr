@@ -1,10 +1,12 @@
 # Whispr Technical Specifications
 This document provides a comprehensive technical overview of the Whispr application, covering its architecture, design decisions, data models, and other important technical details for developers and stakeholders.
+
 ## 💻 Tech Stack
 <table>
   <tr>
+    <td align="center"><a href="https://nextjs.org/"><img src="https://cdn.worldvectorlogo.com/logos/next-js.svg" width="100px;" alt=""/><br /><sub><b>Next.js</b></sub></a><br /></td>
     <td align="center"><a href="https://reactjs.org/"><img src="https://cdn.worldvectorlogo.com/logos/react-2.svg" width="100px;" alt=""/><br /><sub><b>React</b></sub></a><br /></td>
-    <td align="center"><a href="https://www.typescriptlang.org/"><img src="https://cdn.worldvectorlogo.com/logos/typescript.svg" width="100px;" alt=""/><br /><sub><b>Typescript</b></sub></a><br /></td>
+    <td align="center"><a href="https://www.typescriptlang.org/"><img src="https://cdn.worldvectorlogo.com/logos/typescript.svg" width="100px;" alt=""/><br /><sub><b>TypeScript</b></sub></a><br /></td>
     <td align="center"><a href="https://www.supabase.io/"><img src="https://vectorlogo.zone/logos/supabase/supabase-icon.svg" width="100px;" alt=""/><br /><sub><b>Supabase</b></sub></a><br /></td>
     <td align="center"><a href="https://tailwindcss.com/"><img src="https://cdn.worldvectorlogo.com/logos/tailwindcss.svg" width="100px;" alt=""/><br /><sub><b>Tailwind CSS</b></sub></a><br /></td>
     <td align="center"><a href="https://vercel.com/"><img src="https://cdn.worldvectorlogo.com/logos/vercel.svg" width="100px;" alt=""/><br /><sub><b>Vercel</b></sub></a><br /></td>
@@ -12,40 +14,87 @@ This document provides a comprehensive technical overview of the Whispr applicat
 </table>
 
 ## System Architecture
-Whispr follows a thin-client, monolithic front-end architecture. The entire application logic (aside from backend services provided by Supabase) resides on the client side (in the React app). There is no custom server for Whispr; instead, the front-end communicates directly with Supabase’s back-end services (database, authentication, storage) via Supabase’s JavaScript SDK and RESTful APIs. This approach was chosen to keep the system simple and fast to develop, given the project’s moderate scope.
+Whispr is built with Next.js 15, leveraging the modern App Router architecture with Server Components, Server Actions, and Client Components. The application follows a hybrid rendering strategy, utilizing Server-Side Rendering (SSR) for dynamic pages, Static Site Generation (SSG) for public pages, and Client-Side Rendering where interactive features are needed. There is no custom backend server; instead, Next.js Server Actions and API routes communicate directly with Supabase's backend services (database, authentication, storage) via the `@supabase/ssr` SDK.
+
 Key elements of the architecture include:
-- **Client**: A single-page React application (SPA) that implements all UI and client-side logic. It runs in the user’s browser, handling routing, state management, and calls to Supabase.
-- **Backend-as-a-Service (BaaS)**: Supabase is used as the backend. Supabase provides:
-a PostgreSQL database for storing all persistent data (user profiles and messages), Auth services for user sign-up/login (including magic link support), and Row-Level Security (RLS) policies to enforce data access rules in the database (ensuring users can only access their own data). Edge functions are used to handle server-side logic, such submitting whisprs, deleting users, and other operations that require server-side processing.
-- **Hosting**: The front-end is deployed on Vercel, which serves the React app over HTTPS. This means the application can be accessed globally with low latency, and it can scale automatically to handle more users.
-Below is a high-level diagram of Whispr’s system architecture:
+
+- **Next.js App Router**: Modern file-based routing with support for layouts, loading states, error boundaries, and streaming. Uses the `app/` directory structure with clear separation between public `(public)` and authenticated `(authenticated)` route groups.
+
+- **Server Components (RSC)**: Default rendering mode for most components, allowing server-side data fetching and reducing client-side JavaScript. Provides faster initial page loads, better SEO, and improved performance.
+
+- **Client Components**: Used for interactive features requiring browser APIs, state management, or event handlers. Marked with `'use client'` directive and strategically placed to minimize client-side JavaScript bundle.
+
+- **Server Actions**: Type-safe server-side functions callable from both Server and Client Components, replacing traditional API routes for mutations. Provides seamless form handling and data updates.
+
+- **Backend-as-a-Service (BaaS)**: Supabase provides:
+  - PostgreSQL database for all persistent data (profiles, messages, social links, stats)
+  - Auth services with magic link support and Row-Level Security (RLS)
+  - Storage for user avatars and media files
+  - Edge functions for custom server-side operations
+  - Real-time subscriptions for live updates
+
+- **Hosting**: Deployed on Vercel, which provides:
+  - Global Edge Network for low latency worldwide
+  - Automatic SSL certificates and HTTPS
+  - Serverless Functions for API routes
+  - Incremental Static Regeneration (ISR) support
+  - Preview deployments for pull requests
+  - Analytics and monitoring
+
+Below is a high-level diagram of Whispr's system architecture:
 
 ``` mermaid
 graph TD
-  subgraph Client
-    A[React App] -->|API Calls| B[Supabase]
+  subgraph Client Browser
+    A[Next.js App] -->|Server Actions| B[Next.js Server]
+    A -->|Client-Side API| C[Supabase Client SDK]
+  end
+
+  subgraph Next.js Server
+    B -->|SSR/SSG| D[React Server Components]
+    B -->|Server Actions| E[Supabase Server SDK]
+    B -->|Middleware| F[Auth & Routing]
   end
 
   subgraph Supabase
-    B -->|Database Queries| C[PostgreSQL Database]
-    B -->|Auth Requests| D[Auth Service]
-    B -->|Storage Requests| E[Storage Service]
-    B -->|Edge Functions| F[Serverless Functions]
+    C -->|Auth/Data| G[Supabase API]
+    E -->|Auth/Data| G
+    G -->|Queries| H[PostgreSQL + RLS]
+    G -->|Auth| I[Auth Service]
+    G -->|Files| J[Storage Service]
+    G -->|Functions| K[Edge Functions]
   end
 
   subgraph Hosting
-    G[Vercel] --> A
+    L[Vercel Edge Network] --> A
+    L --> B
   end
 ```
-**Monolithic Front-end Rationale:** Building the entire front-end as a single React application (rather than micro-frontends) keeps development straightforward and cohesive. Given Whispr’s size, the overhead of splitting into multiple front-end services isn’t justified – a monolithic SPA is easier to maintain and deploy. React was selected due to the team’s familiarity and its component-based architecture, which fits well with our design approach (Atomic Design). TypeScript adds reliability through static typing, catching errors early in development. This combination enables rapid iteration on features without managing complex multi-service interactions.
 
-**Supabase Backend Rationale**: Using Supabase allowed the team to avoid writing a custom API server, significantly reducing development and maintenance effort. Supabase provides out-of-the-box solutions for user authentication (including OAuth providers and magic links) and integrates directly with a PostgreSQL database. Key benefits:
-- **Fast Development**: No need to implement common backend features (auth, database CRUD, storage) from scratch – we use Supabase’s APIs.
-- **Scalability**: Supabase is serverless and can scale to accommodate growing user base without major changes.
-- **Security**: Supabase’s built-in security (RLS, auth token management) ensures robust protection of data without extensive custom code.
-- **Simplicity**: Our data model is relatively simple (three main tables: Profiles, Whisprs, Weekly Stats and inbuilt Users table), so a lean BaaS is sufficient and efficient. A fully custom backend would be overkill for these needs
+**Next.js App Router Rationale:** The App Router provides significant advantages:
+- **Server Components by default**: Reduces client-side JavaScript bundle size and improves performance by rendering on the server
+- **Streaming & Suspense**: Progressive rendering for faster perceived performance and better user experience
+- **Layouts**: Shared layouts that persist across navigation without re-rendering
+- **Server Actions**: Type-safe server mutations without building separate API endpoints
+- **Better SEO**: Built-in metadata API and server-side rendering for optimal search engine indexing
+- **Colocation**: Components, tests, and utilities can be organized together in feature folders
+- **Enhanced Security**: Sensitive operations execute server-side, never exposing credentials to the client
 
-In summary, Whispr’s architecture is essentially a React client + Supabase backend, communicating over HTTPS. The client handles presentation and invoking backend operations; Supabase handles data persistence, auth, and file storage. This yields a clean separation: the front-end focuses on user experience, while backend concerns are abstracted by Supabase.
+**Hybrid Rendering Strategy:**
+- **Public pages** (landing, profile viewing): Static Site Generation (SSG) with Incremental Static Regeneration (ISR) for fresh content
+- **Authenticated pages** (dashboard, settings): Server-Side Rendering (SSR) for personalized, real-time data
+- **Interactive components**: Client Components for forms, filters, modals, and real-time interactions
+- **API Routes & Server Actions**: Server-side operations for data mutations and complex business logic
+
+**Supabase Backend Rationale**: Using Supabase provides key benefits:
+- **Fast Development**: Pre-built authentication, database, and storage solutions eliminate boilerplate
+- **Type Safety**: Generated TypeScript types from database schema ensure compile-time safety
+- **Real-time**: Built-in real-time subscriptions for live updates without WebSocket management
+- **Security**: Row-Level Security (RLS) policies enforce data access at the database level
+- **Scalability**: Serverless architecture scales automatically with user growth
+- **SSR Integration**: `@supabase/ssr` package provides optimized cookie-based auth for Next.js
+
+In summary, Whispr's architecture leverages Next.js for optimal rendering strategies (SSR/SSG/CSR) + Supabase for backend services, all hosted on Vercel's edge network. This yields excellent performance, security, SEO, and developer experience while maintaining simplicity and scalability.
 
 ## 📱 Features and 👥 User Flows
 This section outlines key user stories and how the system behaves for each. It describes the functional requirements from the end-user perspective, which also illustrate how different components work together behind the scenes.
@@ -244,8 +293,30 @@ erDiagram
 - The metadata field in Whisprs is a JSONB column, allowing us to store additional information about the message (e.g., IP address, browser info) without needing to create separate columns for each piece of data. This is useful for moderation and analytics purposes.
 - The social_links table allows users to add multiple social media links, with a display order for how they should appear on their profile. This is a flexible way to manage user profiles without hardcoding link types.
 - The weekly_stats table is designed to track user engagement over time. It allows us to analyze trends in message volume and profile views, which can inform future feature development and marketing strategies.
-- The use of UUIDs as primary keys ensures that each record is globally unique, which is important for distributed systems and when using Supabase’s API.
+- The use of UUIDs as primary keys ensures that each record is globally unique, which is important for distributed systems and when using Supabase's API.
+- Next.js Server Actions can directly interact with Supabase server-side, providing type-safe mutations without exposing database credentials to the client.
 
+
+## ⚡️ Authentication & Authorization
+Whispr uses Supabase Auth with Next.js Server-Side Rendering (SSR) integration for secure, performant authentication. The implementation leverages the `@supabase/ssr` package, which provides optimized cookie-based session management compatible with Next.js App Router.
+
+### Authentication Flow
+- **Auth Providers:** Email Magic Link (passwordless authentication) – when users sign up with email, Supabase sends them a secure login link. This eliminates password management, reduces security risks, and improves user experience.
+
+- **Server-Side Auth**: Authentication state is managed server-side using HTTP-only cookies, preventing XSS attacks. The session is validated on the server before rendering protected pages, ensuring security at the infrastructure level.
+
+- **Client-Side Auth**: Client Components can access auth state through the Supabase client for UI updates, but all session validation occurs server-side for security.
+
+- **Supabase Auth Integration**: When users sign in or sign up, Supabase handles verification and returns a user object with a unique user ID (UUID). This integrates seamlessly with our profiles table.
+
+### Session Management
+- **Cookie-based Sessions**: Supabase session tokens are stored in HTTP-only cookies managed by Next.js middleware, providing robust security against XSS attacks. Tokens are never accessible to client-side JavaScript.
+
+- **Middleware Protection**: Next.js middleware (`middleware.ts`) intercepts all requests to protected routes, validates session tokens, and redirects unauthenticated users to the login page. This happens before page rendering.
+
+- **Automatic Token Refresh**: The Supabase client automatically refreshes access tokens before expiration, maintaining seamless user sessions without manual intervention.
+
+- **Server Components**: Can directly access session data server-side without additional API calls, improving performance and reducing latency.
 
 ## ⚡️ Authentication & Authorization
 Whispr uses Supabase's [Auth](https://supabase.com/docs/guides/auth) to handle authentication. Supabase Auth provides a secure authentication system out of the box, with support for  passwordless authentication (magic link) with email, and more.
@@ -253,132 +324,270 @@ Whispr uses Supabase's [Auth](https://supabase.com/docs/guides/auth) to handle a
 - **Supabase Auth Integration**: When a user signs in or signs up, Supabase handles the verification (OAuth token exchange or email verification) and returns a user object to our front-end. This user object contains a unique user ID (a UUID).
 - **Users Table Sync**: We use a Users table in our database to store profile info (username, etc.). We link this to Supabase Auth by using the same UUID as the primary key. For example, after a new user signs up via Supabase, our front-end will prompt for a username and then insert a record into our Users table with id = auth.user.id to tie that profile to the auth record.
 - **Session Management**: Supabase provides a session JWT for logged-in users, which the front-end SDK uses to authenticate future requests. We don’t manually handle tokens – the Supabase library does that for us, storing tokens in local storage and including them in API calls.
-- **Authorization (RLS)**: We leverage Row Level Security policies in Supabase to enforce data access rules . RLS is enabled on the Whisprs tables so that:
-  - A logged-in user can only select (read) their own messages from the Whisprs table. For example, a policy like owner_id = auth.uid() ensures user Alex can fetch only rows where owner_id = Alex’s user ID.
-  - Only authorized actions are allowed. We can have policies to allow inserts into Whisprs by any user (even anonymous) as long as the owner_id corresponds to an existing user – this allows the public to send messages without being logged in. Meanwhile, reading from Whisprs requires auth and is restricted to owners.
-  - Similar RLS rules apply to the Metadata table (e.g., perhaps only the service admin can read it, while insert is open or done via a secure function).
-  - RLS on Users table might ensure users can only update their own profile, etc.
+- **Authorization (RLS)**: We leverage Row Level Security policies in Supabase to enforce data access rules. RLS is enabled on the Whisprs tables so that:
+
+  - **Whisprs Table**: 
+    - Users can only read messages where `user_id` matches their authenticated user ID (`auth.uid()`)
+    - Anonymous users can insert messages for any valid user (enabling anonymous submissions)
+    - Only message owners can delete their received whisprs
+    - Update operations restricted to marking messages as read/unread
+
+  - **Profiles Table**:
+    - Public read access for basic profile information (username, avatar, bio, theme settings)
+    - Users can only update their own profile data
+    - View counts and statistics are managed via Server Actions to prevent manipulation
+    - Sensitive fields are protected from public access
+
+  - **Social Links Table**:
+    - Public read access for display purposes on profile pages
+    - Users can only create, update, or delete their own social links
+    - Display order is controlled by the profile owner
+
+  - **Weekly Stats Table**:
+    - Users can only view their own statistics
+    - Updates are performed server-side through Server Actions and Edge Functions
+    - Ensures data integrity and prevents fraudulent stat manipulation
 - **Security**: By using Supabase Auth and RLS, we ensure that even if someone manipulates the front-end, the backend will not return data that isn’t theirs, nor allow unauthorized actions. For example, a malicious party cannot download someone else’s messages or alter data, because the Supabase policies will block any request that doesn’t meet the criteria (the policies are enforced at the database level).
 - **Password Management**: Since we allow passwordless email, we don’t handle passwords at all (no password column usage). If we ever enabled classic email/password sign-up, Supabase would handle hashing the password. Our system design avoids us ever seeing plaintext passwords, which is ideal for security. 
 - **Account Data**: Users can update their own data (like change username or avatar) through the app, and such requests go through Supabase as authenticated updates to the Users table. We ensure via RLS that users can only update their own row.
 
+### Security Features
+- **Server-Side Validation**: All authentication checks happen on the server, preventing client-side bypasses and manipulation
 
-## Frontend Architecture (Atomic Design)
-Whispr’s front-end codebase is structured using the principles of Atomic Design. This methodology divides UI components into a hierarchy of complexity – from simple building blocks to complex pages – making the system scalable and maintainable. The component categories are:
-## 📦 Architecture
-Since Whispr is built on React, we leverage "Atomic Design" principles to build our components. In the Atomic Design Pattern, the project structure is organized into distinct levels or components, each serving a specific purpose. For this project, we will be using the following components:
-- **Atoms**: The smallest and most basic components, analogous to HTML elements. These could be simple components like a button, an input field, a label, or an icon. They serve as the foundational building blocks that can’t be broken down further without losing functionality.
-- **Molecules**: Slightly more complex components that are made up of multiple atoms working together. For example, a form input with a label and error message could be a molecule (combining label + input atom + perhaps an icon).
-- **Organisms**: Larger sections of the UI formed by groups of molecules (and/or atoms). These are independent, relatively complex UI units. For instance, a navigation bar, a footer section, or a message list could be organisms composed of smaller parts.
-- **Templates**: Page-level layout components that arrange organisms into a full page structure. A template defines the overall page skeleton (for example, a generic dashboard layout template that includes a header, a sidebar, and a content area, with slots where organisms will go).
-- **Pages**: Specific instances of templates, with real content. A page is what the end-user actually sees as a route in the app – it fills a template with actual data and sub-components. For example, a “Dashboard Page” which uses the Dashboard template and populates it with the user’s actual data in organisms like the message list.
-  
-This structure is reflected in the project’s folder organization for the front-end code:
+- **RLS Enforcement**: Database-level security ensures even direct database access (via SQL editor or API) respects user permissions. Policies are enforced by PostgreSQL itself.
+
+- **Secure Cookie Storage**: HTTP-only, Secure, and SameSite cookies prevent JavaScript access and CSRF attacks
+
+- **CSRF Protection**: Built-in protection through SameSite cookie attributes and Next.js middleware
+
+- **Route Protection**: Middleware automatically protects all routes in the `(authenticated)` route group, redirecting unauthorized users
+
+- **Type-Safe Auth Helpers**: Server and client utilities (`lib/server/supabase.ts`, `lib/client/supabase.ts`) provide type-safe access to user session data
+
+- **No Password Storage**: Passwordless authentication means we never handle or store passwords, eliminating a major security risk
+
+
+## Frontend Architecture (Atomic Design with Next.js App Router)
+Whispr's front-end codebase is structured using Atomic Design principles, combined with Next.js 15's App Router file-based routing system. This methodology divides UI components into a hierarchy of complexity – from simple building blocks to complex pages – making the system scalable and maintainable.
+
+## 📦 Component Hierarchy
+
+The component categories are organized within the `components/` directory, while pages and layouts follow Next.js App Router conventions in the `app/` directory:
+
+- **Atoms**: The smallest, most basic components analogous to HTML elements. Examples include buttons, inputs, labels, badges, toggles, and icons. These are pure, reusable building blocks that can't be broken down further without losing functionality.
+
+- **Molecules**: More complex components composed of multiple atoms working together. Examples include form fields with labels, social media link cards, profile cards, and filter controls. These combine atoms into functional units.
+
+- **Organisms**: Larger UI sections formed by groups of molecules and atoms. These are independent, complex units such as headers, footers, navigation bars, settings panels, and message lists. They represent significant page sections.
+
+- **Templates**: Page-level layout components implemented as Next.js `layout.tsx` files. These define the overall page structure and skeleton, with slots where organisms are placed. Templates provide consistency across related pages.
+
+- **Pages**: Specific route implementations using Next.js `page.tsx` files. These fill templates with actual data and components, representing what end-users see at specific URLs.
+
+### Directory Structure
+
+The project follows this enhanced structure combining Atomic Design with Next.js App Router:
 
 ```
-src/
-├── atoms/            # Basic UI elements (reusable across app)
-│   ├── Button.tsx
-│   ├── Input.tsx
-│   └── Avatar.tsx        # etc...
+app/                          # Next.js App Router (pages & layouts)
+├── globals.css              # Global styles and Tailwind directives
+├── layout.tsx               # Root layout (HTML shell, metadata)
+├── not-found.tsx            # 404 error page
+├── robots.ts                # SEO robots.txt generator
+├── sitemap.ts               # SEO sitemap generator
 │
-├── molecules/        # Small composite components
-│   ├── SocialLoginButton.tsx   # Combines Icon + Button (uses atoms)
-│   ├── AuthForm.tsx            # A form composed of inputs, buttons
-│   └── ContentListItem.tsx     # Perhaps a card or list element molecule
+├── (authenticated)/         # Route group for protected pages
+│   ├── layout.tsx          # Authenticated layout wrapper with auth check
+│   ├── dashboard/
+│   │   └── page.tsx        # Dashboard page (Server Component)
+│   ├── profile/
+│   │   └── page.tsx        # Profile editing page
+│   ├── settings/
+│   │   └── page.tsx        # Settings page
+│   └── setup-profile/
+│       └── page.tsx        # Initial profile setup flow
 │
-├── organisms/        # Larger composites and sections
-│   ├── LandingPageHeader.tsx
-│   ├── LandingPageFooter.tsx
-│   ├── AuthPage.tsx
-│   ├── ProfileSettings.tsx
-│   ├── DashboardHeader.tsx
-│   ├── ContentList.tsx        # List of messages, uses ContentListItem
-│   ├── DashboardFilters.tsx
-│   ├── MessageDisplay.tsx
-│   └── MessagesFilters.tsx   # etc...
+├── (public)/               # Route group for public pages
+│   ├── layout.tsx          # Public layout wrapper
+│   ├── page.tsx            # Landing page (SSG)
+│   ├── [username]/
+│   │   └── page.tsx        # Dynamic user profile view (SSG with ISR)
+│   └── auth/
+│       └── page.tsx        # Authentication page
 │
-├── templates/        # Page layouts
-│   ├── DefaultTemplate.tsx    # Generic layout (header, footer, content area)
-│   ├── LandingPageTemplate.tsx
-│   ├── AuthTemplate.tsx
-│   ├── DashboardTemplate.tsx
-│   └── ... (one template per major page section)
+├── privacy/
+│   └── page.tsx            # Privacy policy (SSG)
+└── terms/
+    └── page.tsx            # Terms of service (SSG)
+
+components/                  # Atomic Design components
+├── atoms/                  # Basic UI elements (mostly Client Components)
+│   ├── Button.tsx          # Reusable button with variants
+│   ├── Badge.tsx           # Status and type badges
+│   ├── Toggle.tsx          # Boolean toggle switches
+│   ├── Logo.tsx            # App logo component
+│   ├── IconButton.tsx      # Icon-only buttons
+│   └── EmptyState.tsx      # Empty state illustrations
 │
-├── pages/            # Specific pages (routes)
-│   ├── LandingPage.tsx        # Uses LandingPageTemplate and fills content
-│   ├── LoginPage.tsx          # Possibly uses AuthTemplate
-│   ├── SignupPage.tsx         # Uses AuthTemplate as well
-│   ├── ProfilePage.tsx        # Uses Profile template
-│   ├── DashboardPage.tsx      # Uses DashboardTemplate
-│   └── MessagesPage.tsx       # Perhaps for viewing a single message or messages section
+├── molecules/              # Composite components
+│   ├── AuthButtons.tsx     # Sign in/sign up buttons
+│   ├── ProfileCard.tsx     # User profile preview card
+│   ├── SocialLink.tsx      # Single social media link
+│   ├── FilterControl.tsx   # Message filter controls
+│   ├── NavLink.tsx         # Navigation link with active state
+│   ├── FeatureCard.tsx     # Landing page feature cards
+│   └── StatsTabContent.tsx # Statistics display
 │
-├── services/         # Modules for API calls or external interactions
-│   └── supabaseClient.ts      # e.g., configuration of Supabase connection
-│   └── ... (any other API helpers)
+├── organisms/              # Complex UI sections
+│   ├── Header.tsx          # Main navigation header
+│   ├── Footer.tsx          # Site footer with links
+│   ├── DashboardHeader.tsx # Dashboard-specific header
+│   ├── WhisprsList.tsx     # List of messages with filtering
+│   ├── SettingsPanel.tsx   # Settings configuration UI
+│   ├── ProfileSettings.tsx # Profile editing form
+│   └── CustomizationTabs.tsx # Theme customization interface
 │
-├── utils/            # Utility functions (e.g., formatting dates, generating random prompts)
-│   └── constants.ts, helpers.ts, etc.
+├── pages/                  # Page-specific component compositions
+│   └── ...
 │
-├── styles/           # Global styles or Tailwind config (if any separate files)
-│   └── index.css, etc.
-│
-├── App.tsx           # React root component – configures Routes, layouts
-└── index.tsx         # Application entry point (ReactDOM render)
+└── templates/              # Reusable layout patterns
+    └── ...
+
+lib/                        # Core utilities & configurations
+├── supabase.ts            # Supabase client initialization
+├── client/                # Client-side Supabase utilities
+│   └── supabase.ts        # Browser client creation
+└── server/                # Server-side Supabase utilities
+    └── supabase.ts        # Server client creation with cookies
+
+hooks/                      # Custom React hooks (Client-side)
+├── useProfile.ts          # Profile data management
+├── useWhisprs.ts          # Message fetching and filtering
+├── useAuth.ts             # Authentication state
+├── useProfileSettings.ts  # Profile settings mutations
+├── useWhisprModal.ts      # Modal state management
+└── useResponsive.ts       # Responsive breakpoint detection
+
+types/                      # TypeScript type definitions
+├── index.ts               # Shared types
+└── whispr.ts              # Whispr-specific types
+
+utils/                      # Helper functions
+├── seo.ts                 # SEO metadata generators
+└── supabase/              # Supabase utility functions
+
+middleware.ts              # Next.js middleware (auth, redirects)
+next.config.mjs            # Next.js configuration
+tailwind.config.ts         # Tailwind CSS configuration
+tsconfig.json              # TypeScript configuration
 ```
-(In the above, filenames are illustrative. The actual implementation might organize them slightly differently or have additional files, but the overall structure follows this Atomic hierarchy.)
-The benefit of this architecture is that it imposes a clear separation of concerns:- 
-- When adding a very simple element, you add an Atom.
-- When that element needs to be used with another in tandem, you combine them in a Molecule.
-- Complex UI sections on a page become Organisms, which keep related elements together (for example, a “Message List” organism encapsulates the logic for paginating and displaying multiple messages).
-- **Templates** ensure consistency across pages (e.g., all pages might share a header and footer, defined once in a DefaultTemplate).
-- This makes the UI scalable: as new features are added, developers can decide at which level a new component should be introduced, rather than piling all logic in large components.
 
-We also maintain a hierarchy in our React component rendering:
-- The main App sets up routing. Based on the URL, it loads a specific Page component (e.g., DashboardPage).
-- Page components apply a Template and populate it with Organisms and Molecules as needed.
-- Within those, smaller Molecules and Atoms are used. State and props flow down this tree.
-- For example: `App -> DashboardPage -> DashboardTemplate (which includes Header, Sidebar, Content area) -> DashboardHeader (organism), ContentList (organism) -> ContentListItem (molecule) -> Button, Text, etc. (atoms)`.
+### Key Architectural Benefits
 
-We can visualize a portion of the component hierarchy in a simplified form:
+1. **App Router Route Groups**: Using `(authenticated)` and `(public)` route groups allows different layouts without affecting URLs, providing clean separation between public and private sections.
+
+2. **Server & Client Components**:
+   - **Server Components** (default): Used for layouts, static content, data fetching, and non-interactive displays. These reduce client-side JavaScript and improve performance.
+   - **Client Components** (`'use client'`): Used for interactive features in atoms, molecules, and organisms that require state, effects, or browser APIs.
+
+3. **Colocation**: Related components, hooks, and utilities are organized together, improving code discoverability and making feature development more efficient.
+
+4. **Type Safety**: TypeScript types are shared across the application and can be generated from the Supabase schema, ensuring consistency and catching errors at compile time.
+
+5. **Reusability**: Atomic components are designed to be composed and reused across different contexts, reducing code duplication and ensuring UI consistency.
+
+6. **Streaming & Suspense**: Server Components support streaming and React Suspense for progressive loading and better perceived performance.
+
+### Component Rendering Flow
+
+Next.js App Router with Atomic Design creates a clear rendering hierarchy:
+
 ``` mermaid
-
 graph LR
-    App --> Router
-    Router --> LandingPage
-    Router --> AuthPage
-    Router --> DashboardPage
-    Router --> ProfilePage
-
-    LandingPage --> LandingPageTemplate
-    AuthPage --> AuthTemplate
-    DashboardPage --> DashboardTemplate
-    ProfilePage --> ProfileTemplate
-
-    LandingPageTemplate --> LandingPageHeader
-    LandingPageTemplate --> LandingPageFooter
-
-    AuthTemplate --> AuthForm
-    DashboardTemplate --> DashboardHeader
-    DashboardTemplate --> ContentList
-    DashboardTemplate --> DashboardFilters
-    ContentList --> ContentListItem
+    RootLayout[Root Layout] --> RouteGroups{Route Groups}
+    RouteGroups -->|Public| PublicLayout[Public Layout<br/>Server Component]
+    RouteGroups -->|Authenticated| AuthLayout[Auth Layout<br/>Server Component]
+    
+    PublicLayout --> LandingPage[Landing Page<br/>SSG]
+    PublicLayout --> ProfileView[Profile View<br/>SSG + ISR]
+    PublicLayout --> AuthPage[Auth Page<br/>SSR]
+    
+    AuthLayout --> Dashboard[Dashboard<br/>SSR]
+    AuthLayout --> Settings[Settings<br/>SSR]
+    AuthLayout --> Profile[Profile Edit<br/>SSR]
+    
+    Dashboard --> DashboardHeader[Dashboard Header<br/>Organism]
+    Dashboard --> WhisprsList[Whisprs List<br/>Organism]
+    Dashboard --> FilterControls[Filter Controls<br/>Molecule]
+    
+    WhisprsList --> WhisprCard[Whispr Card<br/>Molecule]
+    WhisprCard --> Badge[Badge<br/>Atom]
+    WhisprCard --> Button[Button<br/>Atom]
+    
+    style RootLayout fill:#e1f5ff
+    style PublicLayout fill:#e1f5ff
+    style AuthLayout fill:#e1f5ff
+    style LandingPage fill:#c8e6c9
+    style Dashboard fill:#fff9c4
 ```
 
-(Above is just an example; actual components may differ, but this shows how pages break down into templates and then into sections.)
+### Rendering Strategies by Page Type
+
+- **Landing Page**: Static Site Generation (SSG) for optimal performance and SEO
+- **User Profile Pages**: SSG with Incremental Static Regeneration (ISR) for fast loads with fresh data
+- **Dashboard**: Server-Side Rendering (SSR) for personalized, real-time content
+- **Settings**: Server-Side Rendering (SSR) with Client Components for forms
+- **Auth Pages**: Server-Side Rendering (SSR) with server-side session validation
+
 ## Conclusion
-The Atomic Design pattern provides a clear, scalable way to structure the Whispr front-end codebase. By organizing components into a hierarchy of Atoms, Molecules, Organisms, Templates, and Pages, we ensure that the application is maintainable and easy to extend as new features are added. This approach also promotes reusability and consistency across the UI, making it easier for developers to work collaboratively on the project.
+The Atomic Design pattern combined with Next.js App Router provides a clear, scalable way to structure Whispr's codebase. By organizing components into a hierarchy of Atoms, Molecules, Organisms, Templates, and Pages, while leveraging Server and Client Components strategically, we ensure the application is maintainable, performant, and easy to extend. This approach promotes reusability, consistency, and excellent developer experience while delivering optimal performance to end users.
+
 ## Future Improvements
-- **Component Library**: As the project grows, we may consider creating a shared component library for reusable components across different projects.
-- **Testing**: Implementing unit tests for components and integration tests for user flows to ensure reliability and catch regressions.
-- **Performance Optimization**: Continuously monitoring and optimizing the performance of components, especially those that handle large data sets or complex rendering.
-- **Accessibility**: Ensuring all components are accessible and meet WCAG standards for users with disabilities.
-- **Documentation**: Maintaining clear documentation for each component, including usage examples and props descriptions, to help future developers understand the codebase quickly.
-- **Design System**: As the project matures, we may consider creating a design system that includes guidelines for component usage, design tokens, and best practices for building new components. This would help maintain consistency and improve collaboration between designers and developers.
-- **State Management**: As the application grows, we may need to implement a more robust state management solution (e.g., Redux, Zustand) to handle complex state interactions and improve performance.
-- **Internationalization**: If we plan to support multiple languages, we may need to implement internationalization (i18n) for the application, allowing users to switch between languages easily.
+- **Component Library**: As the project grows, we may consider extracting a shared component library for reusable components across different projects
+- **Testing**: Implementing comprehensive testing strategy:
+  - Unit tests for utility functions and hooks
+  - Component tests for UI components
+  - Integration tests for user flows
+  - E2E tests using Playwright or Cypress
+- **Performance Optimization**: 
+  - Implement React Server Components caching strategies
+  - Optimize images with Next.js Image component
+  - Implement Incremental Static Regeneration (ISR) for profile pages
+  - Use streaming and suspense for better loading states
+- **Accessibility**: Ensure all components meet WCAG 2.1 AA standards with proper ARIA labels, keyboard navigation, and screen reader support
+- **Documentation**: Maintain comprehensive documentation including:
+  - Component Storybook for visual documentation
+  - API documentation for Server Actions
+  - Developer onboarding guides
+  - Architecture decision records (ADRs)
+- **Design System**: Create a formal design system including:
+  - Design tokens for colors, spacing, typography
+  - Component usage guidelines
+  - Accessibility standards
+  - Animation and interaction patterns
+- **State Management**: 
+  - Evaluate need for global state management (Zustand, Redux Toolkit)
+  - Implement optimistic UI updates
+  - Add real-time subscriptions for live message updates
+- **Internationalization**: Implement i18n using next-intl for multi-language support
+- **Analytics & Monitoring**:
+  - Add application performance monitoring (APM)
+  - Implement user analytics and tracking
+  - Error tracking with Sentry or similar
+  - Real User Monitoring (RUM)
+- **PWA Support**: Convert to Progressive Web App with offline support and install prompts
+- **Advanced Features**:
+  - Push notifications for new messages
+  - Message reactions and threading
+  - Profile themes and customization
+  - Advanced analytics dashboard
+  - Export functionality for user data
 
 ## References
+- [Next.js App Router Documentation](https://nextjs.org/docs/app)
+- [Next.js Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components)
+- [Supabase SSR Documentation](https://supabase.com/docs/guides/auth/server-side-rendering)
+- [Atomic Design Methodology](https://bradfrost.com/blog/post/atomic-web-design/)
 - [Andela's Atomic Design Pattern](https://andela.com/blog-posts/structuring-your-react-application-atomic-design-principles)
-- [BootcampCoffeeIsTheKey](https://bootcamp.uxdesign.cc/from-atoms-to-pages-implementing-atomic-design-in-react-2c91d1031e7c)
-- [Google references](https://www.google.com/search?q=react+atomic+design+pattern)
+- [Next.js Middleware](https://nextjs.org/docs/app/building-your-application/routing/middleware)
+- [TypeScript Best Practices](https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html)

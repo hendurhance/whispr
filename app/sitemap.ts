@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@supabase/supabase-js';
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -34,9 +34,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Fetch active user profiles
+  // Fetch active user profiles using anonymous client (no cookies needed)
   try {
-    const supabase = await createClient();
+    // Create anonymous Supabase client for public data access
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    
     const { data: profiles } = await supabase
       .from('profiles')
       .select('username, updated_at')

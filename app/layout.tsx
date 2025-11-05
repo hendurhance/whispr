@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
+// @ts-ignore: CSS module declaration missing; add a '*.css' .d.ts file (e.g. global.d.ts) to provide proper types
 import "./globals.css";
+import CONFIGURATIONS from "@/configs";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://whispr.app';
 const APP_NAME = "Whispr";
@@ -99,9 +101,7 @@ export const metadata: Metadata = {
     title: APP_NAME,
   },
   verification: {
-    // Add your verification codes here when ready
-    // google: 'google-site-verification-code',
-    // yandex: 'yandex-verification-code',
+    google: CONFIGURATIONS.VERIFICATIONS.GOOGLE,
   },
   category: 'social',
 };
@@ -111,7 +111,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // JSON-LD structured data for better SEO
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',

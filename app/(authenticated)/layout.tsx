@@ -5,7 +5,6 @@
  * This layout wraps children with StaticAuthProvider which uses
  * server-provided data instead of fetching client-side.
  * 
- * This eliminates the 2-4s navigation delay caused by AuthProvider.
  */
 export default function AuthenticatedLayout({
   children,

@@ -9,6 +9,9 @@ const CONFIGURATIONS = {
         DELETE_USER: `${process.env.NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL}/delete-user`,
     },
     APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    VERIFICATIONS: {
+        GOOGLE: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION,
+    },
     get APP_URL_CLEAN() {
         return this.APP_URL ? this.APP_URL.replace('https://', '').replace('http://', '').replace(/\/$/, '') : '';
     }

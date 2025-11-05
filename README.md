@@ -34,9 +34,10 @@ Whispr is an open-source alternative to anonymous Q&A apps like NGL, Sarahah, or
 - **Responsive UI**: A clean, mobile-friendly web interface built with a modern tech stack (React + Tailwind CSS) for a smooth user experience.
 
 ## 💻 Tech Stack
-Whispr’s front-end is built with React and TypeScript, styled with Tailwind CSS, and deployed on Vercel for hosting. It uses Supabase (a Backend-as-a-Service) for its entire back-end needs and edge functions to handle server-side logic. The app is designed to be responsive and user-friendly, ensuring a seamless experience across devices.
+Whispr is built with Next.js (React framework) and TypeScript, styled with Tailwind CSS, and deployed on Vercel for hosting. It uses Supabase (a Backend-as-a-Service) for its entire back-end needs and edge functions to handle server-side logic. The app is designed to be responsive and user-friendly, ensuring a seamless experience across devices.
 <table>
   <tr>
+    <td align="center"><a href="https://nextjs.org/"><img src="https://cdn.worldvectorlogo.com/logos/next-js.svg" width="100px;" alt=""/><br /><sub><b>Next.js</b></sub></a><br /></td>
     <td align="center"><a href="https://reactjs.org/"><img src="https://cdn.worldvectorlogo.com/logos/react-2.svg" width="100px;" alt=""/><br /><sub><b>React</b></sub></a><br /></td>
     <td align="center"><a href="https://www.typescriptlang.org/"><img src="https://cdn.worldvectorlogo.com/logos/typescript.svg" width="100px;" alt=""/><br /><sub><b>Typescript</b></sub></a><br /></td>
     <td align="center"><a href="https://www.supabase.io/"><img src="https://vectorlogo.zone/logos/supabase/supabase-icon.svg" width="100px;" alt=""/><br /><sub><b>Supabase</b></sub></a><br /></td>
@@ -45,12 +46,13 @@ Whispr’s front-end is built with React and TypeScript, styled with Tailwind CS
   </tr>
 </table>
 
-- **React & TypeScript**: For building a dynamic single-page application with robust, maintainable code (leveraging static typing)
-- **Tailwind CSS**: Utility-first CSS framework for rapid UI development and consistent design.
-- **Supabase (PostgreSQL database + Auth + Storage)**: Handles user authentication, data persistence, and file storage. This replaces a custom server/backend – all data operations and authentication are done via Supabase’s secure APIs
-- **Vercel**: Hosts the front-end, providing easy deployment and scaling. The app can be accessed publicly (and via the demo link above) without any server setup.
+- **Next.js 15**: Modern React framework with App Router, Server Components, and Server Actions for optimal performance and SEO
+- **React & TypeScript**: For building a dynamic application with robust, maintainable code (leveraging static typing)
+- **Tailwind CSS**: Utility-first CSS framework for rapid UI development and consistent design
+- **Supabase (PostgreSQL database + Auth + Storage)**: Handles user authentication, data persistence, and file storage. This replaces a custom server/backend – all data operations and authentication are done via Supabase's secure APIs with Server-Side Rendering (SSR) support
+- **Vercel**: Hosts the application, providing easy deployment, edge functions, and scaling. The app can be accessed publicly (and via the demo link above) with automatic SSL and global CDN
 
-> **Why these technologies**? I chose a monolithic React front-end for simplicity and ease of development given the project’s scope. Using Supabase for the back-end greatly speeds up development by offloading infrastructure, security, and scaling concerns to a reliable service. This way, we focus on building features rather than reinventing the wheel for authentication or database management. The Atomic Design pattern is used in the front-end codebase to keep components modular and maintainable (see [Technical Specifications](/doc/technical-specifications.md) for more details).
+> **Why these technologies**? We chose Next.js for its powerful features including Server-Side Rendering (SSR), Static Site Generation (SSG), API routes, and excellent SEO capabilities. The framework provides an optimal developer experience while delivering superior performance to end users. Using Supabase for the back-end greatly speeds up development by offloading infrastructure, security, and scaling concerns to a reliable service. This way, we focus on building features rather than reinventing the wheel for authentication or database management. The Atomic Design pattern is used in the front-end codebase to keep components modular and maintainable (see [Technical Specifications](/doc/technical-specifications.md) for more details).
 
 ## 📸 Screenshots
 ### Landing Page
@@ -66,10 +68,10 @@ Whispr’s front-end is built with React and TypeScript, styled with Tailwind CS
 Follow these steps to set up a local development environment for Whispr.
 ### Prerequisites
 Make sure you have the following installed/setup on your system:
-- Git – for cloning the repository.
-- Node.js (v21 or above recommended) – JavaScript runtime.
-- Yarn (or npm) – for installing dependencies.
-- Supabase account – You’ll need a Supabase project to use as the back-end (sign up at supabase.com). In the project, obtain your Supabase API URL and anon API key for the next step
+- Git – for cloning the repository
+- Node.js (v18.17 or above recommended) – JavaScript runtime
+- npm (comes with Node.js) – for installing dependencies
+- Supabase account – You'll need a Supabase project to use as the back-end (sign up at supabase.com). In the project, obtain your Supabase API URL and anon API key for the next step
 
 ### Installation
 1. **Clone the repo**
@@ -79,40 +81,43 @@ Make sure you have the following installed/setup on your system:
    ```
 2. **Install NPM packages**
    ```sh
-    yarn install
-    ```
-    Or
-    ```sh
     npm install
     ```
-3. **Configure environment variables**: Create a `.env` from `.env.local` file in the root directory and add the following variables
-   ```sh
-   cp .env.local .env
-    ```
-    Then add the following variables
+3. **Configure environment variables**: Create a `.env.local` file in the root directory and add the following variables
     ```sh
-    NODE_ENV=local
-    VITE_APP_URL=localhost:3000
-    VITE_SUPABASE_URL=<supabase_url>
-    VITE_SUPABASE_ANON_KEY=<supabase_anon_key>
-    VITE_SUPABASE_FUNCTIONS_URL=<supabase_functions_url>
+    NEXT_PUBLIC_APP_URL=http://localhost:3000
+    NEXT_PUBLIC_SUPABASE_URL=<your_supabase_project_url>
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=<your_supabase_anon_key>
     ```
-4. **Run the app**
+    Replace the placeholders with your actual Supabase project credentials.
+4. **Run the development server**
     ```sh
-    yarn start
-    ```
-    Or
-    ```sh
-    npm start
+    npm run dev
     ```
   This will run the app in development mode. Open http://localhost:3000 in your browser to view it.
-5. **Setup Supabase**: In your Supabase project, create the following tables:
-   - Use the `/ migrations/init.sql` file to create the necessary tables and functions in your Supabase database. You can run this SQL script in the SQL editor of your Supabase project.
-   - **Setup Edge Functions**: In your Supabase project, navigate to the "Functions" section and create a new function that uses the functions created in the `/ migrations/init.sql` file. This function will handle incoming messages and store them in the database. The edge functions include:
-     * `update-profile-views`: This function handles updating the profile views count in the database.
-     * `update-whispr-counts`: This function handles updating the whispr counts in the database.
-     * `submit-whispr`: This function handles submitting a new message to the database. It uses the SQL function `submit_anonymous_whispr` to insert the whispr into the database.
-     * `delete-user`: This function handles deleting a user from the database. Due to Supabase's security policies, you need to create a edge function to delete a user from the database.
+5. **Setup Supabase Database**: In your Supabase project, set up the database schema:
+   - Navigate to the SQL Editor in your Supabase dashboard
+   - Run the SQL script from `/migrations/init.sql` to create the necessary tables, functions, and Row Level Security (RLS) policies
+   - This will create tables for profiles, whisprs, social_links, and weekly_stats
+   
+6. **Setup Supabase Edge Functions** (Optional but recommended for production):
+   In your Supabase project, you may want to deploy edge functions for server-side operations:
+   - `update-profile-views`: Handles updating profile view counts
+   - `update-whispr-counts`: Handles updating whispr statistics
+   - `submit-whispr`: Handles anonymous message submissions with validation
+   - `delete-user`: Handles user account deletion with proper cleanup
+   
+7. **Create an account**: Once the app is running locally, navigate to http://localhost:3000 and click Sign Up. You can create an account using email (you'll receive a magic login link). After your first login, you'll be prompted to set up your profile and choose a unique username.
+
+8. **Set up your profile**: After signing up, configure your profile settings including your username, display name, bio, and avatar. Your personal Whispr link will be `http://localhost:3000/<username>` (or `trywhispr.me/<username>` in production).
+
+9. **Test the app**: 
+   - Share your profile link with friends or open it in an incognito browser
+   - Submit an anonymous message to yourself
+   - Check your dashboard to see the received message
+   - Explore customization options, filters, and other features
+
+> Happy Hacking! You now have Whispr running locally with Next.js. Feel free to explore the code, tweak features, or contribute improvements. For a deep dive into the architecture and design of Whispr, see the [Technical Specifications](/doc/technical-specifications.md) document.
 6. **Create an account on Whispr:** Once the app is running locally, click Sign Up and create an account. You can sign up with an email (you’ll receive a magic login link). After your first login, you’ll be prompted to choose a username for your profile link.
 7. Set up your profile link: After signing up, Whispr will associate your chosen username with a personal link (e.g., `http://localhost:3000/<username>` for local dev, or `trywhispr.me/<username>` in production)
 github.com. Share this link with friends or on social media so others can send you anonymous messages!

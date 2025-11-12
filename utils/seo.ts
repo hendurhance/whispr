@@ -5,11 +5,11 @@
 
 export const APP_CONFIG = {
   name: 'Whispr',
-  url: process.env.NEXT_PUBLIC_APP_URL || 'https://whispr.app',
+  url: process.env.NEXT_PUBLIC_APP_URL || 'https://trywhispr.me',
   description: 'Send and receive anonymous messages, confessions, and honest feedback. Play Q&A games, get real opinions, and connect with friends through anonymous questions.',
   social: {
-    twitter: '@whisprapp',
-    instagram: '@whispr.app',
+    twitter: '@trywhispr',
+    instagram: '@trywhispr',
   },
 };
 
@@ -132,7 +132,7 @@ export function generateOrganizationJsonLd() {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'Customer Support',
-      email: 'support@whispr.app',
+      email: 'support@trywhispr.me',
     },
   };
 }

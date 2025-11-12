@@ -4,7 +4,7 @@ import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import CONFIGURATIONS from "@/configs";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://whispr.app';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://trywhispr.me';
 const APP_NAME = "Whispr";
 const APP_DESCRIPTION = "Send and receive anonymous messages, confessions, and honest feedback. Play Q&A games, get real opinions, and connect with friends through anonymous questions.";
 
@@ -65,8 +65,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    site: "@whisprapp",
-    creator: "@whisprapp",
+    site: "@trywhispr",
+    creator: "@trywhispr",
     title: "Whispr - Anonymous Q&A and Honest Feedback",
     description: APP_DESCRIPTION,
     images: {
@@ -125,8 +125,8 @@ export default function RootLayout({
     description: 'Send and receive anonymous messages, confessions, and honest feedback. Play Q&A games, get real opinions, and connect with friends.',
     url: APP_URL,
     sameAs: [
-      'https://twitter.com/whisprapp',
-      'https://instagram.com/whispr.app',
+      'https://twitter.com/trywhispr',
+      'https://instagram.com/trywhispr',
     ],
     aggregateRating: {
       '@type': 'AggregateRating',

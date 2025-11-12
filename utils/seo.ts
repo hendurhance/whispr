@@ -5,7 +5,7 @@
 
 export const APP_CONFIG = {
   name: 'Whispr',
-  url: process.env.NEXT_PUBLIC_APP_URL || 'https://trywhispr.com', // Update with your actual production domain
+  url: process.env.NEXT_PUBLIC_APP_URL || 'https://trywhispr.me',
   description: 'Send and receive anonymous messages, confessions, and honest feedback. Play Q&A games, get real opinions, and connect with friends through anonymous questions.',
   social: {
     twitter: '@trywhispr',

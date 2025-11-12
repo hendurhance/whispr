@@ -4,7 +4,7 @@ import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import CONFIGURATIONS from "@/configs";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://trywhispr.com'; // Update with your actual production domain
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://trywhispr.me';
 const APP_NAME = "Whispr";
 const APP_DESCRIPTION = "Send and receive anonymous messages, confessions, and honest feedback. Play Q&A games, get real opinions, and connect with friends through anonymous questions.";
 

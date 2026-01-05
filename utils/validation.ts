@@ -42,7 +42,7 @@ export const validateUsername = (username: string): { valid: boolean; error?: st
     return { valid: false, error: 'Username can only contain letters, numbers, and underscores' };
   }
 
-  if (RESERVED_USERNAMES.includes(normalized as typeof RESERVED_USERNAMES[number])) {
+  if ((RESERVED_USERNAMES as readonly string[]).includes(normalized)) {
     return { valid: false, error: 'This username is reserved and cannot be used' };
   }
 
@@ -56,13 +56,45 @@ export const sanitizeUsername = (input: string): string => {
   return input.replace(/[^a-zA-Z0-9_]/g, '').slice(0, USERNAME_MAX_LENGTH);
 };
 
+// Blocked hostnames for security (internal/private networks)
+const BLOCKED_HOSTNAMES = [
+  'localhost',
+  '127.0.0.1',
+  '0.0.0.0',
+  '::1',
+  '[::1]'
+];
+
+// Patterns for private IP ranges
+const PRIVATE_IP_PATTERNS = [
+  /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/,           // 10.0.0.0/8
+  /^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/, // 172.16.0.0/12
+  /^192\.168\.\d{1,3}\.\d{1,3}$/               // 192.168.0.0/16
+];
+
 /**
- * Validates if a URL is properly formatted
+ * Validates if a URL is properly formatted and safe
  */
 export const isValidUrl = (urlString: string): boolean => {
   try {
     const url = new URL(urlString);
-    return url.protocol === 'http:' || url.protocol === 'https:';
+
+    // Only allow http and https protocols
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      return false;
+    }
+
+    // Block localhost and loopback addresses
+    if (BLOCKED_HOSTNAMES.includes(url.hostname.toLowerCase())) {
+      return false;
+    }
+
+    // Block private IP ranges
+    if (PRIVATE_IP_PATTERNS.some(pattern => pattern.test(url.hostname))) {
+      return false;
+    }
+
+    return true;
   } catch {
     return false;
   }

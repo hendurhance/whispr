@@ -24,8 +24,8 @@ export const platformOptions = [
 // Maximum number of social links allowed per user
 const MAX_SOCIAL_LINKS = 10;
 
-// Valid platform IDs
-const VALID_PLATFORM_IDS = platformOptions.map(p => p.id);
+// Valid platform IDs - use as const for type safety
+const VALID_PLATFORM_IDS = ['instagram', 'twitter', 'tiktok', 'youtube', 'facebook', 'linkedin', 'github', 'website'] as const;
 
 export const useSocialLinks = () => {
   const supabase = createClient();
@@ -88,6 +88,11 @@ export const useSocialLinks = () => {
   const addSocialLink = async (platform: string, url: string): Promise<boolean> => {
     if (!user) return false;
 
+    // Prevent concurrent operations (race condition protection)
+    if (operation.isLoading) {
+      return false;
+    }
+
     // Validate inputs are provided
     if (!platform || !url) {
       setStatusMessage({ error: 'Please provide both platform and URL' });
@@ -98,7 +103,7 @@ export const useSocialLinks = () => {
     const trimmedPlatform = platform.trim().toLowerCase();
 
     // Validate platform is in allowed list
-    if (!(VALID_PLATFORM_IDS as readonly string[]).includes(trimmedPlatform)) {
+    if (!VALID_PLATFORM_IDS.includes(trimmedPlatform as typeof VALID_PLATFORM_IDS[number])) {
       setStatusMessage({ error: 'Invalid platform selected' });
       return false;
     }
@@ -115,8 +120,8 @@ export const useSocialLinks = () => {
       return false;
     }
 
-    // Check for duplicate platform
-    const existingPlatform = socialLinks.find(link => link.platform === trimmedPlatform);
+    // Check for duplicate platform (case-insensitive comparison)
+    const existingPlatform = socialLinks.find(link => link.platform.toLowerCase() === trimmedPlatform);
     if (existingPlatform) {
       setStatusMessage({ error: `You already have a ${getPlatformName(trimmedPlatform)} link. Delete the existing one first.` });
       return false;

@@ -71,9 +71,18 @@ export const useSetting = ({ initialUser, initialProfile }: UseSettingProps) => 
         }
     }, [initialUser, initialProfile]);
 
+    // Cleanup debounce timer on unmount
+    useEffect(() => {
+        return () => {
+            if (usernameDebounceRef.current) {
+                clearTimeout(usernameDebounceRef.current);
+            }
+        };
+    }, []);
+
     // Function to check username availability
     const checkUsernameAvailability = async (value: string) => {
-        const currentUsername = initialProfile?.username || initialUser.user_metadata?.username;
+        const currentUsername = (initialProfile?.username || initialUser.user_metadata?.username)?.toLowerCase().trim();
         const normalizedValue = value.toLowerCase().trim();
 
         if (!normalizedValue || normalizedValue === currentUsername) {
@@ -140,7 +149,7 @@ export const useSetting = ({ initialUser, initialProfile }: UseSettingProps) => 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const currentUsername = initialProfile?.username || initialUser.user_metadata?.username;
+        const currentUsername = (initialProfile?.username || initialUser.user_metadata?.username)?.toLowerCase().trim();
         const normalizedUsername = username.toLowerCase().trim();
 
         // Validate username using shared validation

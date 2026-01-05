@@ -98,7 +98,7 @@ export const useSocialLinks = () => {
     const trimmedPlatform = platform.trim().toLowerCase();
 
     // Validate platform is in allowed list
-    if (!VALID_PLATFORM_IDS.includes(trimmedPlatform)) {
+    if (!(VALID_PLATFORM_IDS as readonly string[]).includes(trimmedPlatform)) {
       setStatusMessage({ error: 'Invalid platform selected' });
       return false;
     }

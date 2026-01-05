@@ -174,7 +174,29 @@ export const useWhisprSubmission = ({
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!content.trim()) {
+    const trimmedContent = content.trim();
+
+    // Validate content is not empty
+    if (!trimmedContent) {
+      if (onError) onError(new Error('Message cannot be empty'));
+      return;
+    }
+
+    // Validate content length
+    if (trimmedContent.length > MAX_WHISPR_CHARS) {
+      if (onError) onError(new Error(`Message must be ${MAX_WHISPR_CHARS} characters or less`));
+      return;
+    }
+
+    // Validate whispr type is valid
+    if (!WHISPR_TYPES.includes(selectedType)) {
+      if (onError) onError(new Error('Invalid message type selected'));
+      return;
+    }
+
+    // Validate username is provided
+    if (!username || !username.trim()) {
+      if (onError) onError(new Error('Invalid recipient'));
       return;
     }
 
@@ -183,12 +205,12 @@ export const useWhisprSubmission = ({
     try {
       if (customSubmitFunction) {
         // Use the custom function provided by the parent component
-        await customSubmitFunction(username, content.trim(), selectedType);
+        await customSubmitFunction(username, trimmedContent, selectedType);
       } else {
         // Fallback to using RPC function directly
         const { error } = await supabase.rpc('submit_anonymous_whispr', {
-          recipient_username: username,
-          whispr_content: content.trim(),
+          recipient_username: username.toLowerCase().trim(),
+          whispr_content: trimmedContent,
           whispr_type: selectedType
         });
 

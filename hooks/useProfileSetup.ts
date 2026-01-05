@@ -1,27 +1,37 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { useAuth } from '@/context/auth';
 import { User } from '@supabase/supabase-js';
+import {
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+  BIO_MAX_LENGTH,
+  validateUsername,
+  sanitizeUsername
+} from '@/utils/validation';
 
 const supabase = createClient();
 
 export const useProfileSetup = () => {
   const router = useRouter();
   const { user: authUser } = useAuth();
-  
+
   // Form state
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
   const [avatarPreview, setAvatarPreview] = useState('');
-  
+
   // UI state
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+
+  // Debounce timer ref
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Check if user is authenticated and redirect if needed
   useEffect(() => {
@@ -72,25 +82,22 @@ export const useProfileSetup = () => {
 
   // Check username availability in the database
   const checkAvailability = useCallback(async (value: string) => {
-    if (!value || value.length < 3) {
+    const normalizedValue = value.toLowerCase().trim();
+
+    // Use shared validation
+    const validation = validateUsername(normalizedValue);
+    if (!validation.valid) {
       setIsAvailable(false);
       return;
     }
 
     setIsChecking(true);
     try {
-      // Check if username follows valid pattern
-      const isValidFormat = /^[a-zA-Z0-9_]+$/.test(value);
-      if (!isValidFormat) {
-        setIsAvailable(false);
-        return;
-      }
-
       // Check if username exists in database
       const { data, error } = await supabase
         .from('profiles')
         .select('username')
-        .eq('username', value.toLowerCase())
+        .eq('username', normalizedValue)
         .single();
 
       if (error && error.code !== 'PGRST116') { // PGRST116 means no rows returned
@@ -109,27 +116,62 @@ export const useProfileSetup = () => {
 
   // Debounced username check
   const handleUsernameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setUsername(value);
+    const sanitizedValue = sanitizeUsername(e.target.value);
+    setUsername(sanitizedValue);
 
-    if (value.length === 0) {
+    if (sanitizedValue.length === 0) {
       setIsAvailable(null);
       return;
     }
 
-    // Debounce check to avoid too many API calls
-    const timer = setTimeout(() => {
-      checkAvailability(value);
-    }, 500);
+    // Clear any existing debounce timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
 
-    return () => clearTimeout(timer);
+    // Debounce check to avoid too many API calls
+    debounceTimerRef.current = setTimeout(() => {
+      checkAvailability(sanitizedValue);
+    }, 500);
   }, [checkAvailability]);
+
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Handle bio change with length validation
+  const handleBioChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    // Enforce max length
+    if (value.length <= BIO_MAX_LENGTH) {
+      setBio(value);
+    }
+  }, []);
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!isAvailable || !username || !user) return;
+
+    // Validate username using shared validation
+    const normalizedUsername = username.toLowerCase().trim();
+    const usernameValidation = validateUsername(normalizedUsername);
+    if (!usernameValidation.valid) {
+      setError(usernameValidation.error || 'Invalid username');
+      return;
+    }
+
+    // Validate bio length
+    if (bio.length > BIO_MAX_LENGTH) {
+      setError(`Bio must be ${BIO_MAX_LENGTH} characters or less`);
+      return;
+    }
 
     setIsSubmitting(true);
     setError(null);
@@ -141,9 +183,9 @@ export const useProfileSetup = () => {
         .insert([
           {
             user_id: user.id,
-            username: username.toLowerCase(),
+            username: normalizedUsername,
             display_name: username,
-            bio: bio,
+            bio: bio.trim(),
             avatar_url: avatarUrl,
             created_at: new Date().toISOString()
           }
@@ -182,18 +224,24 @@ export const useProfileSetup = () => {
     bio,
     avatarUrl,
     avatarPreview,
-    
+
     // UI state
     isAvailable,
     isChecking,
     isSubmitting,
     error,
-    
+
     // Handlers
     setUsername,
     setBio,
     handleUsernameChange,
+    handleBioChange,
     generateDefaultAvatar,
-    handleSubmit
+    handleSubmit,
+
+    // Constants (for UI display)
+    USERNAME_MIN_LENGTH,
+    USERNAME_MAX_LENGTH,
+    BIO_MAX_LENGTH
   };
 };

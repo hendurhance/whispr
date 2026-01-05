@@ -1,10 +1,17 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { FUNCTIONS } from '@/configs';
 import { signOutUser } from '@/lib/client/auth';
 import { User } from '@supabase/supabase-js';
 import { Profile } from '@/types';
+import {
+    USERNAME_MIN_LENGTH,
+    USERNAME_MAX_LENGTH,
+    BIO_MAX_LENGTH,
+    validateUsername,
+    sanitizeUsername
+} from '@/utils/validation';
 
 interface UseSettingProps {
     initialUser: User;
@@ -67,31 +74,27 @@ export const useSetting = ({ initialUser, initialProfile }: UseSettingProps) => 
     // Function to check username availability
     const checkUsernameAvailability = async (value: string) => {
         const currentUsername = initialProfile?.username || initialUser.user_metadata?.username;
-        
-        if (!value || value === currentUsername) {
+        const normalizedValue = value.toLowerCase().trim();
+
+        if (!normalizedValue || normalizedValue === currentUsername) {
             setIsUsernameAvailable(null);
             return;
         }
 
-        if (value.length < 3) {
+        // Use shared validation
+        const validation = validateUsername(normalizedValue);
+        if (!validation.valid) {
             setIsUsernameAvailable(false);
             return;
         }
 
         setIsCheckingUsername(true);
         try {
-            // Check if username follows valid pattern
-            const isValidFormat = /^[a-zA-Z0-9_]+$/.test(value);
-            if (!isValidFormat) {
-                setIsUsernameAvailable(false);
-                return;
-            }
-
             // Check if username exists in database
             const { data, error } = await supabase
                 .from('profiles')
                 .select('username')
-                .eq('username', value.toLowerCase())
+                .eq('username', normalizedValue)
                 .neq('user_id', initialUser.id)
                 .single();
 
@@ -105,9 +108,10 @@ export const useSetting = ({ initialUser, initialProfile }: UseSettingProps) => 
         }
     };
 
-    // Handle username change with debounce
+    // Handle username change with debounce and sanitization
     const handleUsernameChange = (value: string) => {
-        setUsername(value);
+        const sanitizedValue = sanitizeUsername(value);
+        setUsername(sanitizedValue);
 
         // Debounce check - clear previous timer then set a new one
         if (usernameDebounceRef.current) {
@@ -115,8 +119,16 @@ export const useSetting = ({ initialUser, initialProfile }: UseSettingProps) => 
         }
 
         usernameDebounceRef.current = setTimeout(() => {
-            checkUsernameAvailability(value);
+            checkUsernameAvailability(sanitizedValue);
         }, 500);
+    };
+
+    // Handle bio change with length validation
+    const handleBioChange = (value: string) => {
+        // Enforce max length
+        if (value.length <= BIO_MAX_LENGTH) {
+            setBio(value);
+        }
     };
 
     // Refresh profile - triggers server-side refetch
@@ -129,14 +141,23 @@ export const useSetting = ({ initialUser, initialProfile }: UseSettingProps) => 
         e.preventDefault();
 
         const currentUsername = initialProfile?.username || initialUser.user_metadata?.username;
+        const normalizedUsername = username.toLowerCase().trim();
 
-        if (username.length < 3) {
-            setError('Username must be at least 3 characters long');
+        // Validate username using shared validation
+        const usernameValidation = validateUsername(normalizedUsername);
+        if (!usernameValidation.valid) {
+            setError(usernameValidation.error || 'Invalid username');
             return;
         }
 
-        if (!isUsernameAvailable && username !== currentUsername) {
+        if (!isUsernameAvailable && normalizedUsername !== currentUsername) {
             setError('Username is not available');
+            return;
+        }
+
+        // Validate bio length
+        if (bio.length > BIO_MAX_LENGTH) {
+            setError(`Bio must be ${BIO_MAX_LENGTH} characters or less`);
             return;
         }
 
@@ -160,9 +181,9 @@ export const useSetting = ({ initialUser, initialProfile }: UseSettingProps) => 
                 const { error: updateError } = await supabase
                     .from('profiles')
                     .update({
-                        username: username.toLowerCase(),
+                        username: normalizedUsername,
                         display_name: displayName || username,
-                        bio,
+                        bio: bio.trim(),
                         avatar_url: avatarUrl,
                         updated_at: new Date().toISOString()
                     })
@@ -175,9 +196,9 @@ export const useSetting = ({ initialUser, initialProfile }: UseSettingProps) => 
                     .from('profiles')
                     .insert([{
                         user_id: initialUser.id,
-                        username: username.toLowerCase(),
+                        username: normalizedUsername,
                         display_name: displayName || username,
-                        bio,
+                        bio: bio.trim(),
                         avatar_url: avatarUrl,
                         created_at: new Date().toISOString()
                     }]);
@@ -292,9 +313,15 @@ export const useSetting = ({ initialUser, initialProfile }: UseSettingProps) => 
         handleUsernameChange,
         setDisplayName,
         setBio,
+        handleBioChange,
         setAvatarUrl,
         handleToggleNotifications,
         handleSubmit,
-        handleDeleteAccount
+        handleDeleteAccount,
+
+        // Constants (for UI display)
+        USERNAME_MIN_LENGTH,
+        USERNAME_MAX_LENGTH,
+        BIO_MAX_LENGTH
     };
 };

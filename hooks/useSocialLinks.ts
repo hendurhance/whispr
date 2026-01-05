@@ -136,6 +136,9 @@ export const useSocialLinks = () => {
         : 0;
 
       // Insert new link
+      // NOTE: Server-side validation (unique constraint, row count limits) should be
+      // implemented in the database to handle TOCTOU race conditions. The client-side
+      // checks above are for UX optimization only.
       const { error } = await supabase
         .from('social_links')
         .insert([{

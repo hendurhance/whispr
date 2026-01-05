@@ -66,24 +66,35 @@ export const useProfileSettings = (
   const updateSetting = async (field: AllowedField, value: boolean | string) => {
     if (!user) return;
 
-    // Validate that the field is in the allowed list
+    // Runtime validation as defense-in-depth (TypeScript provides compile-time safety)
     if (!ALLOWED_UPDATE_FIELDS.includes(field)) {
       console.error(`Attempted to update unauthorized field: ${field}`);
       return;
     }
 
-    // Validate theme value if updating theme
-    if (field === 'selected_theme' && typeof value === 'string') {
+    // Enforce correct types and allowed values based on field
+    if (field === 'selected_theme') {
+      if (typeof value !== 'string') {
+        console.error(`Invalid type for theme value: expected string, got ${typeof value}`);
+        return;
+      }
       if (!VALID_THEMES.includes(value as typeof VALID_THEMES[number])) {
         console.error(`Invalid theme value: ${value}`);
         return;
       }
-    }
-
-    // Validate background value if updating background
-    if (field === 'selected_background' && typeof value === 'string') {
+    } else if (field === 'selected_background') {
+      if (typeof value !== 'string') {
+        console.error(`Invalid type for background value: expected string, got ${typeof value}`);
+        return;
+      }
       if (!VALID_BACKGROUNDS.includes(value as typeof VALID_BACKGROUNDS[number])) {
         console.error(`Invalid background value: ${value}`);
+        return;
+      }
+    } else {
+      // All remaining allowed fields are booleans; enforce boolean type
+      if (typeof value !== 'boolean') {
+        console.error(`Invalid type for boolean setting ${field}: expected boolean, got ${typeof value}`);
         return;
       }
     }

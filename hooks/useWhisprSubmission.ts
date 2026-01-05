@@ -189,27 +189,28 @@ export const useWhisprSubmission = ({
     }
 
     // Validate whispr type is valid
-    if (!WHISPR_TYPES.includes(selectedType)) {
+    if (typeof selectedType !== 'string' || !WHISPR_TYPES.includes(selectedType)) {
       if (onError) onError(new Error('Invalid message type selected'));
       return;
     }
 
-    // Validate username is provided
+    // Validate username is provided and normalize once for consistent usage
     if (!username || !username.trim()) {
       if (onError) onError(new Error('Invalid recipient'));
       return;
     }
+    const normalizedUsername = username.toLowerCase().trim();
 
     setIsSubmitting(true);
 
     try {
       if (customSubmitFunction) {
-        // Use the custom function provided by the parent component
-        await customSubmitFunction(username, trimmedContent, selectedType);
+        // Use the custom function provided by the parent component (with normalized username)
+        await customSubmitFunction(normalizedUsername, trimmedContent, selectedType);
       } else {
         // Fallback to using RPC function directly
         const { error } = await supabase.rpc('submit_anonymous_whispr', {
-          recipient_username: username.toLowerCase().trim(),
+          recipient_username: normalizedUsername,
           whispr_content: trimmedContent,
           whispr_type: selectedType
         });

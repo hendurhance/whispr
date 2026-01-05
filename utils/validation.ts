@@ -50,10 +50,13 @@ export const validateUsername = (username: string): { valid: boolean; error?: st
 };
 
 /**
- * Sanitizes username input - removes invalid characters and enforces max length
+ * Sanitizes username input - enforces max length only.
+ * Invalid characters are handled by validateUsername() which provides user feedback.
+ * This approach prevents silent character removal that could confuse users.
  */
 export const sanitizeUsername = (input: string): string => {
-  return input.replace(/[^a-zA-Z0-9_]/g, '').slice(0, USERNAME_MAX_LENGTH);
+  const trimmed = input.trim();
+  return trimmed.slice(0, USERNAME_MAX_LENGTH);
 };
 
 // Blocked hostnames for security (internal/private networks)
@@ -65,11 +68,19 @@ const BLOCKED_HOSTNAMES = [
   '[::1]'
 ];
 
-// Patterns for private IP ranges
+// Patterns for private IPv4 ranges
 const PRIVATE_IP_PATTERNS = [
   /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/,           // 10.0.0.0/8
   /^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/, // 172.16.0.0/12
   /^192\.168\.\d{1,3}\.\d{1,3}$/               // 192.168.0.0/16
+];
+
+// Patterns for private/internal IPv6 ranges
+const PRIVATE_IPV6_PATTERNS = [
+  /^\[?fc[0-9a-f]{2}:/i,     // fc00::/7 - Unique local addresses
+  /^\[?fd[0-9a-f]{2}:/i,     // fd00::/8 - Unique local addresses
+  /^\[?fe80:/i,              // fe80::/10 - Link-local addresses
+  /^\[?::1\]?$/i             // ::1 - Loopback
 ];
 
 /**
@@ -89,8 +100,13 @@ export const isValidUrl = (urlString: string): boolean => {
       return false;
     }
 
-    // Block private IP ranges
+    // Block private IPv4 ranges
     if (PRIVATE_IP_PATTERNS.some(pattern => pattern.test(url.hostname))) {
+      return false;
+    }
+
+    // Block private IPv6 ranges
+    if (PRIVATE_IPV6_PATTERNS.some(pattern => pattern.test(url.hostname))) {
       return false;
     }
 

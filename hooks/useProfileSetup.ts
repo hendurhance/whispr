@@ -32,6 +32,8 @@ export const useProfileSetup = () => {
 
   // Debounce timer ref
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Request ID to handle race conditions in async availability checks
+  const latestRequestIdRef = useRef<number>(0);
 
   // Check if user is authenticated and redirect if needed
   useEffect(() => {
@@ -91,6 +93,9 @@ export const useProfileSetup = () => {
       return;
     }
 
+    // Increment request ID to track this specific request
+    const requestId = ++latestRequestIdRef.current;
+
     setIsChecking(true);
     try {
       // Check if username exists in database
@@ -100,6 +105,11 @@ export const useProfileSetup = () => {
         .eq('username', normalizedValue)
         .single();
 
+      // Ignore response if a newer request has been made (prevents race condition)
+      if (requestId !== latestRequestIdRef.current) {
+        return;
+      }
+
       if (error && error.code !== 'PGRST116') { // PGRST116 means no rows returned
         throw error;
       }
@@ -107,10 +117,16 @@ export const useProfileSetup = () => {
       // Username is available if no data returned
       setIsAvailable(!data);
     } catch (error) {
-      console.error('Error checking username:', error);
-      setIsAvailable(false);
+      // Only update state if this is still the latest request
+      if (requestId === latestRequestIdRef.current) {
+        console.error('Error checking username:', error);
+        setIsAvailable(false);
+      }
     } finally {
-      setIsChecking(false);
+      // Only update loading state if this is still the latest request
+      if (requestId === latestRequestIdRef.current) {
+        setIsChecking(false);
+      }
     }
   }, []);
 
@@ -147,10 +163,9 @@ export const useProfileSetup = () => {
   // Handle bio change with length validation
   const handleBioChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
-    // Enforce max length
-    if (value.length <= BIO_MAX_LENGTH) {
-      setBio(value);
-    }
+    // Enforce max length by truncating any excess characters
+    const nextBio = value.length > BIO_MAX_LENGTH ? value.slice(0, BIO_MAX_LENGTH) : value;
+    setBio(nextBio);
   }, []);
 
   // Handle form submission

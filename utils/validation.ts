@@ -50,13 +50,11 @@ export const validateUsername = (username: string): { valid: boolean; error?: st
 };
 
 /**
- * Sanitizes username input - enforces max length only.
- * Invalid characters are handled by validateUsername() which provides user feedback.
- * This approach prevents silent character removal that could confuse users.
+ * Sanitizes username input - removes invalid characters and enforces max length.
+ * This filters on input so users see only valid characters in the input field.
  */
 export const sanitizeUsername = (input: string): string => {
-  const trimmed = input.trim();
-  return trimmed.slice(0, USERNAME_MAX_LENGTH);
+  return input.replace(/[^a-zA-Z0-9_]/g, '').slice(0, USERNAME_MAX_LENGTH);
 };
 
 // Blocked hostnames for security (internal/private networks)

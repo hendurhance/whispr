@@ -121,34 +121,55 @@ export const useProfileSettings = (
     }
   };
 
-  // Setting toggle handlers
+  // Setting toggle handlers with error recovery
   const toggleSetting = (key: keyof ProfileSettings, dbField: AllowedField) => {
-    return () => {
-      const newValue = !settings[key];
-      setSettings(prev => ({ ...prev, [key]: newValue }));
-      updateSetting(dbField, newValue);
+    return async () => {
+      const previousValue = settings[key];
+      const newValue = !previousValue;
+      // Optimistic update
+      setSettings((prev: ProfileSettings) => ({ ...prev, [key]: newValue }));
+      try {
+        await updateSetting(dbField, newValue);
+      } catch {
+        // Revert on error
+        setSettings((prev: ProfileSettings) => ({ ...prev, [key]: previousValue }));
+      }
     };
   };
 
-  // Theme and background handlers with validation
-  const handleThemeChange = (themeId: string) => {
+  // Theme and background handlers with validation and error recovery
+  const handleThemeChange = async (themeId: string) => {
     // Validate theme before applying
     if (!VALID_THEMES.includes(themeId as typeof VALID_THEMES[number])) {
       console.error(`Invalid theme: ${themeId}`);
       return;
     }
-    setSettings(prev => ({ ...prev, selectedTheme: themeId }));
-    updateSetting('selected_theme', themeId);
+    const previousTheme = settings.selectedTheme;
+    // Optimistic update
+    setSettings((prev: ProfileSettings) => ({ ...prev, selectedTheme: themeId }));
+    try {
+      await updateSetting('selected_theme', themeId);
+    } catch {
+      // Revert on error
+      setSettings((prev: ProfileSettings) => ({ ...prev, selectedTheme: previousTheme }));
+    }
   };
 
-  const handleBackgroundChange = (backgroundId: string) => {
+  const handleBackgroundChange = async (backgroundId: string) => {
     // Validate background before applying
     if (!VALID_BACKGROUNDS.includes(backgroundId as typeof VALID_BACKGROUNDS[number])) {
       console.error(`Invalid background: ${backgroundId}`);
       return;
     }
-    setSettings(prev => ({ ...prev, selectedBackground: backgroundId }));
-    updateSetting('selected_background', backgroundId);
+    const previousBackground = settings.selectedBackground;
+    // Optimistic update
+    setSettings((prev: ProfileSettings) => ({ ...prev, selectedBackground: backgroundId }));
+    try {
+      await updateSetting('selected_background', backgroundId);
+    } catch {
+      // Revert on error
+      setSettings((prev: ProfileSettings) => ({ ...prev, selectedBackground: previousBackground }));
+    }
   };
 
   return {

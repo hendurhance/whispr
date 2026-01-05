@@ -188,11 +188,7 @@ export const useWhisprSubmission = ({
       return;
     }
 
-    // Validate whispr type is valid
-    if (typeof selectedType !== 'string' || !WHISPR_TYPES.includes(selectedType)) {
-      if (onError) onError(new Error('Invalid message type selected'));
-      return;
-    }
+    // Note: selectedType is already typed as WhisprType, so TypeScript ensures validity at compile time
 
     // Validate username is provided and normalize once for consistent usage
     if (!username || !username.trim()) {

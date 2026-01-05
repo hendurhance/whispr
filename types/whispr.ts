@@ -27,17 +27,32 @@ export interface SortOption {
 }
 
 export const formatDate = (dateString: string, forShowcase = false): string => {
+  // Handle empty or invalid date strings
+  if (!dateString) {
+    return 'Unknown date';
+  }
+
   const date = new Date(dateString);
-  return forShowcase 
-    ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date)
-    : new Intl.DateTimeFormat('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true
-      }).format(date);
+
+  // Check if date is valid
+  if (isNaN(date.getTime())) {
+    return 'Invalid date';
+  }
+
+  try {
+    return forShowcase
+      ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date)
+      : new Intl.DateTimeFormat('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true
+        }).format(date);
+  } catch {
+    return 'Invalid date';
+  }
 };
 
 export const getTimeOfDay = (): string => {

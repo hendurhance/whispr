@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { createClient } from '@/utils/supabase/client';
 import CONFIGURATIONS, { FUNCTIONS } from '@/configs';
+import { isValidWhisprType } from '@/utils/validation';
 
 interface PublicProfileData {
   username: string;
@@ -80,6 +81,11 @@ export const usePublicProfile = ({ username }: UsePublicProfileProps) => {
   // Submit a whispr via edge function
   const submitWhispr = async (username: string, content: string, type: string) => {
     try {
+      // Validate whispr type before sending to backend
+      if (!isValidWhisprType(type)) {
+        throw new Error(`Invalid whispr type: ${type}`);
+      }
+
       const response = await fetch(CONFIGURATIONS.FUNCTIONS.SUBMIT_WHISPR, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

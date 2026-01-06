@@ -10,6 +10,7 @@ import WhisprSubmissionForm from '@/components/organisms/PublicProfile/WhisprSub
 import useProfileTheme from '@/hooks/useProfileTheme';
 import PublicProfileCard from '@/components/organisms/PublicProfile/PublicProfileCard';
 import CONFIGURATIONS from '@/configs';
+import { isValidWhisprType } from '@/utils/validation';
 
 interface PublicProfileData {
   username: string;
@@ -48,11 +49,16 @@ const PublicProfilePage: React.FC<PublicProfilePageProps> = ({ initialProfile, u
   });
 
   // Submit a whispr via edge function
-  const submitWhispr = async (content: string, type: string) => {
+  const submitWhispr = async (recipientUsername: string, content: string, type: string) => {
+    // Validate whispr type before sending to backend
+    if (!isValidWhisprType(type)) {
+      throw new Error(`Invalid whispr type: ${type}`);
+    }
+
     const response = await fetch(CONFIGURATIONS.FUNCTIONS.SUBMIT_WHISPR, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, content, type })
+      body: JSON.stringify({ username: recipientUsername, content, type })
     });
     
     const data = await response.json();

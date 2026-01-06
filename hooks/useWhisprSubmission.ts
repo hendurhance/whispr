@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { Whispr, WhisprType } from '@/types/whispr';
+import { isValidWhisprType, validateWhisprContent } from '@/utils/validation';
 
 // Sample suggestions for each type
 const SUGGESTIONS = {
@@ -176,19 +177,19 @@ export const useWhisprSubmission = ({
 
     const trimmedContent = content.trim();
 
-    // Validate content is not empty
-    if (!trimmedContent) {
-      if (onError) onError(new Error('Message cannot be empty'));
+    // Validate content using centralized validation
+    const contentValidation = validateWhisprContent(trimmedContent);
+    if (!contentValidation.valid) {
+      if (onError) onError(new Error(contentValidation.error));
       return;
     }
 
-    // Validate content length
-    if (trimmedContent.length > MAX_WHISPR_CHARS) {
-      if (onError) onError(new Error(`Message must be ${MAX_WHISPR_CHARS} characters or less`));
+    // Validate whispr type at runtime to catch any issues
+    if (!isValidWhisprType(selectedType)) {
+      console.error('Invalid whispr type detected:', selectedType);
+      if (onError) onError(new Error(`Invalid whispr type: ${selectedType}`));
       return;
     }
-
-    // Note: selectedType is already typed as WhisprType, so TypeScript ensures validity at compile time
 
     // Validate username is provided and normalize once for consistent usage
     if (!username || !username.trim()) {
@@ -196,6 +197,13 @@ export const useWhisprSubmission = ({
       return;
     }
     const normalizedUsername = username.toLowerCase().trim();
+
+    // Debug log to verify payload structure
+    console.log('Submitting whispr with payload:', {
+      username: normalizedUsername,
+      content: trimmedContent,
+      type: selectedType
+    });
 
     setIsSubmitting(true);
 
@@ -222,11 +230,18 @@ export const useWhisprSubmission = ({
       if (onSuccess) onSuccess();
     } catch (error) {
       console.error('Error in handleSubmit:', error);
+      // Log the full payload on error for debugging
+      console.error('Whispr submission error:', error);
+      console.error('\n\nPayload:', {
+        username: normalizedUsername,
+        content: trimmedContent,
+        type: selectedType
+      });
       if (onError) onError(error as Error);
     } finally {
       setIsSubmitting(false);
     }
-  }, [content, selectedType, username, customSubmitFunction, onSuccess, onError, resetForm]);
+  }, [content, selectedType, username, customSubmitFunction, onSuccess, onError, resetForm, supabase]);
 
   return {
     content,

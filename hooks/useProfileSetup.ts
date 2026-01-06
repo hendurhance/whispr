@@ -182,8 +182,9 @@ export const useProfileSetup = () => {
       return;
     }
 
-    // Validate bio length
-    if (bio.length > BIO_MAX_LENGTH) {
+    // Trim bio and validate length (check trimmed length to prevent whitespace-only bios)
+    const trimmedBio = bio.trim();
+    if (trimmedBio.length > BIO_MAX_LENGTH) {
       setError(`Bio must be ${BIO_MAX_LENGTH} characters or less`);
       return;
     }
@@ -199,8 +200,8 @@ export const useProfileSetup = () => {
           {
             user_id: user.id,
             username: normalizedUsername,
-            display_name: username,
-            bio: bio.trim(),
+            display_name: normalizedUsername,
+            bio: trimmedBio,
             avatar_url: avatarUrl,
             created_at: new Date().toISOString()
           }

@@ -113,3 +113,82 @@ export const isValidUrl = (urlString: string): boolean => {
     return false;
   }
 };
+
+// Valid whispr types
+export const VALID_WHISPR_TYPES = [
+  'question',
+  'compliment',
+  'roast',
+  'confession',
+  'rumor',
+  'suggestion',
+  'secret',
+  'hot_take',
+  'dare'
+] as const;
+
+export type ValidWhisprType = typeof VALID_WHISPR_TYPES[number];
+
+// Whispr content constraints
+export const WHISPR_MIN_LENGTH = 1;
+export const WHISPR_MAX_LENGTH = 500;
+
+/**
+ * Validates if a whispr type is valid
+ */
+export const isValidWhisprType = (type: string): type is ValidWhisprType => {
+  return VALID_WHISPR_TYPES.includes(type as ValidWhisprType);
+};
+
+/**
+ * Validates whispr content
+ */
+export const validateWhisprContent = (content: string): { valid: boolean; error?: string } => {
+  const trimmed = content.trim();
+
+  if (!trimmed) {
+    return { valid: false, error: 'Whispr content cannot be empty' };
+  }
+
+  if (trimmed.length < WHISPR_MIN_LENGTH) {
+    return { valid: false, error: `Whispr must be at least ${WHISPR_MIN_LENGTH} character` };
+  }
+
+  if (trimmed.length > WHISPR_MAX_LENGTH) {
+    return { valid: false, error: `Whispr must be ${WHISPR_MAX_LENGTH} characters or less` };
+  }
+
+  return { valid: true };
+};
+
+/**
+ * Validates a complete whispr submission
+ */
+export const validateWhisprSubmission = ({
+  content,
+  type,
+  username
+}: {
+  content: string;
+  type: string;
+  username: string;
+}): { valid: boolean; error?: string } => {
+  // Validate username
+  const usernameValidation = validateUsername(username);
+  if (!usernameValidation.valid) {
+    return usernameValidation;
+  }
+
+  // Validate content
+  const contentValidation = validateWhisprContent(content);
+  if (!contentValidation.valid) {
+    return contentValidation;
+  }
+
+  // Validate type
+  if (!isValidWhisprType(type)) {
+    return { valid: false, error: `Invalid whispr type: ${type}` };
+  }
+
+  return { valid: true };
+};

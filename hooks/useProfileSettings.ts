@@ -34,6 +34,10 @@ interface ProfileSettings {
   selectedBackground: string;
 }
 
+// Boolean-only setting keys for toggleSetting function
+type BooleanSettingKey = 'allowAnonymous' | 'showQuestionTypes' | 'displaySocialLinks';
+type BooleanDbField = 'allow_anonymous' | 'show_question_types' | 'display_social_links';
+
 export const useProfileSettings = (
   profile: Profile | null, 
   user: User | null, 
@@ -63,39 +67,40 @@ export const useProfileSettings = (
   }, [profile]);
 
   // Update a setting in the database (with field validation)
-  const updateSetting = async (field: AllowedField, value: boolean | string) => {
-    if (!user) return;
+  // Returns true on success, false on failure
+  const updateSetting = async (field: AllowedField, value: boolean | string): Promise<boolean> => {
+    if (!user) return false;
 
     // Runtime validation as defense-in-depth (TypeScript provides compile-time safety)
     if (!ALLOWED_UPDATE_FIELDS.includes(field)) {
       console.error(`Attempted to update unauthorized field: ${field}`);
-      return;
+      return false;
     }
 
     // Enforce correct types and allowed values based on field
     if (field === 'selected_theme') {
       if (typeof value !== 'string') {
         console.error(`Invalid type for theme value: expected string, got ${typeof value}`);
-        return;
+        return false;
       }
       if (!VALID_THEMES.includes(value as typeof VALID_THEMES[number])) {
         console.error(`Invalid theme value: ${value}`);
-        return;
+        return false;
       }
     } else if (field === 'selected_background') {
       if (typeof value !== 'string') {
         console.error(`Invalid type for background value: expected string, got ${typeof value}`);
-        return;
+        return false;
       }
       if (!VALID_BACKGROUNDS.includes(value as typeof VALID_BACKGROUNDS[number])) {
         console.error(`Invalid background value: ${value}`);
-        return;
+        return false;
       }
     } else {
       // All remaining allowed fields are booleans; enforce boolean type
       if (typeof value !== 'boolean') {
         console.error(`Invalid type for boolean setting ${field}: expected boolean, got ${typeof value}`);
-        return;
+        return false;
       }
     }
 
@@ -114,23 +119,25 @@ export const useProfileSettings = (
 
       // Refresh profile data
       await refreshProfile();
+      return true;
     } catch (error) {
       console.error('Error updating setting:', error);
+      return false;
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Setting toggle handlers with error recovery
-  const toggleSetting = (key: keyof ProfileSettings, dbField: AllowedField) => {
+  // Setting toggle handlers with error recovery (boolean fields only)
+  const toggleSetting = (key: BooleanSettingKey, dbField: BooleanDbField) => {
     return async () => {
       const previousValue = settings[key];
       const newValue = !previousValue;
       // Optimistic update
       setSettings((prev: ProfileSettings) => ({ ...prev, [key]: newValue }));
-      try {
-        await updateSetting(dbField, newValue);
-      } catch {
+      // Check return value to determine if update succeeded
+      const success = await updateSetting(dbField, newValue);
+      if (!success) {
         // Revert on error
         setSettings((prev: ProfileSettings) => ({ ...prev, [key]: previousValue }));
       }
@@ -147,9 +154,9 @@ export const useProfileSettings = (
     const previousTheme = settings.selectedTheme;
     // Optimistic update
     setSettings((prev: ProfileSettings) => ({ ...prev, selectedTheme: themeId }));
-    try {
-      await updateSetting('selected_theme', themeId);
-    } catch {
+    // Check return value to determine if update succeeded
+    const success = await updateSetting('selected_theme', themeId);
+    if (!success) {
       // Revert on error
       setSettings((prev: ProfileSettings) => ({ ...prev, selectedTheme: previousTheme }));
     }
@@ -164,9 +171,9 @@ export const useProfileSettings = (
     const previousBackground = settings.selectedBackground;
     // Optimistic update
     setSettings((prev: ProfileSettings) => ({ ...prev, selectedBackground: backgroundId }));
-    try {
-      await updateSetting('selected_background', backgroundId);
-    } catch {
+    // Check return value to determine if update succeeded
+    const success = await updateSetting('selected_background', backgroundId);
+    if (!success) {
       // Revert on error
       setSettings((prev: ProfileSettings) => ({ ...prev, selectedBackground: previousBackground }));
     }

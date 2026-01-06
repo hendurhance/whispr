@@ -35,8 +35,8 @@ const ProfileView = () => {
   });
 
   // Simulate form submission (disabled for showcase)
-  const handleSubmit = () => {
-    console.debug('This is a showcase, submission is disabled!');
+  const handleSubmit = (username: string, content: string, type: string) => {
+    console.debug('This is a showcase, submission is disabled!', { username, content, type });
   };
   
   return (

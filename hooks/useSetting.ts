@@ -134,10 +134,9 @@ export const useSetting = ({ initialUser, initialProfile }: UseSettingProps) => 
 
     // Handle bio change with length validation
     const handleBioChange = (value: string) => {
-        // Enforce max length
-        if (value.length <= BIO_MAX_LENGTH) {
-            setBio(value);
-        }
+        // Enforce max length by truncating any excess characters
+        const nextBio = value.length > BIO_MAX_LENGTH ? value.slice(0, BIO_MAX_LENGTH) : value;
+        setBio(nextBio);
     };
 
     // Refresh profile - triggers server-side refetch
@@ -164,8 +163,9 @@ export const useSetting = ({ initialUser, initialProfile }: UseSettingProps) => 
             return;
         }
 
-        // Validate bio length
-        if (bio.length > BIO_MAX_LENGTH) {
+        // Trim bio and validate length (check trimmed length to prevent whitespace-only bios)
+        const trimmedBio = bio.trim();
+        if (trimmedBio.length > BIO_MAX_LENGTH) {
             setError(`Bio must be ${BIO_MAX_LENGTH} characters or less`);
             return;
         }
@@ -191,8 +191,8 @@ export const useSetting = ({ initialUser, initialProfile }: UseSettingProps) => 
                     .from('profiles')
                     .update({
                         username: normalizedUsername,
-                        display_name: displayName || username,
-                        bio: bio.trim(),
+                        display_name: displayName || normalizedUsername,
+                        bio: trimmedBio,
                         avatar_url: avatarUrl,
                         updated_at: new Date().toISOString()
                     })
@@ -207,7 +207,7 @@ export const useSetting = ({ initialUser, initialProfile }: UseSettingProps) => 
                         user_id: initialUser.id,
                         username: normalizedUsername,
                         display_name: displayName || username,
-                        bio: bio.trim(),
+                        bio: trimmedBio,
                         avatar_url: avatarUrl,
                         created_at: new Date().toISOString()
                     }]);

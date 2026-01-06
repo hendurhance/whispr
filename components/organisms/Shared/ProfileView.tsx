@@ -35,8 +35,13 @@ const ProfileView = () => {
   });
 
   // Simulate form submission (disabled for showcase)
-  const handleSubmit = (username: string, content: string, type: string) => {
+  const submitWhispr = (username: string, content: string, type: string) => {
     console.debug('This is a showcase, submission is disabled!', { username, content, type });
+  };
+
+  // Success callback (no parameters)
+  const handleSuccess = () => {
+    console.debug('Whispr submitted successfully (showcase mode)');
   };
   
   return (
@@ -60,10 +65,10 @@ const ProfileView = () => {
         {/* Submission Form */}
         <WhisprSubmissionForm
           username={profile.username}
-          onSuccess={handleSubmit}
+          onSuccess={handleSuccess}
           onError={() => console.error('Error submitting whispr')}
           className='max-w-md w-full rounded-xl overflow-hidden bg-zinc-900 border border-zinc-700'
-          submitWhispr={handleSubmit}
+          submitWhispr={submitWhispr}
         />
       </div>
     </div>

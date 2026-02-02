@@ -92,15 +92,17 @@ const ViewWhisprModal: React.FC<ViewWhisprModalProps> = ({
   /**
    * Whispr card preview component
    */
-  const WhisprCardPreview = () => (
-    <div
-      ref={whisprCardRef}
-      className="p-5 bg-background-darkest rounded-xl border border-overlay-light"
-    >
-      <div className="flex items-start gap-3">
-        <div className="bg-background-card rounded-lg p-2 text-xl">
-          {getWhisprTypeIcon(whispr.type)}
-        </div>
+  const WhisprCardPreview = () => {
+    const TypeIcon = getWhisprTypeIcon(whispr.type);
+    return (
+      <div
+        ref={whisprCardRef}
+        className="p-5 bg-background-darkest rounded-xl border border-overlay-light"
+      >
+        <div className="flex items-start gap-3">
+          <div className="bg-background-card rounded-lg p-2">
+            <TypeIcon className="w-5 h-5 text-text-muted" />
+          </div>
         <div className="flex-1">
           <div className="flex items-center justify-between mb-2">
             <TypeBadge type={whispr.type} />
@@ -110,7 +112,8 @@ const ViewWhisprModal: React.FC<ViewWhisprModalProps> = ({
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   return (
     <GenericModal

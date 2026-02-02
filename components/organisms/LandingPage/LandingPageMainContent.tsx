@@ -14,6 +14,23 @@ import FloatingMessagesContainer from '@/components/molecules/FloatingMessagesCo
 import CTASection from '@/components/molecules/CTASection';
 import { useRouter } from 'next/navigation';
 import { Whispr } from '@/types/whispr';
+import {
+  HelpCircle,
+  Sparkles,
+  Flame,
+  EyeOff,
+  MessageSquare,
+  Lightbulb,
+  Lock,
+  Zap,
+  Target,
+  BarChart3,
+  ShieldCheck,
+  Shield,
+  Globe,
+  Ban,
+  ArrowRight
+} from 'lucide-react';
 
 const DownloadIcon = () => (
   <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" fill="currentColor">
@@ -42,16 +59,16 @@ const WebAccessIcon = () => (
 
 const LandingPageMainContent: React.FC = () => {
   const features = [
-    { icon: "❓", title: "Anonymous Q&A", description: "Ask spicy questions or get raw, unfiltered answers.", example: "What's the most unhinged thing you've done for clout?", is_coming_soon: false },
-    { icon: "🌟", title: "Anonymous Compliments", description: "Drop some chaotic praise to hype someone up.", example: "Your vibe is like a glitter bomb of awesome.", is_coming_soon: false },
-    { icon: "🔥", title: "Anonymous Roasts", description: "Throw shade or get roasted with zero chill.", example: "Your tweets are so dry they need a hydration sponsor.", is_coming_soon: false },
-    { icon: "🤫", title: "Anonymous Confessions", description: "Spill your wildest secrets or hear juicy ones.", example: "I stalked your profile and now I'm obsessed.", is_coming_soon: false },
-    { icon: "🗣️", title: "Anonymous Rumors", description: "Start or hear spicy gossip without the trace.", example: "Heard you crashed a party with a rap battle.", is_coming_soon: false },
-    { icon: "💡", title: "Anonymous Suggestions", description: "Pitch chaotic ideas or get wild recommendations.", example: "Drop a thirst trap and break the internet.", is_coming_soon: false },
-    { icon: "🔒", title: "Anonymous Secrets", description: "Share or uncover hidden tea in a safe space.", example: "I'm secretly your biggest fan but here for the drama.", is_coming_soon: false },
-    { icon: "💥", title: "Anonymous Hot Takes", description: "Throw out bold opinions or hear unfiltered ones.", example: "Your content's overrated but I can't look away.", is_coming_soon: false },
-    { icon: "😈", title: "Anonymous Dares", description: "Challenge someone to chaos or take on a wild dare.", example: "Tweet a hot take so bad you get canceled by lunch.", is_coming_soon: false },
-    { icon: "📊", title: "Anonymous Polls", description: "Create or participate in wild polls for fun.", example: "Who's the biggest drama queen in our group?", is_coming_soon: true },
+    { icon: <HelpCircle className="w-6 h-6" />, title: "Anonymous Q&A", description: "Ask spicy questions or get raw, unfiltered answers.", example: "What's the most unhinged thing you've done for clout?", is_coming_soon: false },
+    { icon: <Sparkles className="w-6 h-6" />, title: "Anonymous Compliments", description: "Drop some chaotic praise to hype someone up.", example: "Your vibe is like a glitter bomb of awesome.", is_coming_soon: false },
+    { icon: <Flame className="w-6 h-6" />, title: "Anonymous Roasts", description: "Throw shade or get roasted with zero chill.", example: "Your tweets are so dry they need a hydration sponsor.", is_coming_soon: false },
+    { icon: <EyeOff className="w-6 h-6" />, title: "Anonymous Confessions", description: "Spill your wildest secrets or hear juicy ones.", example: "I stalked your profile and now I'm obsessed.", is_coming_soon: false },
+    { icon: <MessageSquare className="w-6 h-6" />, title: "Anonymous Rumors", description: "Start or hear spicy gossip without the trace.", example: "Heard you crashed a party with a rap battle.", is_coming_soon: false },
+    { icon: <Lightbulb className="w-6 h-6" />, title: "Anonymous Suggestions", description: "Pitch chaotic ideas or get wild recommendations.", example: "Drop a thirst trap and break the internet.", is_coming_soon: false },
+    { icon: <Lock className="w-6 h-6" />, title: "Anonymous Secrets", description: "Share or uncover hidden tea in a safe space.", example: "I'm secretly your biggest fan but here for the drama.", is_coming_soon: false },
+    { icon: <Zap className="w-6 h-6" />, title: "Anonymous Hot Takes", description: "Throw out bold opinions or hear unfiltered ones.", example: "Your content's overrated but I can't look away.", is_coming_soon: false },
+    { icon: <Target className="w-6 h-6" />, title: "Anonymous Dares", description: "Challenge someone to chaos or take on a wild dare.", example: "Tweet a hot take so bad you get canceled by lunch.", is_coming_soon: false },
+    { icon: <BarChart3 className="w-6 h-6" />, title: "Anonymous Polls", description: "Create or participate in wild polls for fun.", example: "Who's the biggest drama queen in our group?", is_coming_soon: true },
   ];
 
   const steps = [
@@ -62,10 +79,10 @@ const LandingPageMainContent: React.FC = () => {
   ];
 
   const privacyFeatures = [
-    { icon: "🔒", title: "Total Anonymity", description: "No names, no traces—just pure, unfiltered chaos with zero identifiable data." },
-    { icon: "🛡️", title: "No Data Tracking", description: "We don't track jack. Your spicy secrets stay safe." },
-    { icon: "🌐", title: "Open Source", description: "Whispr's code is public, so you can check it's as legit as your hottest take." },
-    { icon: "🚫", title: "No Ads", description: "No annoying ads, no data scams—just a clean playground for chaos." },
+    { icon: <ShieldCheck className="w-5 h-5" />, title: "Total Anonymity", description: "No names, no traces—just pure, unfiltered chaos with zero identifiable data." },
+    { icon: <Shield className="w-5 h-5" />, title: "No Data Tracking", description: "We don't track jack. Your spicy secrets stay safe." },
+    { icon: <Globe className="w-5 h-5" />, title: "Open Source", description: "Whispr's code is public, so you can check it's as legit as your hottest take." },
+    { icon: <Ban className="w-5 h-5" />, title: "No Ads", description: "No annoying ads, no data scams—just a clean playground for chaos." },
   ];
 
   const whispr: Whispr[] = [
@@ -115,37 +132,47 @@ const LandingPageMainContent: React.FC = () => {
 
   const shapesData: Shape[] = [
     {
-      id: 'shape1',
-      type: 'rectangle',
-      position: { top: '15%', left: '10%' },
-      size: { width: '5rem', height: '5rem' },
-      color: 'bg-gradient-primary',
-      rotation: 45,
-      duration: 8
+      id: 'orb1',
+      type: 'orb',
+      position: { top: '10%', left: '5%' },
+      size: { width: '20rem', height: '20rem' },
+      color: 'bg-primary',
+      blur: '80px',
+      opacity: 0.3,
+      duration: 25
     },
     {
-      id: 'shape2',
-      type: 'circle',
-      position: { top: '30%', right: '15%' },
-      size: { width: '3rem', height: '3rem' },
-      color: 'bg-accent-green',
-      duration: 12
+      id: 'orb2',
+      type: 'orb',
+      position: { top: '20%', right: '10%' },
+      size: { width: '15rem', height: '15rem' },
+      color: 'bg-secondary',
+      blur: '70px',
+      opacity: 0.25,
+      duration: 30,
+      delay: 5
     },
     {
-      id: 'shape3',
-      type: 'triangle',
-      position: { bottom: '20%', left: '20%' },
-      size: { width: '4rem', height: '4rem' },
-      color: 'bg-accent-yellow',
-      duration: 10
+      id: 'orb3',
+      type: 'orb',
+      position: { bottom: '10%', left: '15%' },
+      size: { width: '18rem', height: '18rem' },
+      color: 'bg-accent-purple',
+      blur: '90px',
+      opacity: 0.2,
+      duration: 28,
+      delay: 10
     },
     {
-      id: 'shape4',
-      type: 'blob',
-      position: { bottom: '15%', right: '25%' },
-      size: { width: '6rem', height: '6rem' },
-      color: 'bg-gradient-to-r from-secondary to-primary',
-      duration: 14
+      id: 'orb4',
+      type: 'orb',
+      position: { bottom: '20%', right: '5%' },
+      size: { width: '12rem', height: '12rem' },
+      color: 'bg-accent-pink',
+      blur: '60px',
+      opacity: 0.2,
+      duration: 22,
+      delay: 3
     }
   ];
 
@@ -244,7 +271,7 @@ const LandingPageMainContent: React.FC = () => {
           />
 
           {/* App screenshot showcase */}
-          <div className="relative z-10 mx-auto rounded-xl md:rounded-2xl overflow-hidden shadow-xl">
+          <div className="relative z-10 mx-auto rounded-xl md:rounded-2xl overflow-hidden shadow-2xl shadow-primary/20 perspective-tilt">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/dashboard.png"
@@ -256,7 +283,7 @@ const LandingPageMainContent: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-24 px-4 md:px-8 bg-[#1a1a3a]" id="features">
+      <section className="py-24 px-4 md:px-8 bg-[#1a1a3a] relative noise-texture" id="features">
         <SectionTitle
           title="Share & receive"
           subtitle="Express yourself freely without revealing your identity. Get honest feedback, opinions, and confessions from your audience."
@@ -298,20 +325,47 @@ const LandingPageMainContent: React.FC = () => {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-24 px-4 md:px-8 bg-[#1a1a3a]" id="how-it-works">
+      <section className="py-24 px-4 md:px-8 bg-[#1a1a3a] relative grid-pattern" id="how-it-works">
         <SectionTitle
           title="How it works"
           subtitle="Getting started with Whispr is simple, secure, and takes just minutes."
         />
-        <div className="flex flex-wrap justify-center gap-6 mt-12">
-          {steps.map((step) => (
-            <StepCard key={step.number} {...step} />
-          ))}
+        <div className="mt-12 max-w-6xl mx-auto">
+          {/* Desktop: Grid layout with arrows */}
+          <div className="hidden lg:grid lg:grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr] items-stretch gap-4">
+            {steps.map((step, index) => (
+              <React.Fragment key={step.number}>
+                <div className="flex flex-col pt-5">
+                  <div className="bg-background-card rounded-2xl p-6 flex-1 relative transition-all duration-300 hover:-translate-y-1 hover:bg-background-highlight hover:shadow-lg hover:shadow-primary/20">
+                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center font-bold text-text-bright shadow-lg shadow-primary/30">
+                      {step.number}
+                    </div>
+                    <h3 className="mt-4 mb-3 text-lg font-semibold text-text-bright text-center">{step.title}</h3>
+                    <p className="text-text-muted text-sm text-center">{step.description}</p>
+                  </div>
+                </div>
+                {index < steps.length - 1 && (
+                  <div className="flex items-center justify-center pt-5">
+                    <ArrowRight className="w-5 h-5 text-primary/50" />
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+
+          {/* Mobile/Tablet: Vertical layout */}
+          <div className="lg:hidden flex flex-col items-center gap-10">
+            {steps.map((step) => (
+              <div key={step.number} className="w-full max-w-[300px]">
+                <StepCard {...step} />
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Privacy & Security Section */}
-      <section className="py-24 px-4 md:px-8 relative overflow-hidden" id="privacy">
+      <section className="py-24 px-4 md:px-8 relative overflow-hidden noise-texture" id="privacy">
         <SectionTitle
           title="Privacy & Security First"
           subtitle="Your anonymity and security are our top priorities. Whispr is built to keep your interactions safe and private."

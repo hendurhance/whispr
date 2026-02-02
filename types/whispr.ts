@@ -63,18 +63,32 @@ export const getTimeOfDay = (): string => {
   return 'night';
 };
 
-export const getWhisprTypeIcon = (type: WhisprType): string => {
+import {
+  HelpCircle,
+  Heart,
+  Flame,
+  EyeOff,
+  Ear,
+  Lightbulb,
+  Lock,
+  Zap,
+  Target,
+  Mail,
+  LucideIcon
+} from 'lucide-react';
+
+export const getWhisprTypeIcon = (type: WhisprType): LucideIcon => {
   switch (type) {
-    case 'question': return '❓';
-    case 'compliment': return '💐';
-    case 'roast': return '🔥';
-    case 'confession': return '🤫';
-    case 'rumor': return '👂';
-    case 'suggestion': return '📝';
-    case 'secret': return '🔒';
-    case 'hot_take': return '🌶️';
-    case 'dare': return '⚡';
-    default: return '✉️';
+    case 'question': return HelpCircle;
+    case 'compliment': return Heart;
+    case 'roast': return Flame;
+    case 'confession': return EyeOff;
+    case 'rumor': return Ear;
+    case 'suggestion': return Lightbulb;
+    case 'secret': return Lock;
+    case 'hot_take': return Zap;
+    case 'dare': return Target;
+    default: return Mail;
   }
 };
 

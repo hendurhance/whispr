@@ -141,14 +141,16 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
   /**
    * List view layout
    */
-  const ListViewLayout = () => (
-    <div className={`p-4 bg-background-card rounded-xl border ${getBorderClass()} transition-all hover:shadow-sm ${className}`}>
-      <div className="flex items-start gap-3">
-        {!forShowcase && (
-          <div className="bg-background-darkest rounded-lg p-2 text-xl">
-            {getWhisprTypeIcon(whispr.type)}
-          </div>
-        )}
+  const ListViewLayout = () => {
+    const TypeIcon = getWhisprTypeIcon(whispr.type);
+    return (
+      <div className={`p-4 bg-background-card rounded-xl border ${getBorderClass()} transition-all hover:shadow-sm ${className}`}>
+        <div className="flex items-start gap-3">
+          {!forShowcase && (
+            <div className="bg-background-darkest rounded-lg p-2">
+              <TypeIcon className="w-5 h-5 text-text-muted" />
+            </div>
+          )}
         <div className="flex-1">
           <ContentHeader className="mb-1" />
           <p className="text-text-bright mb-3">{whispr.content}</p>
@@ -156,7 +158,8 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   /**
    * Grid view layout

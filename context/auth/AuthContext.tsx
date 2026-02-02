@@ -35,8 +35,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProfile = async (userId: string) => {
     try {
-      console.log("AuthProvider: Fetching profile for user:", userId);
-
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
       );
@@ -52,10 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         timeoutPromise.then(() => { throw new Error('Query timeout'); })
       ]);
 
-      console.log("AuthProvider: Raw response:", { data, error });
-
       if (error) {
-        console.error('Error fetching profile:', error);
         // Check if error is "no rows returned" which means no profile
         if (error.code === 'PGRST116') {
           localStorage.setItem('profile_setup', 'false');
@@ -65,18 +60,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (data) {
-        console.log("AuthProvider: Profile found", data);
         setProfile(data as Profile);
         localStorage.setItem('profile_setup', 'true');
         return data as Profile;
       } else {
-        console.log("AuthProvider: No profile found");
         setProfile(null);
         localStorage.setItem('profile_setup', 'false');
         return null;
       }
-    } catch (error) {
-      console.error('Error in fetchProfile:', error);
+    } catch {
       return null;
     } finally {
       fetchedProfileRef.current = true;
@@ -86,27 +78,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Added refreshProfile function that can be called from components
   const refreshProfile = async () => {
     if (!user) {
-      console.warn("AuthProvider: Cannot refresh profile, no user is logged in");
       return null;
     }
-    
-    console.log("AuthProvider: Manually refreshing profile");
+
     try {
       const profile = await fetchProfile(user.id);
       return profile;
-    } catch (error) {
-      console.error('Error in refreshProfile:', error);
+    } catch {
       return null;
     }
   };
 
   useEffect(() => {
-    console.log("AuthProvider: Initializing");
-
     // Get initial session
     const getInitialSession = async () => {
       try {
-        console.log("AuthProvider: Getting initial session");
         setIsLoading(true);
 
         const { data: { session } } = await supabase.auth.getSession();
@@ -114,24 +100,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session?.user ?? null);
 
         if (session?.user) {
-          console.log("AuthProvider: User found in session, fetching profile");
           lastUserIdRef.current = session.user.id;
           // Fetch user profile
           await fetchProfile(session.user.id);
-        } else {
-          console.log("AuthProvider: No user in session");
         }
-      } catch (error) {
-        console.error('Error getting initial session:', error);
+      } catch {
+        // Silently handle error
       } finally {
-        console.log("AuthProvider: Initial auth check complete");
         setIsLoading(false);
         initialLoadRef.current = false;
       }
     };
 
     timeoutRef.current = setTimeout(() => {
-      console.log("AuthProvider: Loading timeout triggered");
       setIsLoading(false);
       initialLoadRef.current = false;
     }, 3000);
@@ -141,45 +122,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Set up auth listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log(`AuthProvider: Auth state changed: ${event}`);
-        
         // Ignore TOKEN_REFRESHED events - these happen frequently and don't need profile refetch
         if (event === 'TOKEN_REFRESHED') {
-          console.log("AuthProvider: Skipping TOKEN_REFRESHED event");
           return;
         }
-        
+
         // Skip processing if this is a session refresh from tab focus and user hasn't changed
         const currentUserId = session?.user?.id;
-        const isTabRefresh = event === 'SIGNED_IN' && !initialLoadRef.current && 
+        const isTabRefresh = event === 'SIGNED_IN' && !initialLoadRef.current &&
                            currentUserId && lastUserIdRef.current === currentUserId;
-        
+
         if (isTabRefresh) {
-          console.log("AuthProvider: Skipping tab focus session refresh for same user");
           return;
         }
-        
+
         setSession(session);
         setUser(session?.user ?? null);
 
         if (event === 'SIGNED_IN' && session?.user) {
-          console.log("AuthProvider: User signed in, fetching profile");
           lastUserIdRef.current = session.user.id;
-          
+
           // Only set loading if this is not a tab focus refresh or initial load
           if (initialLoadRef.current || lastUserIdRef.current !== session.user.id) {
             setIsLoading(true);
           }
-          
+
           await fetchProfile(session.user.id);
-          
+
           if (initialLoadRef.current || lastUserIdRef.current !== session.user.id) {
             setIsLoading(false);
           }
         }
 
         if (event === 'SIGNED_OUT') {
-          console.log("AuthProvider: User signed out, clearing profile");
           setProfile(null);
           lastUserIdRef.current = null;
           localStorage.removeItem('profile_setup');
@@ -189,7 +164,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Clean up listener and timeout
     return () => {
-      console.log("AuthProvider: Cleaning up");
       subscription.unsubscribe();
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -201,21 +175,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn = async (email: string) => {
     try {
       const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      
+
       if (!email || !emailRegex.test(email.toLowerCase())) {
         return { error: new Error('Please enter a valid email address') };
       }
-      
-      console.log("AuthProvider: Sending magic link to:", email);
-      
+
       // Get the redirect URL from config or fallback to window.location.origin (client-side only)
       let redirectUrl = CONFIGURATIONS.APP_URL || (typeof window !== 'undefined' ? window.location.origin : '');
-      
+
       // Ensure the URL has a protocol
       if (redirectUrl && !redirectUrl.startsWith('http://') && !redirectUrl.startsWith('https://')) {
         redirectUrl = `https://${redirectUrl}`;
       }
-      
+
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
@@ -225,7 +197,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return { error };
     } catch (error) {
-      console.error('Error signing in:', error);
       return { error };
     }
   };
@@ -233,7 +204,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Sign out
   const signOut = async () => {
     try {
-      console.log("AuthProvider: Signing out");
       await supabase.auth.signOut();
 
       // Clear local storage
@@ -244,8 +214,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(null);
       setUser(null);
       setProfile(null);
-    } catch (error) {
-      console.error('Error signing out:', error);
+    } catch {
+      // Silently handle error
     }
   };
 

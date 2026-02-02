@@ -186,7 +186,6 @@ export const useWhisprSubmission = ({
 
     // Validate whispr type at runtime to catch any issues
     if (!isValidWhisprType(selectedType)) {
-      console.error('Invalid whispr type detected:', selectedType);
       if (onError) onError(new Error(`Invalid whispr type: ${selectedType}`));
       return;
     }
@@ -197,13 +196,6 @@ export const useWhisprSubmission = ({
       return;
     }
     const normalizedUsername = username.toLowerCase().trim();
-
-    // Debug log to verify payload structure
-    console.log('Submitting whispr with payload:', {
-      username: normalizedUsername,
-      content: trimmedContent,
-      type: selectedType
-    });
 
     setIsSubmitting(true);
 
@@ -229,14 +221,6 @@ export const useWhisprSubmission = ({
 
       if (onSuccess) onSuccess();
     } catch (error) {
-      console.error('Error in handleSubmit:', error);
-      // Log the full payload on error for debugging
-      console.error('Whispr submission error:', error);
-      console.error('\n\nPayload:', {
-        username: normalizedUsername,
-        content: trimmedContent,
-        type: selectedType
-      });
       if (onError) onError(error as Error);
     } finally {
       setIsSubmitting(false);

@@ -1,29 +1,31 @@
 'use client';
 
-import React from 'react';
+import React, { ReactNode } from 'react';
+import { Clock } from 'lucide-react';
 
 interface FeatureCardProps {
-  icon: string;
+  icon: ReactNode;
   title: string;
   description: string;
   example?: string;
   is_coming_soon?: boolean;
 }
 
-const FeatureCard: React.FC<FeatureCardProps> = ({ 
-  icon, 
-  title, 
-  description, 
+const FeatureCard: React.FC<FeatureCardProps> = ({
+  icon,
+  title,
+  description,
   example,
   is_coming_soon = false
 }) => (
-  <div className="bg-background-card rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:bg-background-highlight hover:shadow-lg hover:shadow-primary/20 flex flex-col h-full items-center relative">
+  <div className="bg-background-card rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:bg-background-highlight hover:shadow-lg hover:shadow-primary/20 border border-transparent hover:border-primary/30 flex flex-col items-center text-center h-full relative group">
     {is_coming_soon && (
-      <div className="absolute top-4 right-4 bg-primary/80 text-white text-xs font-medium px-2 py-1 rounded-full">
-        ⏳ Coming Soon
+      <div className="absolute top-4 right-4 bg-primary/80 text-white text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1">
+        <Clock className="w-3 h-3" />
+        Coming Soon
       </div>
     )}
-    <div className="w-14 h-14 bg-gradient-primary rounded-xl flex items-center justify-center text-2xl mb-4">
+    <div className="w-14 h-14 bg-gradient-primary rounded-xl flex items-center justify-center text-white mb-4">
       {icon}
     </div>
     <h3 className="text-xl font-semibold mb-3 text-text-bright">{title}</h3>

@@ -7,6 +7,7 @@ import NavLink from '@/components/molecules/NavLink';
 import AuthButtons from '@/components/molecules/AuthButtons';
 import Button from '@/components/atoms/Button';
 import useLinks from '@/hooks/useLinks';
+import { Menu, X } from 'lucide-react';
 
 /**
  * Landing page header with responsive menu and navigation
@@ -108,12 +109,12 @@ const LandingPageHeader: React.FC = () => {
       
       {/* Mobile/Tablet menu toggle button - hide on tablet */}
       {!isDesktop && !isTablet && (
-        <button 
-          className="flex items-center justify-center w-10 h-10 text-2xl text-text rounded-full border-none bg-background-card hover:bg-background-highlight focus:outline-none transition-colors" 
+        <button
+          className="flex items-center justify-center w-10 h-10 text-text rounded-full border-none bg-background-card hover:bg-background-highlight focus:outline-none transition-colors"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label={menuOpen ? "Close menu" : "Open menu"}
         >
-          {menuOpen ? '✕' : '☰'}
+          {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       )}
     </header>

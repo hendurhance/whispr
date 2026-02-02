@@ -4,7 +4,7 @@ import React from 'react';
 
 export interface Shape {
   id: string;
-  type: 'rectangle' | 'circle' | 'triangle' | 'blob';
+  type: 'rectangle' | 'circle' | 'triangle' | 'blob' | 'orb';
   position: {
     top?: string;
     bottom?: string;
@@ -19,6 +19,8 @@ export interface Shape {
   rotation?: number;
   delay?: number;
   duration?: number;
+  blur?: string;
+  opacity?: number;
 }
 
 interface FloatingShapesProps {
@@ -29,21 +31,34 @@ interface FloatingShapesProps {
 const FloatingShapes: React.FC<FloatingShapesProps> = ({ shapes, className = '' }) => {
   // Function to render a shape based on its type
   const renderShape = (shape: Shape) => {
-    const commonStyles = {
+    const commonStyles: React.CSSProperties = {
       ...shape.position,
       width: shape.size.width,
       height: shape.size.height,
       animationDelay: `${shape.delay || 0}s`,
-      animationDuration: `${shape.duration || 10}s`,
-      transform: `rotate(${shape.rotation || 0}deg)`
+      animationDuration: `${shape.duration || 20}s`,
+      transform: `rotate(${shape.rotation || 0}deg)`,
+      filter: shape.blur ? `blur(${shape.blur})` : undefined,
+      opacity: shape.opacity ?? 0.6
     };
 
     switch (shape.type) {
+      case 'orb':
+        return (
+          <div
+            key={shape.id}
+            className={`absolute rounded-full animate-float-slow ${shape.color}`}
+            style={{
+              ...commonStyles,
+              filter: `blur(${shape.blur || '60px'})`
+            }}
+          />
+        );
       case 'rectangle':
         return (
           <div
             key={shape.id}
-            className={`absolute rounded-xl animate-float ${shape.color}`}
+            className={`absolute rounded-xl animate-float-slow ${shape.color}`}
             style={commonStyles}
           />
         );
@@ -51,7 +66,7 @@ const FloatingShapes: React.FC<FloatingShapesProps> = ({ shapes, className = '' 
         return (
           <div
             key={shape.id}
-            className={`absolute rounded-full animate-float ${shape.color}`}
+            className={`absolute rounded-full animate-float-slow ${shape.color}`}
             style={commonStyles}
           />
         );
@@ -59,7 +74,7 @@ const FloatingShapes: React.FC<FloatingShapesProps> = ({ shapes, className = '' 
         return (
           <div
             key={shape.id}
-            className={`absolute animate-float ${shape.color}`}
+            className={`absolute animate-float-slow ${shape.color}`}
             style={{
               ...commonStyles,
               clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)'
@@ -70,7 +85,7 @@ const FloatingShapes: React.FC<FloatingShapesProps> = ({ shapes, className = '' 
         return (
           <div
             key={shape.id}
-            className={`absolute animate-float ${shape.color}`}
+            className={`absolute animate-float-slow ${shape.color}`}
             style={{
               ...commonStyles,
               borderRadius: '30% 70% 70% 30% / 30% 30% 70% 70%'
@@ -83,7 +98,7 @@ const FloatingShapes: React.FC<FloatingShapesProps> = ({ shapes, className = '' 
   };
 
   return (
-    <div className={`absolute inset-0 pointer-events-none z-0 ${className}`}>
+    <div className={`absolute inset-0 pointer-events-none z-0 overflow-hidden ${className}`}>
       {shapes.map(renderShape)}
     </div>
   );

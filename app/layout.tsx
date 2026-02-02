@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Toaster } from "react-hot-toast";
+import ToastProvider from "@/components/atoms/ToastProvider";
 // @ts-ignore: CSS module declaration missing; add a '*.css' .d.ts file (e.g. global.d.ts) to provide proper types
 import "./globals.css";
 import CONFIGURATIONS from "@/configs";
@@ -146,29 +146,7 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <div id="root">
           {children}
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: '#252547',
-                color: '#e0e0e6',
-                border: '1px solid #7A31FF',
-              },
-              success: {
-                iconTheme: {
-                  primary: '#56ffb2',
-                  secondary: '#252547',
-                },
-              },
-              error: {
-                iconTheme: {
-                  primary: '#ff5656',
-                  secondary: '#252547',
-                },
-              },
-            }}
-          />
+          <ToastProvider />
         </div>
       </body>
     </html>

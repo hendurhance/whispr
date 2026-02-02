@@ -1,9 +1,25 @@
 import { useState } from 'react';
 import html2canvas from 'html2canvas-pro';
 import { toast } from 'react-hot-toast';
-import { Whispr, getWhisprTypeIcon, getWhisprTypeLabel, formatDate } from '@/types/whispr';
+import { Whispr, getWhisprTypeLabel, formatDate, WhisprType } from '@/types/whispr';
 import { APP_LOGO_URI } from '@/types';
 import { APP_URL_CLEAN } from '@/configs';
+
+// SVG icon paths for image generation (since we can't render React components in DOM)
+const getWhisprTypeIconSvg = (type: WhisprType): string => {
+  const iconPaths: Record<WhisprType, string> = {
+    question: '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5"/>',
+    compliment: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+    roast: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+    confession: '<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>',
+    rumor: '<path d="M6 8.5a6.5 6.5 0 1 1 13 0c0 6-6 6-6 10a3.5 3.5 0 1 1-7 0"/><path d="M15 8.5a2.5 2.5 0 0 0-5 0v1a2 2 0 1 1 0 4"/>',
+    suggestion: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
+    secret: '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+    hot_take: '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
+    dare: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>'
+  };
+  return iconPaths[type] || '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>';
+};
 
 interface UseWhisprImageProps {
   username: string;
@@ -222,10 +238,21 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      fontSize: '24px',
       flexShrink: '0',
     });
-    typeIconContainer.textContent = getWhisprTypeIcon(whispr.type);
+
+    // Create SVG icon
+    const svgIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svgIcon.setAttribute('width', '24');
+    svgIcon.setAttribute('height', '24');
+    svgIcon.setAttribute('viewBox', '0 0 24 24');
+    svgIcon.setAttribute('fill', 'none');
+    svgIcon.setAttribute('stroke', '#a78bfa');
+    svgIcon.setAttribute('stroke-width', '2');
+    svgIcon.setAttribute('stroke-linecap', 'round');
+    svgIcon.setAttribute('stroke-linejoin', 'round');
+    svgIcon.innerHTML = getWhisprTypeIconSvg(whispr.type);
+    typeIconContainer.appendChild(svgIcon);
 
     // Content area
     const contentArea = document.createElement('div');

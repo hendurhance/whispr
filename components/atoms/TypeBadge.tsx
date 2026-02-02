@@ -9,8 +9,8 @@ interface TypeBadgeProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-const TypeBadge: React.FC<TypeBadgeProps> = ({ 
-  type, 
+const TypeBadge: React.FC<TypeBadgeProps> = ({
+  type,
   className = '',
   size = 'md'
 }) => {
@@ -20,7 +20,14 @@ const TypeBadge: React.FC<TypeBadgeProps> = ({
     md: 'text-xs px-2.5 py-1',
     lg: 'text-sm px-3 py-1.5'
   };
-  
+
+  // Icon size variants
+  const iconSizeClasses = {
+    sm: 'w-3 h-3',
+    md: 'w-3.5 h-3.5',
+    lg: 'w-4 h-4'
+  };
+
   // Background and text color mapping for each type
   const colorMapping = {
     question: 'bg-accent-purple/10 text-accent-purple',
@@ -33,12 +40,14 @@ const TypeBadge: React.FC<TypeBadgeProps> = ({
     hot_take: 'bg-accent-pink/10 text-accent-pink',
     dare: 'bg-accent-yellow/10 text-accent-yellow'
   };
-  
+
+  const IconComponent = getWhisprTypeIcon(type);
+
   return (
-    <div 
+    <div
       className={`inline-flex items-center gap-1 rounded-full ${colorMapping[type]} ${sizeClasses[size]} ${className}`}
     >
-      <span className="mr-0.5">{getWhisprTypeIcon(type)}</span>
+      <IconComponent className={iconSizeClasses[size]} />
       <span>{getWhisprTypeLabel(type)}</span>
     </div>
   );

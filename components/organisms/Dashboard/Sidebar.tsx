@@ -7,6 +7,7 @@ import Logo from '@/components/atoms/Logo';
 import Badge from '@/components/atoms/Badge';
 import useLinks from '@/hooks/useLinks';
 import { signOutUser } from '@/lib/client/auth';
+import { LogOut } from 'lucide-react';
 
 interface SidebarProps {
   unreadCount?: number;
@@ -33,8 +34,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     try {
       await signOutUser();
       router.push('/auth');
-    } catch (error) {
-      console.error('Error signing out:', error);
+    } catch {
+      // Silently handle error
     }
   }, [router]);
 
@@ -78,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     onClick={onClose}
                   >
                     <div className="flex items-center gap-3">
-                      <span>{item.icon}</span>
+                      <item.icon className="w-5 h-5" />
                       <span>{item.label}</span>
                     </div>
                     {item.badge && (
@@ -101,7 +102,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     rel={item.external ? "noopener noreferrer" : undefined}
                     className="flex items-center gap-3 px-4 py-3 rounded-lg text-text-muted hover:bg-background-highlight hover:text-text-bright transition-colors"
                   >
-                    <span>{item.icon}</span>
+                    <item.icon className="w-5 h-5" />
                     <span>{item.label}</span>
                   </a>
                 </li>
@@ -116,7 +117,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             className="flex items-center gap-3 px-4 py-3 rounded-lg text-text-muted hover:bg-background-highlight hover:text-text-bright transition-colors"
             onClick={handleLogout}
           >
-            <span>🚪</span>
+            <LogOut className="w-5 h-5" />
             <span>Log Out</span>
           </a>
         </div>

@@ -2,7 +2,7 @@
 
 <div align="center">
   <img src="/doc/images/logo.png" width="200px">
-  <h2>Whisper</h2>
+  <h2>Whispr</h2>
   <p>An open-source anonymous platform to receive questions, dares, roast, confessions, feedback, and more — you decide whether to spark chaos or spread love. 
   </p> <p> It's an open source alternative to "NGL", "Sarahah" and "Kubool". </p>
 

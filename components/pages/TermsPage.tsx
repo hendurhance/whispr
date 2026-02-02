@@ -19,7 +19,7 @@ const TermsPage: React.FC = () => {
 
     const contactEmail = footerColumns
         .find(column => column.title === "Community")
-        ?.links?.find(link => link.text === "Contact Us")?.href.replace("mailto:", "") || "privacy@trywhispr.me";
+        ?.links?.find(link => link.text === "Contact Us")?.href.replace("mailto:", "") || "support@trywhispr.me";
 
     return (
         <PublicTemplate>

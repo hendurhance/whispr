@@ -5,19 +5,20 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Badge from '@/components/atoms/Badge';
 import useLinks from '@/hooks/useLinks';
+import { LucideIcon } from 'lucide-react';
 
 interface NavigationTabProps {
-  icon: string;
+  icon: LucideIcon;
   label: string;
   path: string;
   isActive: boolean;
   badgeCount?: number;
 }
 
-const NavigationTab: React.FC<NavigationTabProps> = ({ 
-  icon, 
-  label, 
-  path, 
+const NavigationTab: React.FC<NavigationTabProps> = ({
+  icon: Icon,
+  label,
+  path,
   isActive,
   badgeCount
 }) => {
@@ -29,12 +30,12 @@ const NavigationTab: React.FC<NavigationTabProps> = ({
       }`}
     >
       <div className="relative">
-        <span className="text-xl">{icon}</span>
+        <Icon className="w-5 h-5" />
         {badgeCount !== undefined && badgeCount > 0 && (
-          <Badge 
-            count={badgeCount} 
+          <Badge
+            count={badgeCount}
             variant="accent"
-            className="absolute -top-2 -right-2 text-[10px] h-4 min-w-[16px]" 
+            className="absolute -top-2 -right-2 text-[10px] h-4 min-w-[16px]"
           />
         )}
       </div>

@@ -50,7 +50,6 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ initialWhisprs, initialUs
   
   // Local state for whisprs
   const [whisprs, setWhisprs] = useState<Whispr[]>(transformedInitialWhisprs);
-  const [isLoading] = useState(false);
   
   // Profile information
   const displayName = initialProfile?.display_name || initialUser?.user_metadata?.username || 'User';
@@ -247,7 +246,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ initialWhisprs, initialUs
                 onView={handleView}
                 onShare={handleShare}
                 onDelete={handleDelete}
-                isLoading={isLoading}
+                isLoading={false}
                 searchTerm={searchTerm}
                 totalWhisprs={totalCount}
                 resetFilters={resetFilters}

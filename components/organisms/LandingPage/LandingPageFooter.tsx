@@ -37,11 +37,14 @@ const LandingPageFooter: React.FC = () => {
       <div className="mt-12 pt-5 border-t border-overlay-light flex flex-wrap justify-between items-center gap-5">
         <p className="text-text-muted">© {currentYear} Whispr. All rights reserved.</p>
         <div className="flex gap-4">
-          {socialLinks.map((social, index) => (
-            <SocialLink key={`social-${index}`} href={social.href} aria-label={social.label}>
-              {social.icon}
-            </SocialLink>
-          ))}
+          {socialLinks.map((social, index) => {
+            const IconComponent = social.icon;
+            return (
+              <SocialLink key={`social-${index}`} href={social.href} aria-label={social.label}>
+                <IconComponent className="w-5 h-5" />
+              </SocialLink>
+            );
+          })}
         </div>
       </div>
     </footer>

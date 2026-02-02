@@ -67,24 +67,28 @@ const WhisprSubmissionForm: React.FC<WhisprSubmissionFormProps> = ({
             role="radiogroup"
             aria-label="Message type"
           >
-            {whisprTypes.map((type) => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => setSelectedType(type)}
-                className={`px-3 py-1.5 rounded-full text-sm flex items-center gap-1 transition-colors whitespace-nowrap ${
-                  isMobile ? 'flex-shrink-0 snap-start' : 'mb-2'
-                } ${
-                  selectedType === type
-                    ? 'bg-gradient-primary text-white'
-                    : `bg-${backgroundColor} text-text-muted hover:text-text-bright border border-${borderColor} hover:bg-opacity-70`
-                }`}
-                aria-pressed={selectedType === type}
-                aria-label={getWhisprTypeLabel(type)}
-              >
-                <span>{getWhisprTypeIcon(type)} {getWhisprTypeLabel(type)}</span>
-              </button>
-            ))}
+            {whisprTypes.map((type) => {
+              const TypeIcon = getWhisprTypeIcon(type);
+              return (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => setSelectedType(type)}
+                  className={`px-3 py-1.5 rounded-full text-sm flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+                    isMobile ? 'flex-shrink-0 snap-start' : 'mb-2'
+                  } ${
+                    selectedType === type
+                      ? 'bg-gradient-primary text-white'
+                      : `bg-${backgroundColor} text-text-muted hover:text-text-bright border border-${borderColor} hover:bg-opacity-70`
+                  }`}
+                  aria-pressed={selectedType === type}
+                  aria-label={getWhisprTypeLabel(type)}
+                >
+                  <TypeIcon className="w-4 h-4" />
+                  <span>{getWhisprTypeLabel(type)}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 

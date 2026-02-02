@@ -107,26 +107,30 @@ const FilterControls: React.FC<FilterControlsProps> = ({
   // Render type filters for both mobile and desktop
   const renderTypeFilters = () => (
     <div className={isMobile ? "flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide" : "flex flex-wrap gap-2"}>
-      {formattedTypeOptions.map((option) => (
-        <button
-          key={option.type}
-          onClick={() => setSelectedType(option.type)}
-          className={`${getTypeFilterButtonClass(option.type)} ${
-            isMobile ? 'px-3 py-1 rounded-full text-xs whitespace-nowrap' : 'px-3 py-1 rounded-full text-sm'
-          } flex items-center gap-1 transition-colors`}
-        >
-          {option.type === 'all' ? (
-            <span>All</span>
-          ) : (
-            <span>
-              {getWhisprTypeIcon(option.type as WhisprType)} {getWhisprTypeLabel(option.type as WhisprType)}
+      {formattedTypeOptions.map((option) => {
+        const TypeIcon = option.type !== 'all' ? getWhisprTypeIcon(option.type as WhisprType) : null;
+        return (
+          <button
+            key={option.type}
+            onClick={() => setSelectedType(option.type)}
+            className={`${getTypeFilterButtonClass(option.type)} ${
+              isMobile ? 'px-3 py-1 rounded-full text-xs whitespace-nowrap' : 'px-3 py-1 rounded-full text-sm'
+            } flex items-center gap-1.5 transition-colors`}
+          >
+            {option.type === 'all' ? (
+              <span>All</span>
+            ) : (
+              <>
+                {TypeIcon && <TypeIcon className="w-3.5 h-3.5" />}
+                <span>{getWhisprTypeLabel(option.type as WhisprType)}</span>
+              </>
+            )}
+            <span className="bg-black/30 rounded-full px-1.5 min-w-[20px] text-center text-xs">
+              {option.count}
             </span>
-          )}
-          <span className="bg-black/30 rounded-full px-1.5 min-w-[20px] text-center text-xs">
-            {option.count}
-          </span>
-        </button>
-      ))}
+          </button>
+        );
+      })}
     </div>
   );
 

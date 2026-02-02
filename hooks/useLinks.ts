@@ -1,4 +1,15 @@
-import { ReactNode } from 'react';
+import {
+    LayoutDashboard,
+    Link as LinkIcon,
+    Settings,
+    Inbox,
+    HelpCircle,
+    Mail,
+    Github,
+    Twitter,
+    MessageCircle,
+    LucideIcon
+} from 'lucide-react';
 
 // Define Types
 export interface LinkData {
@@ -14,7 +25,7 @@ export interface FooterColumnData {
 }
 
 export interface SocialLinkData {
-    icon: ReactNode;
+    icon: LucideIcon;
     href: string;
     label: string;
 }
@@ -22,7 +33,7 @@ export interface SocialLinkData {
 export interface NavItem {
     label: string;
     path: string;
-    icon: string;
+    icon: LucideIcon;
     requiresAuth?: boolean;
     badgeKey?: string; // To identify which item should have the badge (e.g., 'unreadCount')
 }
@@ -30,7 +41,7 @@ export interface NavItem {
 export interface SupportLink {
     label: string;
     href: string;
-    icon: string;
+    icon: LucideIcon;
     external?: boolean;
 }
 
@@ -73,9 +84,9 @@ const useLinks = () => {
     
     // Social links data
     const socialLinks: SocialLinkData[] = [
-        { icon: "🐙", href: "https://github.com/hendurhance/whispr", label: "GitHub" },
-        { icon: "🐦", href: "https://twitter.com/trywhispr", label: "Twitter" },
-        { icon: "💬", href: "https://discord.gg/trywhispr", label: "Discord" }
+        { icon: Github, href: "https://github.com/hendurhance/whispr", label: "GitHub" },
+        { icon: Twitter, href: "https://twitter.com/trywhispr", label: "Twitter" },
+        { icon: MessageCircle, href: "https://discord.gg/trywhispr", label: "Discord" }
     ];
 
     // Simple footer links
@@ -96,41 +107,41 @@ const useLinks = () => {
 
     // Dashboard navigation items (for sidebar and mobile tabs)
     const dashboardNavItems: NavItem[] = [
-        { 
-            label: 'Dashboard', 
-            path: '/dashboard', 
-            icon: '📊',
+        {
+            label: 'Dashboard',
+            path: '/dashboard',
+            icon: LayoutDashboard,
             badgeKey: 'unreadCount'
         },
-        { 
-            label: 'My Link', 
-            path: '/profile', 
-            icon: '🔗' 
+        {
+            label: 'My Link',
+            path: '/profile',
+            icon: LinkIcon
         },
-        { 
-            label: 'Settings', 
-            path: '/settings', 
-            icon: '⚙️' 
+        {
+            label: 'Settings',
+            path: '/settings',
+            icon: Settings
         }
     ];
 
     // Mobile navigation tabs (a subset of dashboardNavItems with different icon for Dashboard)
     const mobileNavItems: NavItem[] = [
-        { 
-            label: 'Whisprs', 
-            path: '/dashboard', 
-            icon: '📨',
+        {
+            label: 'Whisprs',
+            path: '/dashboard',
+            icon: Inbox,
             badgeKey: 'unreadCount'
         },
-        { 
-            label: 'My Link', 
-            path: '/profile', 
-            icon: '🔗' 
+        {
+            label: 'My Link',
+            path: '/profile',
+            icon: LinkIcon
         },
-        { 
-            label: 'Settings', 
-            path: '/settings', 
-            icon: '⚙️' 
+        {
+            label: 'Settings',
+            path: '/settings',
+            icon: Settings
         }
     ];
 
@@ -139,13 +150,13 @@ const useLinks = () => {
         {
             label: 'Help Center',
             href: 'https://help.trywhispr.me',
-            icon: '❓',
+            icon: HelpCircle,
             external: true
         },
         {
             label: 'Contact Support',
             href: 'mailto:support@trywhispr.me',
-            icon: '📧',
+            icon: Mail,
             external: true
         }
     ];

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/context/auth';
+import { useStaticAuth } from '@/context/StaticAuthContext';
 import { createClient } from '@/utils/supabase/client';
 import { SocialLink } from '@/types';
 import { isValidUrl } from '@/utils/validation';
@@ -29,7 +29,7 @@ const VALID_PLATFORM_IDS = ['instagram', 'twitter', 'tiktok', 'youtube', 'facebo
 
 export const useSocialLinks = () => {
   const supabase = createClient();
-  const { user } = useAuth();
+  const { user } = useStaticAuth();
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
   const [operation, setOperation] = useState<SocialLinkOperation>({
     isLoading: false,

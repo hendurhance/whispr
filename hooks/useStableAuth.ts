@@ -1,4 +1,4 @@
-import { useAuth } from '@/context/auth';
+import { useStaticAuth } from '@/context/StaticAuthContext';
 
 /**
  * Hook to provide stable auth state that doesn't trigger unnecessary re-renders
@@ -8,5 +8,5 @@ import { useAuth } from '@/context/auth';
  * in the future to add memoization or other optimizations.
  */
 export const useStableAuth = () => {
-  return useAuth();
+  return useStaticAuth();
 };

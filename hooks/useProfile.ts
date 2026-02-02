@@ -1,11 +1,11 @@
-import { useAuth } from '@/context/auth';
+import { useStaticAuth } from '@/context/StaticAuthContext';
 import { getUsernameLink } from './getUsernameLink';
 
 /**
  * Hook for accessing and managing user profile information
  */
 export const useProfile = () => {
-  const { user, profile } = useAuth();
+  const { user, profile } = useStaticAuth();
   
   // Extract and normalize profile data
   const profileData = {

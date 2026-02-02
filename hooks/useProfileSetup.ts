@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { useAuth } from '@/context/auth';
+import { useStaticAuth } from '@/context/StaticAuthContext';
 import { User } from '@supabase/supabase-js';
 import {
   USERNAME_MIN_LENGTH,
@@ -15,7 +15,7 @@ const supabase = createClient();
 
 export const useProfileSetup = () => {
   const router = useRouter();
-  const { user: authUser } = useAuth();
+  const { user: authUser } = useStaticAuth();
 
   // Form state
   const [username, setUsername] = useState('');

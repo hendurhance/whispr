@@ -29,7 +29,6 @@ interface FloatingShapesProps {
 }
 
 const FloatingShapes: React.FC<FloatingShapesProps> = ({ shapes, className = '' }) => {
-  // Function to render a shape based on its type
   const renderShape = (shape: Shape) => {
     const commonStyles: React.CSSProperties = {
       ...shape.position,

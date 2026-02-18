@@ -38,13 +38,10 @@ const WhisprList: React.FC<WhisprListProps> = ({
   resetFilters,
   isFiltered = false
 }) => {
-  // Use the shareLink hook
   const { copied, shareLink, shareError } = useShareLink();
   
-  // Get username for the profile link
   const profileLink = getUsernameLink(username);
   
-  // Handle share link click
   const handleShareLink = async () => {
     const success = await shareLink(profileLink, {
       title: `Send me anonymous messages`,
@@ -59,7 +56,6 @@ const WhisprList: React.FC<WhisprListProps> = ({
     }
   };
 
-  // Loading state
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -68,7 +64,6 @@ const WhisprList: React.FC<WhisprListProps> = ({
     );
   }
 
-  // Empty state
   if (whisprs.length === 0) {
     return (
       <EmptyState
@@ -100,7 +95,6 @@ const WhisprList: React.FC<WhisprListProps> = ({
     );
   }
 
-  // Display count information
   const renderCountInfo = () => {
     const hasFiltering = totalWhisprs && whisprs.length !== totalWhisprs;
     
@@ -112,7 +106,6 @@ const WhisprList: React.FC<WhisprListProps> = ({
           {hasFiltering && ` (filtered from ${totalWhisprs} total)`}
         </div>
         
-        {/* Add reset filters button when filters are applied */}
         {isFiltered && resetFilters && (
           <button 
             onClick={resetFilters}
@@ -125,7 +118,6 @@ const WhisprList: React.FC<WhisprListProps> = ({
     );
   };
 
-  // Determine the appropriate layout class based on view mode
   const getLayoutClass = () => {
     return viewMode === 'grid' 
       ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' 

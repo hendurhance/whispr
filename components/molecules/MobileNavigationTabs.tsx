@@ -54,7 +54,6 @@ const MobileNavigationTabs: React.FC<MobileNavigationTabsProps> = ({
   const pathname = usePathname();
   const { mobileNavItems } = useLinks();
   
-  // Prepare navigation items with badge counts where needed
   const navItemsWithBadges = mobileNavItems.map(item => ({
     ...item,
     badgeCount: item.badgeKey === 'unreadCount' ? unreadCount : undefined

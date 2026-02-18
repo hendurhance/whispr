@@ -12,15 +12,12 @@ export const metadata: Metadata = {
   },
 };
 
-// Configure dynamic behavior with revalidation
-export const revalidate = 60; // Revalidate every 60 seconds
+export const revalidate = 60;
 
 export default async function Settings() {
-  // Fetch user and profile data server-side
   const user = await getUserSession();
   const profile = await getProfileData();
-  
-  // Redirect if not authenticated
+
   if (!user) {
     redirect('/auth');
   }

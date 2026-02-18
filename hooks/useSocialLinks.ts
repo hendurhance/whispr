@@ -24,7 +24,6 @@ export const platformOptions = [
 // Maximum number of social links allowed per user
 const MAX_SOCIAL_LINKS = 10;
 
-// Valid platform IDs - use as const for type safety
 const VALID_PLATFORM_IDS = ['instagram', 'twitter', 'tiktok', 'youtube', 'facebook', 'linkedin', 'github', 'website'] as const;
 
 export const useSocialLinks = () => {
@@ -37,11 +36,9 @@ export const useSocialLinks = () => {
     success: null
   });
 
-  // Clear status messages after a delay
   const setStatusMessage = (status: Partial<SocialLinkOperation>) => {
     setOperation(prev => ({ ...prev, ...status }));
-    
-    // Clear success/error messages after 3 seconds
+
     if (status.success || status.error) {
       setTimeout(() => {
         setOperation(prev => ({ 
@@ -53,7 +50,6 @@ export const useSocialLinks = () => {
     }
   };
 
-  // Fetch social links from the database
   const fetchSocialLinks = useCallback(async () => {
     if (!user) return;
     
@@ -77,14 +73,12 @@ export const useSocialLinks = () => {
     }
   }, [user]);
   
-  // Load social links on mount or when user changes
   useEffect(() => {
     if (user) {
       fetchSocialLinks();
     }
   }, [user, fetchSocialLinks]);
   
-  // Add a new social link
   const addSocialLink = async (platform: string, url: string): Promise<boolean> => {
     if (!user) return false;
 
@@ -93,7 +87,6 @@ export const useSocialLinks = () => {
       return false;
     }
 
-    // Validate inputs are provided
     if (!platform || !url) {
       setStatusMessage({ error: 'Please provide both platform and URL' });
       return false;
@@ -102,25 +95,21 @@ export const useSocialLinks = () => {
     const trimmedUrl = url.trim();
     const trimmedPlatform = platform.trim().toLowerCase();
 
-    // Validate platform is in allowed list
     if (!VALID_PLATFORM_IDS.includes(trimmedPlatform as typeof VALID_PLATFORM_IDS[number])) {
       setStatusMessage({ error: 'Invalid platform selected' });
       return false;
     }
 
-    // Proper URL validation using URL constructor
     if (!isValidUrl(trimmedUrl)) {
       setStatusMessage({ error: 'Please enter a valid URL (must start with http:// or https://)' });
       return false;
     }
 
-    // Check if user has reached the maximum limit
     if (socialLinks.length >= MAX_SOCIAL_LINKS) {
       setStatusMessage({ error: `You can only add up to ${MAX_SOCIAL_LINKS} social links` });
       return false;
     }
 
-    // Check for duplicate platform (case-insensitive comparison)
     const existingPlatform = socialLinks.find(link => link.platform.toLowerCase() === trimmedPlatform);
     if (existingPlatform) {
       setStatusMessage({ error: `You already have a ${getPlatformName(trimmedPlatform)} link. Delete the existing one first.` });
@@ -130,12 +119,10 @@ export const useSocialLinks = () => {
     setOperation(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      // Get next display order
       const nextOrder = socialLinks.length > 0
         ? Math.max(...socialLinks.map(link => link.display_order || 0)) + 1
         : 0;
 
-      // Insert new link
       // NOTE: Server-side validation (unique constraint, row count limits) should be
       // implemented in the database to handle TOCTOU race conditions. The client-side
       // checks above are for UX optimization only.
@@ -150,7 +137,6 @@ export const useSocialLinks = () => {
 
       if (error) throw error;
 
-      // Refetch links to ensure we have the latest data
       await fetchSocialLinks();
 
       setStatusMessage({ success: 'Social link added successfully' });
@@ -165,7 +151,6 @@ export const useSocialLinks = () => {
     }
   };
   
-  // Delete a social link
   const deleteSocialLink = async (id: string): Promise<boolean> => {
     if (!user) return false;
     
@@ -176,11 +161,10 @@ export const useSocialLinks = () => {
         .from('social_links')
         .delete()
         .eq('id', id)
-        .eq('user_id', user.id); // Extra safety check
+        .eq('user_id', user.id);
       
       if (error) throw error;
       
-      // Update local state for immediate UI response
       setSocialLinks(prevLinks => prevLinks.filter(link => link.id !== id));
       
       setStatusMessage({ success: 'Social link removed' });
@@ -195,7 +179,6 @@ export const useSocialLinks = () => {
     }
   };
   
-  // Get platform display name
   const getPlatformName = (platformId: string): string => {
     const platform = platformOptions.find(p => p.id === platformId);
     return platform ? platform.name : platformId;

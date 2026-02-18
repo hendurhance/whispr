@@ -11,7 +11,6 @@ import {
     LucideIcon
 } from 'lucide-react';
 
-// Define Types
 export interface LinkData {
     text: string;
     href: string;
@@ -49,7 +48,6 @@ export interface SupportLink {
  * Hook for accessing links across the application
  */
 const useLinks = () => {
-    // Footer columns data
     const footerColumns: FooterColumnData[] = [
         {
             title: "Whispr",
@@ -82,21 +80,18 @@ const useLinks = () => {
         }
     ];
     
-    // Social links data
     const socialLinks: SocialLinkData[] = [
         { icon: Github, href: "https://github.com/hendurhance/whispr", label: "GitHub" },
         { icon: Twitter, href: "https://twitter.com/trywhispr", label: "Twitter" },
         { icon: MessageCircle, href: "https://discord.gg/trywhispr", label: "Discord" }
     ];
 
-    // Simple footer links
     const simpleFooterLinks: LinkData[] = [
         { text: "Terms", href: "/terms" },
         { text: "Privacy", href: "/privacy" },
         { text: "GitHub", href: "https://github.com/hendurhance/whispr", external: true }
     ];
 
-    // Landing page header navigation links
     const landingNavLinks: LinkData[] = [
         { text: "Features", href: "#features" },
         { text: "How It Works", href: "#how-it-works" },
@@ -105,7 +100,6 @@ const useLinks = () => {
         { text: "Contact", href: "#contact" }
     ];
 
-    // Dashboard navigation items (for sidebar and mobile tabs)
     const dashboardNavItems: NavItem[] = [
         {
             label: 'Dashboard',
@@ -125,7 +119,6 @@ const useLinks = () => {
         }
     ];
 
-    // Mobile navigation tabs (a subset of dashboardNavItems with different icon for Dashboard)
     const mobileNavItems: NavItem[] = [
         {
             label: 'Whisprs',
@@ -145,7 +138,6 @@ const useLinks = () => {
         }
     ];
 
-    // Support links for sidebar
     const supportLinks: SupportLink[] = [
         {
             label: 'Help Center',
@@ -161,7 +153,6 @@ const useLinks = () => {
         }
     ];
 
-    // Contact information
     const contactInfo = {
         email: 'support@trywhispr.me',
         helpCenter: 'https://help.trywhispr.me',

@@ -17,7 +17,6 @@ const AppearanceTabContent: React.FC<AppearanceTabContentProps> = ({
   onBackgroundChange,
   isLoading = false
 }) => {
-  // Theme options with inline gradient styles
   const themeOptions = [
     { 
       id: 'purple-pink', 
@@ -41,7 +40,6 @@ const AppearanceTabContent: React.FC<AppearanceTabContentProps> = ({
     }
   ];
 
-  // Background options with inline background colors
   const backgroundOptions = [
     { id: 'black', style: { backgroundColor: '#000000' } },
     { id: 'dark-gray', style: { backgroundColor: '#18181b' } },

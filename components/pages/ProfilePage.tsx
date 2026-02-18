@@ -21,23 +21,19 @@ interface ProfilePageProps {
 const ProfilePage: React.FC<ProfilePageProps> = ({ initialUser, initialProfile }) => {
   const { isMobile } = useResponsive();
   
-  // Use server-fetched data
   const displayName = initialProfile?.display_name || initialUser?.user_metadata?.username || 'User';
   const username = initialProfile?.username || initialUser?.user_metadata?.username || 'username';
   const avatarUrl = initialProfile?.avatar_url || initialUser?.user_metadata?.avatar_url || '';
   const bio = initialProfile?.bio || '';
   
-  // Profile link
   const profileLink = getUsernameLink(username);
   
   const router = useRouter();
 
-  // Handle navigation to settings
   const handleEditProfile = () => {
     router.push('/settings');
   };
   
-  // Mobile view
   if (isMobile) {
     return (
       <MobilePageContainer 
@@ -74,7 +70,6 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ initialUser, initialProfile }
     );
   }
   
-  // Desktop view
   return (
     <DashboardTemplate>
       <div className="mb-8">
@@ -85,14 +80,12 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ initialUser, initialProfile }
       </div>
       
       <div className="flex flex-col xl:flex-row gap-8">
-        {/* QR Code and Link */}
-        <ProfileLinkCard 
+        <ProfileLinkCard
           username={username} 
           profileLink={profileLink} 
           className="flex-1"
         />
         
-        {/* Profile Preview and Tools */}
         <div className="flex flex-col flex-1">
           <ProfileCard 
             username={username}

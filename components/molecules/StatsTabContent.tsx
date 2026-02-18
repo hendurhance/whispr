@@ -68,7 +68,6 @@ const StatsTabContent: React.FC<StatsTabContentProps> = ({ stats }) => {
         Upgrade to Whispr Pro to access detailed analytics and performance data.
       </p>
       
-      {/* Coming Soon Modal */}
       {showModal && (
         <GenericModal
           title="Coming Soon"

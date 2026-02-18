@@ -12,7 +12,6 @@ const AuthCallbackPage = () => {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // Get auth parameters from URL
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -23,27 +22,22 @@ const AuthCallbackPage = () => {
           throw new Error("Authentication failed. Please try again.");
         }
         
-        // Check if user has a profile
         const { data: profileData } = await supabase
           .from('profiles')
           .select('*')
           .eq('user_id', data.session.user.id)
           .single();
         
-        // Set profile setup flag in localStorage
         if (profileData) {
           localStorage.setItem('profile_setup', 'true');
-          // Redirect to dashboard
           router.replace('/dashboard');
         } else {
           localStorage.setItem('profile_setup', 'false');
-          // Redirect to profile setup
           router.replace('/setup-profile');
         }
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : "Authentication failed";
         setError(errorMessage);
-        // Redirect to auth page with error
         router.replace(`/auth?error=auth_callback_error&error_description=${encodeURIComponent(errorMessage || "Authentication failed")}`);
       }
     };

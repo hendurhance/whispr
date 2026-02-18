@@ -6,18 +6,15 @@ import PublicTemplate from '@/components/templates/PublicTemplate';
 import useLinks from '@/hooks/useLinks';
 
 const PrivacyPage: React.FC = () => {
-  // Auto-scroll to top on page load
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Get links from hook for the terms of service link
   const { footerColumns } = useLinks();
   const termsLink = footerColumns
     .find(column => column.title === "Legal")
     ?.links?.find(link => link.text === "Terms of Use")?.href || "/terms";
 
-  // Get contact email from the hook
   const contactEmail = footerColumns
     .find(column => column.title === "Community")
     ?.links?.find(link => link.text === "Contact Us")?.href.replace("mailto:", "") || "support@trywhispr.me";

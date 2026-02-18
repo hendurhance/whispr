@@ -8,7 +8,6 @@ import CONFIGURATIONS from '@/configs';
 
 const supabase = createClient();
 
-// Define context types
 interface AuthContextType {
   session: Session | null;
   user: User | null;
@@ -19,10 +18,8 @@ interface AuthContextType {
   refreshProfile: () => Promise<Profile | null>;
 }
 
-// Create auth context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// AuthProvider component
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -75,7 +72,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Added refreshProfile function that can be called from components
   const refreshProfile = async () => {
     if (!user) {
       return null;
@@ -90,7 +86,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    // Get initial session
     const getInitialSession = async () => {
       try {
         setIsLoading(true);
@@ -101,7 +96,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (session?.user) {
           lastUserIdRef.current = session.user.id;
-          // Fetch user profile
           await fetchProfile(session.user.id);
         }
       } catch {
@@ -119,7 +113,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     getInitialSession();
 
-    // Set up auth listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         // Ignore TOKEN_REFRESHED events - these happen frequently and don't need profile refetch
@@ -162,7 +155,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    // Clean up listener and timeout
     return () => {
       subscription.unsubscribe();
       if (timeoutRef.current) {
@@ -171,7 +163,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  // Sign in with magic link
   const signIn = async (email: string) => {
     try {
       const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -180,10 +171,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { error: new Error('Please enter a valid email address') };
       }
 
-      // Get the redirect URL from config or fallback to window.location.origin (client-side only)
       let redirectUrl = CONFIGURATIONS.APP_URL || (typeof window !== 'undefined' ? window.location.origin : '');
-
-      // Ensure the URL has a protocol
       if (redirectUrl && !redirectUrl.startsWith('http://') && !redirectUrl.startsWith('https://')) {
         redirectUrl = `https://${redirectUrl}`;
       }
@@ -201,16 +189,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Sign out
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
 
-      // Clear local storage
       localStorage.removeItem('auth_token');
       localStorage.removeItem('profile_setup');
 
-      // Reset state
       setSession(null);
       setUser(null);
       setProfile(null);

@@ -33,7 +33,6 @@ export const StaticAuthProvider: React.FC<StaticAuthProviderProps> = ({
 }) => {
   const router = useRouter();
 
-  // Memoize functions to prevent re-creation
   const signOut = useMemo(() => async () => {
     await signOutUser();
     router.push('/auth');
@@ -44,7 +43,6 @@ export const StaticAuthProvider: React.FC<StaticAuthProviderProps> = ({
     return profile;
   }, [router, profile]);
 
-  // Memoize the context value to prevent unnecessary re-renders
   const value = useMemo(
     () => ({
       user,
@@ -53,7 +51,7 @@ export const StaticAuthProvider: React.FC<StaticAuthProviderProps> = ({
       signOut,
       refreshProfile,
     }),
-    [user, profile, signOut, refreshProfile] // Only re-create if dependencies change
+    [user, profile, signOut, refreshProfile]
   );
 
   return (

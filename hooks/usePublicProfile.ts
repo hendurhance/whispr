@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-hot-toast';
 import { createClient } from '@/utils/supabase/client';
-import CONFIGURATIONS, { FUNCTIONS } from '@/configs';
-import { isValidWhisprType } from '@/utils/validation';
+import { FUNCTIONS } from '@/configs';
+import { submitWhispr, updateWhisprCount } from '@/lib/client/whisprs';
 
 interface PublicProfileData {
   username: string;
@@ -36,84 +36,37 @@ export const usePublicProfile = ({ username }: UsePublicProfileProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [viewUpdated, setViewUpdated] = useState(false);
-  
-  // Update profile views when page loads
-  const updateProfileViews = async (username: string) => {
+  const viewUpdatedRef = useRef(false);
+
+  const updateProfileViews = async (profileUsername: string) => {
     try {
       const response = await fetch(FUNCTIONS.UPDATE_PROFILE_VIEWS, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username })
+        body: JSON.stringify({ username: profileUsername })
       });
-      
+
       if (!response.ok) {
         return;
       }
-      
-      setViewUpdated(true);
-    } catch (error) {
+
+      viewUpdatedRef.current = true;
+    } catch {
       // Error updating profile views - silent fail
     }
   };
-  
-  // Update whispr count after submission
-  const updateWhisprCount = async (username: string) => {
-    try {
-      const response = await fetch(CONFIGURATIONS.FUNCTIONS.UPDATE_WHISPR_COUNTS, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username })
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        return null;
-      }
-      
-      return data.whisprs; // Return the new whispr count
-    } catch (error) {
-      return null;
-    }
-  };
-  
-  // Submit a whispr via edge function
-  const submitWhispr = async (username: string, content: string, type: string) => {
-    try {
-      // Validate whispr type before sending to backend
-      if (!isValidWhisprType(type)) {
-        throw new Error(`Invalid whispr type: ${type}`);
-      }
 
-      const response = await fetch(CONFIGURATIONS.FUNCTIONS.SUBMIT_WHISPR, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, content, type })
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to submit whispr');
-      }
-      
-      return data;
-    } catch (error) {
-      throw error;
-    }
-  };
-  
   useEffect(() => {
+    let ignore = false;
+
     const fetchProfile = async () => {
       if (!username) {
         setError('Username not provided');
         setIsLoading(false);
         return;
       }
-      
+
       try {
-        // Fetch the profile
         const { data, error } = await supabase
           .from('profiles')
           .select(`
@@ -131,29 +84,31 @@ export const usePublicProfile = ({ username }: UsePublicProfileProps) => {
           `)
           .eq('username', username)
           .single();
-        
+
+        if (ignore) return;
+
         if (error) {
           console.error('Error fetching profile:', error);
           setError('Profile not found');
           setIsLoading(false);
           return;
         }
-        
-        // If profile exists, fetch social links if enabled
-        let socialLinks = [];
+
+        let socialLinks: Array<{ id: string; platform: string; url: string; displayOrder: number }> = [];
         if (data && data.display_social_links) {
           const { data: links, error: linksError } = await supabase
             .from('social_links')
             .select('*')
             .eq('user_id', data.user_id)
             .order('display_order', { ascending: true });
-          
+
+          if (ignore) return;
+
           if (!linksError && links) {
             socialLinks = links;
           }
         }
-        
-        // Set the profile data
+
         setProfile({
           username: data.username,
           displayName: data.display_name,
@@ -167,60 +122,58 @@ export const usePublicProfile = ({ username }: UsePublicProfileProps) => {
           selectedTheme: data.selected_theme,
           selectedBackground: data.selected_background
         });
-        
+
         setIsLoading(false);
-        
-        // Update profile views once profile is fetched
-        if (!viewUpdated) {
+
+        if (!viewUpdatedRef.current) {
           updateProfileViews(data.username);
         }
       } catch (error) {
+        if (ignore) return;
         console.error('Error in fetchProfile:', error);
         setError('Error loading profile');
         setIsLoading(false);
       }
     };
-    
+
     fetchProfile();
-  }, [username, viewUpdated]);
-  
-  // Handle successful whispr submission
+
+    return () => {
+      ignore = true;
+    };
+  }, [username]);
+
   const handleSubmitSuccess = async () => {
     setSubmitSuccess(true);
     toast.success('Your whispr has been sent!');
-    
-    // Update whispr count via edge function
+
     if (profile) {
       const newWhisprCount = await updateWhisprCount(profile.username);
-      
+
       if (newWhisprCount !== null) {
-        // Update the profile state with the new count
         setProfile({
           ...profile,
           totalWhisprs: newWhisprCount
         });
       } else {
-        // If edge function failed, just increment locally
         setProfile({
           ...profile,
           totalWhisprs: profile.totalWhisprs + 1
         });
       }
     }
-    
-    // Reset after 3 seconds
+
     setTimeout(() => {
       setSubmitSuccess(false);
     }, 3000);
   };
-  
-  // Handle error in whispr submission
+
   const handleSubmitError = (error: unknown) => {
     const errorMessage = error instanceof Error ? error.message : 'Failed to send whispr';
     toast.error(errorMessage);
     console.error('Whispr submission error:', error);
   };
-  
+
   return {
     profile,
     isLoading,

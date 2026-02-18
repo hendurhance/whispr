@@ -2,8 +2,8 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { Whispr, WhisprType } from '@/types/whispr';
 import { isValidWhisprType, validateWhisprContent } from '@/utils/validation';
+import { useResponsive } from '@/hooks/useResponsive';
 
-// Sample suggestions for each type
 const SUGGESTIONS = {
   question: [
     "What's the weirdest food combo you've ever tried?",
@@ -70,7 +70,6 @@ const SUGGESTIONS = {
   ]
 };
 
-// List of all available whispr types
 export const WHISPR_TYPES: WhisprType[] = [
   'question',
   'compliment',
@@ -102,24 +101,13 @@ export const useWhisprSubmission = ({
   const [content, setContent] = useState('');
   const [selectedType, setSelectedType] = useState<WhisprType>('question');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [charCount, setCharCount] = useState(0);
   const [isDiceRolling, setIsDiceRolling] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const typeScrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Check if the screen is mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+  const { isMobile } = useResponsive();
 
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
+  const charCount = content.length;
 
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // Handle horizontal scrolling with mouse wheel on mobile only
   useEffect(() => {
     if (!isMobile) return;
 
@@ -142,55 +130,44 @@ export const useWhisprSubmission = ({
     };
   }, [isMobile]);
 
-  // Handle content change with character limit
   const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;
     if (text.length <= MAX_WHISPR_CHARS) {
       setContent(text);
-      setCharCount(text.length);
     }
   }, []);
 
-  // Generate a random suggestion based on the selected type
   const generateSuggestion = useCallback(() => {
     setIsDiceRolling(true);
 
-    // Simulate dice rolling animation
     setTimeout(() => {
       const typeSuggestions = SUGGESTIONS[selectedType];
       const randomIndex = Math.floor(Math.random() * typeSuggestions.length);
       setContent(typeSuggestions[randomIndex]);
-      setCharCount(typeSuggestions[randomIndex].length);
       setIsDiceRolling(false);
     }, 800); // Animation duration
   }, [selectedType]);
 
-  // Reset form state
   const resetForm = useCallback(() => {
     setContent('');
-    setCharCount(0);
   }, []);
 
-  // Handle form submission
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
     const trimmedContent = content.trim();
 
-    // Validate content using centralized validation
     const contentValidation = validateWhisprContent(trimmedContent);
     if (!contentValidation.valid) {
       if (onError) onError(new Error(contentValidation.error));
       return;
     }
 
-    // Validate whispr type at runtime to catch any issues
     if (!isValidWhisprType(selectedType)) {
       if (onError) onError(new Error(`Invalid whispr type: ${selectedType}`));
       return;
     }
 
-    // Validate username is provided and normalize once for consistent usage
     if (!username || !username.trim()) {
       if (onError) onError(new Error('Invalid recipient'));
       return;
@@ -201,10 +178,8 @@ export const useWhisprSubmission = ({
 
     try {
       if (customSubmitFunction) {
-        // Use the custom function provided by the parent component (with normalized username)
         await customSubmitFunction(normalizedUsername, trimmedContent, selectedType);
       } else {
-        // Fallback to using RPC function directly
         const { error } = await supabase.rpc('submit_anonymous_whispr', {
           recipient_username: normalizedUsername,
           whispr_content: trimmedContent,
@@ -216,7 +191,6 @@ export const useWhisprSubmission = ({
         }
       }
 
-      // Clear form on success
       resetForm();
 
       if (onSuccess) onSuccess();

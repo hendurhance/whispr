@@ -12,15 +12,12 @@ export const metadata: Metadata = {
   },
 };
 
-// Configure dynamic behavior with revalidation
-export const revalidate = 30; // Revalidate every 30 seconds
+export const revalidate = 30;
 
 export default async function Dashboard() {
-  // Fetch whisprs and user data server-side
   const { whisprs, user } = await getWhisprsData();
   const profile = await getProfileData();
-  
-  // Redirect if not authenticated
+
   if (!user) {
     redirect('/auth');
   }

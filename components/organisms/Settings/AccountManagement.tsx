@@ -21,17 +21,12 @@ const AccountManagement: React.FC<AccountManagementProps> = ({
   const [error, setError] = useState<string | null>(null);
   
   const {
-    // Modal states
     isDeleteModalOpen,
     isSignOutModalOpen,
     isSigningOut,
-    
-    // Delete account methods
     openDeleteModal,
     closeDeleteModal,
     confirmDelete,
-    
-    // Sign out methods
     openSignOutModal,
     closeSignOutModal,
     confirmSignOut
@@ -40,7 +35,6 @@ const AccountManagement: React.FC<AccountManagementProps> = ({
     onDeleteAccount
   });
   
-  // Handle sign out confirmation with error handling
   const handleSignOutConfirm = async () => {
     const signOutError = await confirmSignOut();
     if (signOutError) {

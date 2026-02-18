@@ -17,49 +17,41 @@ export const useProfileSetup = () => {
   const router = useRouter();
   const { user: authUser } = useStaticAuth();
 
-  // Form state
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
   const [avatarPreview, setAvatarPreview] = useState('');
 
-  // UI state
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
-  // Debounce timer ref
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Request ID to handle race conditions in async availability checks
+  // Tracks the latest request to prevent stale async availability checks from updating state
   const latestRequestIdRef = useRef<number>(0);
 
-  // Check if user is authenticated and redirect if needed
   useEffect(() => {
     const checkUserAndRedirect = async () => {
-      // First check for user from auth context
       if (authUser) {
         setUser(authUser);
 
-        // If user already has profile setup, redirect to dashboard
         if (authUser.user_metadata?.profile_setup) {
           router.replace('/dashboard');
           return;
         }
       } else {
-        // Fallback to direct Supabase call if not available in context
+        // Fallback to direct Supabase call if auth context is unavailable
         const { data, error } = await supabase.auth.getUser();
 
         if (error || !data?.user) {
-          // If no user, redirect to auth page
           router.replace('/auth');
           return;
         }
 
         setUser(data.user);
 
-        // If user already has profile setup, redirect to dashboard
         if (data.user.user_metadata?.profile_setup) {
           router.replace('/dashboard');
         }
@@ -69,12 +61,10 @@ export const useProfileSetup = () => {
     checkUserAndRedirect();
   }, [router, authUser]);
 
-  // Initialize default avatar when component mounts
   useEffect(() => {
     generateDefaultAvatar();
   }, []);
 
-  // Generate a random avatar using Dicebear API
   const generateDefaultAvatar = useCallback((seed?: string) => {
     const avatarSeed = seed || Math.random().toString(36).substring(2, 10);
     const dicebearUrl = `https://api.dicebear.com/9.x/personas/svg?seed=${avatarSeed}&backgroundColor=b6e3f4,c0aede,d1d4f9`;
@@ -82,55 +72,47 @@ export const useProfileSetup = () => {
     setAvatarUrl(dicebearUrl);
   }, []);
 
-  // Check username availability in the database
   const checkAvailability = useCallback(async (value: string) => {
     const normalizedValue = value.toLowerCase().trim();
 
-    // Use shared validation
     const validation = validateUsername(normalizedValue);
     if (!validation.valid) {
       setIsAvailable(false);
       return;
     }
 
-    // Increment request ID to track this specific request
     const requestId = ++latestRequestIdRef.current;
 
     setIsChecking(true);
     try {
-      // Check if username exists in database
       const { data, error } = await supabase
         .from('profiles')
         .select('username')
         .eq('username', normalizedValue)
         .single();
 
-      // Ignore response if a newer request has been made (prevents race condition)
+      // Ignore stale response if a newer request has been made
       if (requestId !== latestRequestIdRef.current) {
         return;
       }
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 means no rows returned
+      if (error && error.code !== 'PGRST116') {
         throw error;
       }
 
-      // Username is available if no data returned
       setIsAvailable(!data);
     } catch (error) {
-      // Only update state if this is still the latest request
       if (requestId === latestRequestIdRef.current) {
         console.error('Error checking username:', error);
         setIsAvailable(false);
       }
     } finally {
-      // Only update loading state if this is still the latest request
       if (requestId === latestRequestIdRef.current) {
         setIsChecking(false);
       }
     }
   }, []);
 
-  // Debounced username check
   const handleUsernameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const sanitizedValue = sanitizeUsername(e.target.value);
     setUsername(sanitizedValue);
@@ -140,18 +122,15 @@ export const useProfileSetup = () => {
       return;
     }
 
-    // Clear any existing debounce timer
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
 
-    // Debounce check to avoid too many API calls
     debounceTimerRef.current = setTimeout(() => {
       checkAvailability(sanitizedValue);
     }, 500);
   }, [checkAvailability]);
 
-  // Cleanup debounce timer on unmount
   useEffect(() => {
     return () => {
       if (debounceTimerRef.current) {
@@ -160,21 +139,17 @@ export const useProfileSetup = () => {
     };
   }, []);
 
-  // Handle bio change with length validation
   const handleBioChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
-    // Enforce max length by truncating any excess characters
     const nextBio = value.length > BIO_MAX_LENGTH ? value.slice(0, BIO_MAX_LENGTH) : value;
     setBio(nextBio);
   }, []);
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!isAvailable || !username || !user) return;
 
-    // Validate username using shared validation
     const normalizedUsername = username.toLowerCase().trim();
     const usernameValidation = validateUsername(normalizedUsername);
     if (!usernameValidation.valid) {
@@ -182,7 +157,6 @@ export const useProfileSetup = () => {
       return;
     }
 
-    // Trim bio and validate length (check trimmed length to prevent whitespace-only bios)
     const trimmedBio = bio.trim();
     if (trimmedBio.length > BIO_MAX_LENGTH) {
       setError(`Bio must be ${BIO_MAX_LENGTH} characters or less`);
@@ -193,7 +167,6 @@ export const useProfileSetup = () => {
     setError(null);
 
     try {
-      // First, insert the profile record
       const { error: profileError } = await supabase
         .from('profiles')
         .insert([
@@ -209,7 +182,6 @@ export const useProfileSetup = () => {
 
       if (profileError) throw profileError;
 
-      // Then, update user metadata to mark profile as set up
       const { error: updateError } = await supabase.auth.updateUser({
         data: {
           profile_setup: true,
@@ -220,10 +192,7 @@ export const useProfileSetup = () => {
 
       if (updateError) throw updateError;
 
-      // Update local storage
       localStorage.setItem('profile_setup', 'true');
-
-      // Redirect to dashboard on success
       router.replace('/dashboard');
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to set up profile. Please try again.';
@@ -235,19 +204,16 @@ export const useProfileSetup = () => {
   };
 
   return {
-    // Form state
     username,
     bio,
     avatarUrl,
     avatarPreview,
 
-    // UI state
     isAvailable,
     isChecking,
     isSubmitting,
     error,
 
-    // Handlers
     setUsername,
     setBio,
     handleUsernameChange,
@@ -255,7 +221,6 @@ export const useProfileSetup = () => {
     generateDefaultAvatar,
     handleSubmit,
 
-    // Constants (for UI display)
     USERNAME_MIN_LENGTH,
     USERNAME_MAX_LENGTH,
     BIO_MAX_LENGTH

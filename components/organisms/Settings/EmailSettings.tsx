@@ -21,13 +21,10 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({
   className = ''
 }) => {
   const {
-    // States
     isEmailModalOpen,
     isUpdatingNotification,
     notificationState,
     error,
-    
-    // Actions
     openEmailModal,
     closeEmailModal,
     toggleNotifications
@@ -47,7 +44,6 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({
         </div>
       )}
 
-      {/* Email Display and Change Button */}
       <div className="mb-6">
         <p className="text-text-muted mb-2">Your account email</p>
         <div className="flex items-center justify-center">
@@ -64,7 +60,6 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({
         </div>
       </div>
 
-      {/* Email Notifications Toggle */}
       <div className="border-t border-overlay-light pt-6">
         <div className="flex items-center justify-between">
           <div className="flex-1">
@@ -85,7 +80,6 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({
         </div>
       </div>
       
-      {/* Email Change Modal */}
       {isEmailModalOpen && (
         <EmailChangeModal onClose={closeEmailModal} />
       )}

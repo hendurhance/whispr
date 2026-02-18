@@ -26,7 +26,6 @@ const DashboardView: React.FC<DashboardViewProps> = ({
   onDelete,
   onTabChange
 }) => {
-  // Tab data
   const tabs = [
     { id: 'messages', icon: '📨', label: 'Messages', isActive: true },
     { id: 'link', icon: '🔗', label: 'My Link', isActive: false },
@@ -35,7 +34,6 @@ const DashboardView: React.FC<DashboardViewProps> = ({
 
   return (
     <div className="bg-background-lighter flex flex-col h-full">
-      {/* Header */}
       <div className="p-4 border-b border-background-highlight bg-background-card">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-white">
@@ -52,7 +50,6 @@ const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
       
-      {/* Messages List */}
       <div className="flex-1 overflow-y-auto p-4">
         {whispr.length > 0 ? (
           <div className="grid grid-cols-1 gap-4">
@@ -76,8 +73,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
         )}
       </div>
       
-      {/* Footer Tabs */}
-      <TabBar 
+      <TabBar
         tabs={tabs} 
         onTabChange={onTabChange}
       />

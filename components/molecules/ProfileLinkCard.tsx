@@ -17,16 +17,13 @@ const ProfileLinkCard: React.FC<ProfileLinkCardProps> = ({
   profileLink,
   className = ''
 }) => {
-  // Use our custom hooks
   const { copied, copyToClipboard, shareLink, shareError } = useShareLink();
   const { qrSize, qrCodeRef, downloadQRCode } = useQRCode(200);
 
-  // Handle copy link action
   const handleCopyLink = () => {
     copyToClipboard(profileLink);
   };
 
-  // Handle share link action
   const handleShareLink = () => {
     shareLink(profileLink, {
       title: `Send me anonymous messages`,
@@ -34,7 +31,6 @@ const ProfileLinkCard: React.FC<ProfileLinkCardProps> = ({
     });
   };
 
-  // Handle QR code download
   const handleDownloadQR = () => {
     downloadQRCode(`${username}-whispr-qr.png`, {
       padding: 16,
@@ -42,7 +38,6 @@ const ProfileLinkCard: React.FC<ProfileLinkCardProps> = ({
     });
   };
 
-  // Open profile link in a new tab
   const openProfileLink = (link: string) => {
     try {
       const urlString = link.startsWith('http://') || link.startsWith('https://') ? link : `https://${link}`;

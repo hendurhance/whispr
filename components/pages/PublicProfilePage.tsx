@@ -9,8 +9,7 @@ import FooterSimple from '@/components/organisms/Shared/FooterSimple';
 import WhisprSubmissionForm from '@/components/organisms/PublicProfile/WhisprSubmissionForm';
 import useProfileTheme from '@/hooks/useProfileTheme';
 import PublicProfileCard from '@/components/organisms/PublicProfile/PublicProfileCard';
-import CONFIGURATIONS from '@/configs';
-import { isValidWhisprType } from '@/utils/validation';
+import { submitWhispr, updateWhisprCount } from '@/lib/client/whisprs';
 
 interface PublicProfileData {
   username: string;
@@ -41,94 +40,44 @@ const PublicProfilePage: React.FC<PublicProfilePageProps> = ({ initialProfile, u
   const [profile, setProfile] = useState<PublicProfileData | null>(initialProfile);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
-  // Apply theme styles
   const { themeGradientStyle, backgroundStyle } = useProfileTheme({
     theme: profile?.selectedTheme,
     background: profile?.selectedBackground,
     applyBodyBackground: true
   });
 
-  // Submit a whispr via edge function
-  const submitWhispr = async (recipientUsername: string, content: string, type: string) => {
-    // Validate whispr type before sending to backend
-    if (!isValidWhisprType(type)) {
-      throw new Error(`Invalid whispr type: ${type}`);
-    }
-
-    const response = await fetch(CONFIGURATIONS.FUNCTIONS.SUBMIT_WHISPR, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: recipientUsername, content, type })
-    });
-    
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.error || 'Failed to submit whispr');
-    }
-    
-    return data;
-  };
-
-  // Update whispr count after submission
-  const updateWhisprCount = async () => {
-    try {
-      const response = await fetch(CONFIGURATIONS.FUNCTIONS.UPDATE_WHISPR_COUNTS, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username })
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        return null;
-      }
-      
-      return data.whisprs;
-    } catch (error) {
-      console.error('Error updating whispr count:', error);
-      return null;
-    }
-  };
-
-  // Handle successful whispr submission
   const handleSubmitSuccess = async () => {
     setSubmitSuccess(true);
     toast.success('Your whispr has been sent!');
-    
-    // Update whispr count via edge function
+
     if (profile) {
-      const newWhisprCount = await updateWhisprCount();
-      
+      const newWhisprCount = await updateWhisprCount(username);
+
       if (newWhisprCount !== null) {
         setProfile({
           ...profile,
           totalWhisprs: newWhisprCount
         });
       } else {
-        // If edge function failed, just increment locally
+        // Fallback to local increment if edge function failed
         setProfile({
           ...profile,
           totalWhisprs: profile.totalWhisprs + 1
         });
       }
     }
-    
-    // Reset after 3 seconds
+
     setTimeout(() => {
       setSubmitSuccess(false);
     }, 3000);
   };
 
-  // Handle error in whispr submission
   const handleSubmitError = (error: unknown) => {
     const errorMessage = error instanceof Error ? error.message : 'Failed to send whispr';
     toast.error(errorMessage);
     console.error('Whispr submission error:', error);
   };
 
-  // Error state (no profile found)
   if (!profile) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-white p-6" style={backgroundStyle}>
@@ -146,7 +95,6 @@ const PublicProfilePage: React.FC<PublicProfilePageProps> = ({ initialProfile, u
   
   return (
     <div className="min-h-screen flex flex-col" style={backgroundStyle}>
-      {/* Header with Logo */}
       <header className="py-4 px-6 flex justify-between items-center">
         <Logo />
         <Link href="/" className="text-text-muted hover:text-text-bright text-sm">
@@ -158,7 +106,6 @@ const PublicProfilePage: React.FC<PublicProfilePageProps> = ({ initialProfile, u
         {profile.allowAnonymous ? (
           <>
             {submitSuccess ? (
-              // Success message
               <div className="max-w-md w-full bg-background-card rounded-xl border border-overlay-light p-6 text-center">
                 <div className="text-4xl mb-4">✓</div>
                 <h2 className="text-lg font-semibold text-text-bright mb-2">Whispr Sent!</h2>
@@ -171,7 +118,6 @@ const PublicProfilePage: React.FC<PublicProfilePageProps> = ({ initialProfile, u
                 </button>
               </div>
             ) : (
-              // Profile card and submission form
               <div className="flex flex-col items-center w-full max-w-md">
                 <PublicProfileCard
                   username={profile.username}
@@ -197,7 +143,6 @@ const PublicProfilePage: React.FC<PublicProfilePageProps> = ({ initialProfile, u
             )}
           </>
         ) : (
-          // Profile with anonymous messages disabled
           <PublicProfileCard
             username={profile.username}
             displayName={profile.displayName}

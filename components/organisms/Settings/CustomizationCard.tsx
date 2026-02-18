@@ -27,7 +27,6 @@ const CustomizationCard: React.FC<CustomizationCardProps> = ({
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabType>('settings');
   
-  // Use our custom hooks
   const refreshProfileWrapper = async () => {
     router.refresh();
   };
@@ -36,7 +35,6 @@ const CustomizationCard: React.FC<CustomizationCardProps> = ({
   
   const stats = useProfileStats(initialProfile, initialUser);
   
-  // Settings options configuration
   const settingsOptions = [
     {
       title: 'Allow Anonymous Messages',

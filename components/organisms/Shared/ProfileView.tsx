@@ -9,7 +9,6 @@ import PublicProfileCard from '../PublicProfile/PublicProfileCard';
  * Demo/showcase profile view for app previews
  */
 const ProfileView = () => {
-  // Sample profile data
   const [profile] = useState({
     username: "whispr",
     displayName: "Whispr Demo",
@@ -28,26 +27,18 @@ const ProfileView = () => {
     selectedBackground: "black"
   });
   
-  // Get theme and background styles
   const { themeGradientStyle, backgroundStyle } = useProfileTheme({
     theme: profile.selectedTheme,
     background: profile.selectedBackground
   });
 
-  // Simulate form submission (disabled for showcase)
-  const submitWhispr = (username: string, content: string, type: string) => {
-    console.debug('This is a showcase, submission is disabled!', { username, content, type });
-  };
+  const submitWhispr = () => {};
 
-  // Success callback (no parameters)
-  const handleSuccess = () => {
-    console.debug('Whispr submitted successfully (showcase mode)');
-  };
+  const handleSuccess = () => {};
   
   return (
     <div className="min-h-screen flex flex-col" style={backgroundStyle}>
       <div className="flex-1 flex flex-col items-center justify-center">
-        {/* Profile Card - using showcase variant for demo */}
         <PublicProfileCard
           username={profile.username}
           displayName={profile.displayName}
@@ -62,7 +53,6 @@ const ProfileView = () => {
           className="mb-6"
         />
         
-        {/* Submission Form */}
         <WhisprSubmissionForm
           username={profile.username}
           onSuccess={handleSuccess}

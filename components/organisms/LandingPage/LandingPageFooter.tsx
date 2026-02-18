@@ -7,7 +7,6 @@ import SocialLink from '@/components/molecules/SocialLink';
 import useLinks from '@/hooks/useLinks';
 
 const LandingPageFooter: React.FC = () => {
-  // Get links data from the hook
   const { footerColumns, socialLinks } = useLinks();
   const currentYear = new Date().getFullYear();
   

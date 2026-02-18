@@ -39,13 +39,10 @@ const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
   onDelete,
   className = ''
 }) => {
-  // Use the shareLink hook
   const { copied, shareLink } = useShareLink();
   
-  // Get username for the profile link
   const profileLink = getUsernameLink(username);
   
-  // Handle share link click
   const handleShareLink = async () => {
     const success = await shareLink(profileLink, {
       title: `Send me anonymous messages`,
@@ -58,7 +55,6 @@ const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
     }
   };
 
-  // Use the unified filtering hook
   const {
     viewMode,
     setViewMode,
@@ -77,7 +73,6 @@ const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
     initialViewMode: 'list'
   });
 
-  // Use card navigation hook for swipe behavior in card view
   const {
     currentIndex,
     goToPrevCard,
@@ -93,9 +88,6 @@ const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
     whisprs: filteredWhisprs
   });
 
-  /**
-   * Render the profile header
-   */
   const renderHeader = () => (
     <div className="p-4 border-b border-background-highlight bg-background-card">
       <div className="flex items-center gap-3">
@@ -126,9 +118,6 @@ const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
     </div>
   );
 
-  /**
-   * Render card view with swipe navigation
-   */
   const renderCardView = () => (
     <div className="h-full flex flex-col items-center justify-center">
       <div
@@ -155,7 +144,6 @@ const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
       </div>
 
       <div className="mt-4 flex items-center justify-center gap-4">
-        {/* Card navigation arrows */}
         <button
           onClick={goToPrevCard}
           disabled={!hasPrevious}
@@ -183,16 +171,12 @@ const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
         </button>
       </div>
 
-      {/* Swipe hint */}
       <div className="mt-2 text-xs text-text-muted text-center">
         Swipe left or right to navigate
       </div>
     </div>
   );
 
-  /**
-   * Render list view
-   */
   const renderListView = () => (
     <div className="space-y-3">
       {filteredWhisprs.map((whispr) => (
@@ -208,9 +192,6 @@ const MobileWhisprView: React.FC<MobileWhisprViewProps> = ({
     </div>
   );
 
-  /**
-   * Render empty state when no whisprs match filters
-   */
   const renderEmptyState = () => (
     <EmptyState
       icon={searchTerm ? "🔍" : "📭"}

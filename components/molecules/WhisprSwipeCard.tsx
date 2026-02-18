@@ -33,13 +33,9 @@ const WhisprSwipeCard: React.FC<WhisprSwipeCardProps> = ({
   resetFilters,
   isFiltered = false
 }) => {
-  // Use the shareLink hook
   const { copied, shareLink } = useShareLink();
-  
-  // Get username for the profile link
   const profileLink = getUsernameLink(username);
-  
-  // Handle share link click
+
   const handleShareLink = async () => {
     const success = await shareLink(profileLink, {
       title: `Send me anonymous messages`,
@@ -62,7 +58,6 @@ const WhisprSwipeCard: React.FC<WhisprSwipeCardProps> = ({
     currentItem
   } = useCardNavigation({ whisprs, enableSwipe: false });
   
-  // Show empty state when there are no whisprs
   if (whisprs.length === 0) {
     return (
       <EmptyState
@@ -142,7 +137,6 @@ const WhisprSwipeCard: React.FC<WhisprSwipeCardProps> = ({
         </button>
       </div>
       
-      {/* Add reset filters button when filters are applied */}
       {isFiltered && resetFilters && (
         <div className="mt-4 text-center">
           <button 

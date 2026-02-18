@@ -13,16 +13,13 @@ export const metadata: Metadata = {
 };
 
 export default async function SetupProfile() {
-  // Fetch user session server-side
   const user = await getUserSession();
   const profile = await getProfileData();
-  
-  // Redirect if not authenticated
+
   if (!user) {
     redirect('/auth');
   }
-  
-  // Redirect to dashboard if profile already setup
+
   if (profile) {
     redirect('/dashboard');
   }

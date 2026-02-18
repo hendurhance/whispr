@@ -60,7 +60,6 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
       <h2 className="text-xl font-semibold text-text-bright mb-4">Profile Information</h2>
       
       <form onSubmit={onSubmit} className="space-y-6">
-        {/* Username */}
         <div>
           <label htmlFor="username" className="block text-sm font-medium text-text-bright mb-2">
             Username <span className="text-accent-pink">*</span>
@@ -118,7 +117,6 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
           </div>
         </div>
 
-        {/* Display Name */}
         <div>
           <label htmlFor="displayName" className="block text-sm font-medium text-text-bright mb-2">
             Display Name
@@ -136,13 +134,11 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
           </div>
         </div>
 
-        {/* Avatar */}
         <div>
           <label className="block text-sm font-medium text-text-bright mb-2">
             Profile Picture
           </label>
           <div className="flex flex-col sm:flex-row items-center gap-6">
-            {/* Avatar Preview */}
             <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-overlay-light bg-background-card flex items-center justify-center">
               {avatarPreview ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -156,7 +152,6 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
               )}
             </div>
 
-            {/* Generate Avatar Button */}
             <div className="flex flex-col gap-3 w-full">
               <button
                 type="button"
@@ -175,7 +170,6 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
           </div>
         </div>
 
-        {/* Bio */}
         <div>
           <label htmlFor="bio" className="block text-sm font-medium text-text-bright mb-2">
             Bio
@@ -194,21 +188,18 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
           </p>
         </div>
 
-        {/* Success Message */}
         {successMessage && (
           <div className="bg-accent-green/10 text-accent-green rounded-lg p-3 text-sm">
             {successMessage}
           </div>
         )}
 
-        {/* Error Message */}
         {error && (
           <div className="bg-accent-pink/10 text-accent-pink rounded-lg p-3 text-sm">
             {error}
           </div>
         )}
 
-        {/* Submit Button */}
         <div className="flex justify-end">
           <button
             type="submit"

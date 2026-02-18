@@ -14,8 +14,7 @@ export async function signOutUser(): Promise<boolean> {
     const supabase = createClient();
     
     await supabase.auth.signOut();
-    
-    // Clear local storage
+
     localStorage.removeItem('auth_token');
     localStorage.removeItem('profile_setup');
     
@@ -40,7 +39,6 @@ export async function signInWithMagicLink(email: string, redirectUrl: string): P
     
     const supabase = createClient();
     
-    // Ensure the redirect URL has a protocol
     let finalRedirectUrl = redirectUrl;
     if (finalRedirectUrl && !finalRedirectUrl.startsWith('http://') && !finalRedirectUrl.startsWith('https://')) {
       finalRedirectUrl = `https://${finalRedirectUrl}`;

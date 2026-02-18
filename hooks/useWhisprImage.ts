@@ -86,7 +86,6 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
    * Creates DOM elements for the whispr image rendering
    */
   const createWhisprImageElements = (whispr: Whispr) => {
-    // Container
     const container = document.createElement('div');
     Object.assign(container.style, {
       position: 'fixed',
@@ -105,13 +104,8 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
       boxSizing: 'border-box',
     });
 
-    // Render header with app logo and username
     container.appendChild(createHeaderElement());
-    
-    // Render content with whispr details
     container.appendChild(createCardContentElement(whispr));
-    
-    // Render footer with sharing URL
     container.appendChild(createFooterElement());
 
     return container;
@@ -121,7 +115,6 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
    * Creates the header element for the image
    */
   const createHeaderElement = () => {
-    // Header with grid layout
     const header = document.createElement('div');
     Object.assign(header.style, {
       display: 'grid',
@@ -131,7 +124,6 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
       marginBottom: '8px',
     });
 
-    // Logo container
     const logoContainer = document.createElement('div');
     Object.assign(logoContainer.style, {
       display: 'flex',
@@ -140,7 +132,6 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
       height: '32px',
     });
 
-    // Logo element
     const logo = document.createElement('div');
     Object.assign(logo.style, {
       width: '32px',
@@ -156,7 +147,6 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
       overflow: 'hidden',
     });
 
-    // Logo image
     const logoImg = document.createElement('img');
     logoImg.src = APP_LOGO_URI;
     logoImg.alt = 'Logo';
@@ -167,7 +157,6 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
     });
     logo.appendChild(logoImg);
 
-    // Domain text
     const domainText = document.createElement('span');
     domainText.textContent = APP_URL_CLEAN;
     Object.assign(domainText.style, {
@@ -180,10 +169,8 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
     logoContainer.appendChild(logo);
     logoContainer.appendChild(domainText);
 
-    // Spacer
     const spacer = document.createElement('div');
 
-    // Username
     const usernameElement = document.createElement('span');
     usernameElement.textContent = `@${username}`;
     Object.assign(usernameElement.style, {
@@ -193,7 +180,6 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
       textAlign: 'right',
     });
 
-    // Add elements to header
     header.appendChild(logoContainer);
     header.appendChild(spacer);
     header.appendChild(usernameElement);
@@ -205,7 +191,6 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
    * Creates the card content element for the image
    */
   const createCardContentElement = (whispr: Whispr) => {
-    // Card content container
     const cardContent = document.createElement('div');
     Object.assign(cardContent.style, {
       padding: '16px',
@@ -219,7 +204,6 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
       boxSizing: 'border-box',
     });
 
-    // Card inner layout
     const cardInner = document.createElement('div');
     Object.assign(cardInner.style, {
       display: 'flex',
@@ -228,7 +212,6 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
       width: '100%',
     });
 
-    // Type icon container
     const typeIconContainer = document.createElement('div');
     Object.assign(typeIconContainer.style, {
       width: '44px',
@@ -241,7 +224,6 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
       flexShrink: '0',
     });
 
-    // Create SVG icon
     const svgIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svgIcon.setAttribute('width', '24');
     svgIcon.setAttribute('height', '24');
@@ -254,7 +236,6 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
     svgIcon.innerHTML = getWhisprTypeIconSvg(whispr.type);
     typeIconContainer.appendChild(svgIcon);
 
-    // Content area
     const contentArea = document.createElement('div');
     Object.assign(contentArea.style, {
       flex: '1',
@@ -264,7 +245,6 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
       minWidth: '0',
     });
 
-    // Content header
     const contentHeader = document.createElement('div');
     Object.assign(contentHeader.style, {
       display: 'flex',
@@ -274,7 +254,6 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
       height: '24px',
     });
 
-    // Type badge
     const typeBadge = document.createElement('span');
     Object.assign(typeBadge.style, {
       backgroundColor: 'rgba(124, 58, 237, 0.2)',
@@ -291,7 +270,6 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
     });
     typeBadge.textContent = getWhisprTypeLabel(whispr.type);
 
-    // Date
     const dateSpan = document.createElement('span');
     Object.assign(dateSpan.style, {
       fontSize: '12px',
@@ -306,7 +284,6 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
     contentHeader.appendChild(typeBadge);
     contentHeader.appendChild(dateSpan);
 
-    // Content text
     const contentText = document.createElement('p');
     Object.assign(contentText.style, {
       margin: '0',
@@ -318,15 +295,12 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
     });
     contentText.textContent = whispr.content;
 
-    // Assemble content area
     contentArea.appendChild(contentHeader);
     contentArea.appendChild(contentText);
 
-    // Assemble card inner
     cardInner.appendChild(typeIconContainer);
     cardInner.appendChild(contentArea);
 
-    // Add inner to card
     cardContent.appendChild(cardInner);
 
     return cardContent;
@@ -364,13 +338,9 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
     const loadingToast = toast.loading('Generating image...');
 
     try {
-      // Create elements for rendering
       const container = createWhisprImageElements(whispr);
-      
-      // Add to document for rendering
       document.body.appendChild(container);
 
-      // Use html2canvas with specific settings
       const canvas = await html2canvas(container, {
         backgroundColor: '#1e293b',
         scale: 2,
@@ -380,13 +350,10 @@ export const useWhisprImage = ({ username, profileUrl }: UseWhisprImageProps) =>
         removeContainer: false,
       });
 
-      // Clean up
       document.body.removeChild(container);
 
-      // Convert canvas to image data
       const imageData = canvas.toDataURL('image/png');
 
-      // Handle sharing or downloading
       if (forSharing) {
         return await shareImage(imageData, whispr.id);
       } else {

@@ -40,7 +40,6 @@ const WhisprSubmissionForm: React.FC<WhisprSubmissionFormProps> = ({
     customSubmitFunction: submitWhispr
   });
 
-  // Extract style classes from className prop
   const borderColor = className.includes('border-') 
     ? className.split('border-')[1].split(' ')[0] 
     : 'overlay-light';
@@ -56,7 +55,6 @@ const WhisprSubmissionForm: React.FC<WhisprSubmissionFormProps> = ({
       </h2>
 
       <form onSubmit={handleSubmit}>
-        {/* Type selection - Horizontally scrollable only on mobile */}
         <div className="mb-4">
           <label className="block text-text-muted text-sm mb-2">
             Select type
@@ -92,7 +90,6 @@ const WhisprSubmissionForm: React.FC<WhisprSubmissionFormProps> = ({
           </div>
         </div>
 
-        {/* Content textarea with dice button inside */}
         <div className="mb-4">
           <label htmlFor="whispr-content" className="block text-text-muted text-sm mb-2">
             Your message
@@ -110,7 +107,6 @@ const WhisprSubmissionForm: React.FC<WhisprSubmissionFormProps> = ({
               aria-describedby="char-count"
             />
 
-            {/* Dice button positioned within the textarea */}
             <button
               type="button"
               onClick={generateSuggestion}
@@ -125,13 +121,11 @@ const WhisprSubmissionForm: React.FC<WhisprSubmissionFormProps> = ({
             </button>
           </div>
 
-          {/* Character count */}
           <div id="char-count" className="flex justify-end text-xs text-text-muted mt-1">
             {charCount}/{maxChars}
           </div>
         </div>
 
-        {/* Submit button */}
         <button
           type="submit"
           disabled={isSubmitting || content.trim().length === 0}
@@ -145,7 +139,6 @@ const WhisprSubmissionForm: React.FC<WhisprSubmissionFormProps> = ({
           {isSubmitting ? 'Sending...' : 'Send Anonymous Whispr'}
         </button>
 
-        {/* Privacy note */}
         <p className="text-xs text-text-muted text-center mt-3">
           Your identity will remain anonymous. We don&apos;t store personal information that can identify you.
         </p>

@@ -32,9 +32,6 @@ const ViewWhisprModal: React.FC<ViewWhisprModalProps> = ({
 
   if (!isOpen) return null;
 
-  /**
-   * Button loading spinner component
-   */
   const LoadingSpinner = () => (
     <span className="flex items-center justify-center">
       <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -45,9 +42,6 @@ const ViewWhisprModal: React.FC<ViewWhisprModalProps> = ({
     </span>
   );
 
-  /**
-   * Download button component
-   */
   const DownloadButton = () => (
     <button
       onClick={() => generateWhisprImage(whispr, false)}
@@ -67,9 +61,6 @@ const ViewWhisprModal: React.FC<ViewWhisprModalProps> = ({
     </button>
   );
 
-  /**
-   * Share button component
-   */
   const ShareButton = () => (
     <button
       onClick={() => generateWhisprImage(whispr, true)}
@@ -89,9 +80,6 @@ const ViewWhisprModal: React.FC<ViewWhisprModalProps> = ({
     </button>
   );
 
-  /**
-   * Whispr card preview component
-   */
   const WhisprCardPreview = () => {
     const TypeIcon = getWhisprTypeIcon(whispr.type);
     return (

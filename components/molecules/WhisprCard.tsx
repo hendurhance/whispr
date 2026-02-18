@@ -37,9 +37,6 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
     getBorderClass
   } = useWhisprCard({ whispr, onDelete });
 
-  /**
-   * Delete confirmation modal
-   */
   const DeleteConfirmationModal = () => (
     <GenericModal
       title="Delete Whispr"
@@ -56,9 +53,6 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
     </GenericModal>
   );
 
-  /**
-   * Content header with type badge and date
-   */
   const ContentHeader = ({ className = '' }: { className?: string }) => (
     <div className={`flex items-center justify-between ${className}`}>
       <TypeBadge type={whispr.type} />
@@ -68,9 +62,6 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
     </div>
   );
 
-  /**
-   * Action buttons for view, share, delete
-   */
   const ActionButtons = ({ variant }: { variant: 'list' | 'grid' | 'card' }) => {
     const baseButtonStyles = {
       view: 'bg-accent-purple/10 text-accent-purple hover:bg-accent-purple/20',
@@ -78,7 +69,6 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
       delete: 'bg-accent-pink/10 text-accent-pink hover:bg-accent-pink/20'
     };
 
-    // Style variants for different view modes
     const buttonStyles = {
       list: {
         container: 'flex gap-2',
@@ -138,9 +128,6 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
     );
   };
 
-  /**
-   * List view layout
-   */
   const ListViewLayout = () => {
     const TypeIcon = getWhisprTypeIcon(whispr.type);
     return (
@@ -161,9 +148,6 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
     );
   };
 
-  /**
-   * Grid view layout
-   */
   const GridViewLayout = () => (
     <div className={`p-4 bg-background-card rounded-xl border ${getBorderClass()} h-full flex flex-col transition-all hover:shadow-sm ${className}`}>
       <ContentHeader className="mb-3" />
@@ -172,9 +156,6 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
     </div>
   );
 
-  /**
-   * Card view layout (swipe card)
-   */
   const CardViewLayout = () => (
     <div className={`p-6 bg-background-card rounded-xl border ${getBorderClass()} flex flex-col shadow-md max-w-md mx-auto transition-all ${className}`}>
       <ContentHeader className="mb-4" />
@@ -183,14 +164,12 @@ const WhisprCard: React.FC<WhisprCardProps> = ({
     </div>
   );
 
-  // Render the appropriate layout based on view mode
   return (
     <>
       {viewMode === 'list' && <ListViewLayout />}
       {viewMode === 'grid' && <GridViewLayout />}
       {viewMode === 'card' && <CardViewLayout />}
 
-      {/* Delete Confirmation Modal (common for all layouts) */}
       {showDeleteModal && <DeleteConfirmationModal />}
     </>
   );

@@ -19,12 +19,10 @@ export const useProfileTheme = ({
   applyBodyBackground = false
 }: UseProfileThemeProps) => {
   
-  // Apply body background color if requested
   useEffect(() => {
     if (applyBodyBackground) {
       document.body.style.backgroundColor = getBackgroundColorValue(background as BackgroundType);
-      
-      // Reset body background color when component unmounts
+
       return () => {
         document.body.style.backgroundColor = '';
       };
@@ -71,7 +69,6 @@ export const useProfileTheme = ({
     return { backgroundColor: getBackgroundColorValue(backgroundType) };
   };
   
-  // Memoize the current theme gradient and background styles
   const themeGradientStyle = useMemo(
     () => getThemeGradientStyle(theme as ThemeType),
     [theme]

@@ -88,22 +88,18 @@ export const isValidUrl = (urlString: string): boolean => {
   try {
     const url = new URL(urlString);
 
-    // Only allow http and https protocols
     if (url.protocol !== 'http:' && url.protocol !== 'https:') {
       return false;
     }
 
-    // Block localhost and loopback addresses
     if (BLOCKED_HOSTNAMES.includes(url.hostname.toLowerCase())) {
       return false;
     }
 
-    // Block private IPv4 ranges
     if (PRIVATE_IP_PATTERNS.some(pattern => pattern.test(url.hostname))) {
       return false;
     }
 
-    // Block private IPv6 ranges
     if (PRIVATE_IPV6_PATTERNS.some(pattern => pattern.test(url.hostname))) {
       return false;
     }
@@ -114,7 +110,6 @@ export const isValidUrl = (urlString: string): boolean => {
   }
 };
 
-// Valid whispr types
 export const VALID_WHISPR_TYPES = [
   'question',
   'compliment',
@@ -129,7 +124,6 @@ export const VALID_WHISPR_TYPES = [
 
 export type ValidWhisprType = typeof VALID_WHISPR_TYPES[number];
 
-// Whispr content constraints
 export const WHISPR_MIN_LENGTH = 1;
 export const WHISPR_MAX_LENGTH = 500;
 
@@ -173,19 +167,16 @@ export const validateWhisprSubmission = ({
   type: string;
   username: string;
 }): { valid: boolean; error?: string } => {
-  // Validate username
   const usernameValidation = validateUsername(username);
   if (!usernameValidation.valid) {
     return usernameValidation;
   }
 
-  // Validate content
   const contentValidation = validateWhisprContent(content);
   if (!contentValidation.valid) {
     return contentValidation;
   }
 
-  // Validate type
   if (!isValidWhisprType(type)) {
     return { valid: false, error: `Invalid whispr type: ${type}` };
   }

@@ -12,18 +12,13 @@ interface SetupProfilePageProps {
 
 const SetupProfilePage: React.FC<SetupProfilePageProps> = (/* { initialUser } */) => {
   const {
-    // Form state
     username,
     bio,
     avatarPreview,
-    
-    // UI state
     isAvailable,
     isChecking,
     isSubmitting,
     error,
-    
-    // Handlers
     handleUsernameChange,
     setBio,
     generateDefaultAvatar,
@@ -42,7 +37,6 @@ const SetupProfilePage: React.FC<SetupProfilePageProps> = (/* { initialUser } */
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Username Input */}
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-text-bright mb-2">
               Username <span className="text-accent-pink">*</span>
@@ -110,13 +104,11 @@ const SetupProfilePage: React.FC<SetupProfilePageProps> = (/* { initialUser } */
             </div>
           </div>
 
-          {/* Avatar Preview and Generation */}
           <div>
             <label className="block text-sm font-medium text-text-bright mb-2">
               Profile Picture
             </label>
             <div className="flex flex-col sm:flex-row items-center gap-6">
-              {/* Avatar Preview */}
               <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-overlay-light bg-background-card flex items-center justify-center">
                 {avatarPreview ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -130,7 +122,6 @@ const SetupProfilePage: React.FC<SetupProfilePageProps> = (/* { initialUser } */
                 )}
               </div>
 
-              {/* Generate Random Avatar Button */}
               <div className="flex flex-col gap-3 w-full">
                 <button
                   type="button"
@@ -151,7 +142,6 @@ const SetupProfilePage: React.FC<SetupProfilePageProps> = (/* { initialUser } */
             </div>
           </div>
 
-          {/* Bio Input */}
           <div>
             <label htmlFor="bio" className="block text-sm font-medium text-text-bright mb-2">
               Bio
@@ -171,14 +161,12 @@ const SetupProfilePage: React.FC<SetupProfilePageProps> = (/* { initialUser } */
             </p>
           </div>
 
-          {/* Error Message */}
           {error && (
             <div className="bg-accent-pink/10 text-accent-pink rounded-lg p-3 text-sm" role="alert">
               {error}
             </div>
           )}
 
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={!isAvailable || isSubmitting}

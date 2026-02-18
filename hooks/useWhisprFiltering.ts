@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Whispr, WhisprType, SortOption, ViewMode } from '@/types/whispr';
 
 interface UseWhisprFilteringProps {
@@ -16,21 +16,17 @@ export const useWhisprFiltering = ({
   initialSort = 'newest',
   initialSearch = ''
 }: UseWhisprFilteringProps) => {
-  // State for filtering/sorting options
   const [viewMode, setViewMode] = useState<ViewMode>(initialViewMode);
   const [selectedType, setSelectedType] = useState<WhisprType | 'all'>(initialType);
   const [sortOption, setSortOption] = useState<SortOption['value']>(initialSort);
   const [searchTerm, setSearchTerm] = useState(initialSearch);
 
-  // Calculate type counts from whisprs for filter options
   const typeOptions = useMemo(() => {
-    // Count whisprs by type
     const typeCount = whisprs.reduce((acc, whispr) => {
       acc[whispr.type] = (acc[whispr.type] || 0) + 1;
       return acc;
     }, {} as Record<WhisprType, number>);
-    
-    // Create the array of type options with counts
+
     return [
       { type: 'all' as const, count: whisprs.length },
       ...Object.entries(typeCount).map(([type, count]) => ({
@@ -40,16 +36,17 @@ export const useWhisprFiltering = ({
     ];
   }, [whisprs]);
 
-  // Apply filtering and sorting to whisprs
   const filteredWhisprs = useMemo(() => {
     let filtered = [...whisprs];
 
-    // Filter by type
-    if (selectedType !== 'all') {
-      filtered = filtered.filter(whispr => whispr.type === selectedType);
+    // Filter by type — if the selected type no longer exists in the data, show all
+    const typeStillExists = selectedType === 'all' || typeOptions.some(t => t.type === selectedType);
+    const effectiveType = typeStillExists ? selectedType : 'all';
+
+    if (effectiveType !== 'all') {
+      filtered = filtered.filter(whispr => whispr.type === effectiveType);
     }
 
-    // Filter by search term
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(whispr =>
@@ -57,7 +54,6 @@ export const useWhisprFiltering = ({
       );
     }
 
-    // Sort
     switch (sortOption) {
       case 'newest':
         filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -73,16 +69,9 @@ export const useWhisprFiltering = ({
     }
 
     return filtered;
-  }, [whisprs, selectedType, sortOption, searchTerm]);
-
-  // Reset filters when whisprs change significantly (optional)
-  useEffect(() => {
-    setSelectedType(initialType);
-    setSearchTerm(initialSearch);
-  }, [initialSearch, initialType, whisprs.length]);
+  }, [whisprs, selectedType, sortOption, searchTerm, typeOptions]);
 
   return {
-    // Filtering state
     viewMode,
     setViewMode,
     selectedType,
@@ -91,22 +80,18 @@ export const useWhisprFiltering = ({
     setSortOption,
     searchTerm,
     setSearchTerm,
-    
-    // Results
+
     filteredWhisprs,
-    
-    // Metadata for UI
     typeOptions,
     totalCount: whisprs.length,
     filteredCount: filteredWhisprs.length,
-    
-    // Helper methods
+
     resetFilters: () => {
       setSelectedType(initialType);
       setSearchTerm(initialSearch);
       setSortOption(initialSort);
     },
-    
+
     isFiltered: searchTerm !== '' || selectedType !== 'all'
   };
 };

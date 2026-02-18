@@ -27,16 +27,13 @@ const CTASection: React.FC<CTASectionProps> = ({
 }) => {
   const router = useRouter();
 
-  // Default button action if none provided
   const handleClick = buttonAction || (() => router.push('/auth'));
 
-  // Prepare the title with highlighting if needed
   const renderTitle = () => {
     if (!showHighlight || typeof title !== 'string') {
       return title;
     }
     
-    // Handle the special case for "Whispr?" text
     if (title.includes('Whispr')) {
       const parts = title.split('Whispr');
       return (
@@ -55,10 +52,8 @@ const CTASection: React.FC<CTASectionProps> = ({
   return (
     <div className="px-4 md:px-8 my-24">
       <section className={`py-24 px-4 md:px-16 text-center bg-background-lighter rounded-3xl relative overflow-hidden ${className}`}>
-        {/* Use the CTABlobs component */}
         <CTABlobs />
-        
-        {/* Content with higher z-index to ensure it's above the shapes */}
+
         <div className="relative z-10">
           <h2 className="text-4xl md:text-5xl font-extrabold mb-5 text-text-bright">
             {renderTitle()}

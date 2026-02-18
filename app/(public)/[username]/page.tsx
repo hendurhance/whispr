@@ -7,12 +7,10 @@ type Props = {
   params: Promise<{ username: string }>;
 };
 
-// Fetch full profile data (reusable function)
 async function fetchProfileData(username: string) {
   const supabase = await createClient();
-  
+
   try {
-    // Fetch the profile
     const { data, error } = await supabase
       .from('profiles')
       .select(`
@@ -35,7 +33,6 @@ async function fetchProfileData(username: string) {
       return null;
     }
     
-    // If profile exists, fetch social links if enabled
     let socialLinks = [];
     if (data.display_social_links) {
       const { data: links, error: linksError } = await supabase
@@ -49,7 +46,6 @@ async function fetchProfileData(username: string) {
       }
     }
     
-    // Return formatted profile data
     return {
       username: data.username,
       displayName: data.display_name,
@@ -69,7 +65,6 @@ async function fetchProfileData(username: string) {
   }
 }
 
-// Update profile views server-side
 async function updateProfileViews(username: string) {
   try {
     await fetch(FUNCTIONS.UPDATE_PROFILE_VIEWS, {
@@ -159,11 +154,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PublicProfile({ params }: Props) {
   const { username } = await params;
-  
-  // Fetch profile data server-side
+
   const profile = await fetchProfileData(username);
-  
-  // Update profile views (fire and forget)
+
   if (profile) {
     updateProfileViews(username).catch(console.error);
   }

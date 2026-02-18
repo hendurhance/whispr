@@ -25,10 +25,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const { dashboardNavItems, supportLinks } = useLinks();
 
-  // Check if a nav item is active - memoized
   const isActive = useCallback((path: string) => pathname === path, [pathname]);
 
-  // Handle logout - memoized
   const handleLogout = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
     try {
@@ -39,7 +37,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   }, [router]);
 
-  // Add badge count to nav items that need it - memoized
   const navItemsWithBadges = useMemo(() => dashboardNavItems.map(item => ({
     ...item,
     badge: item.badgeKey === 'unreadCount' && unreadCount > 0 ? unreadCount : undefined
@@ -47,7 +44,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
-      {/* Sidebar */}
       <aside
         className={`
           w-64 bg-background-card h-full border-r border-overlay-light
@@ -123,7 +119,6 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </aside>
 
-      {/* Mobile overlay */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-20 md:hidden"

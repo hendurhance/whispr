@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { Profile } from '@/types';
@@ -14,13 +14,11 @@ const ALLOWED_UPDATE_FIELDS = [
 
 type AllowedField = typeof ALLOWED_UPDATE_FIELDS[number];
 
-// Valid theme options
 const VALID_THEMES = [
   'purple-pink', 'blue-cyan', 'green-teal', 'orange-yellow',
   'pink-purple', 'red-orange', 'teal-green', 'cyan-blue'
 ] as const;
 
-// Valid background options
 const VALID_BACKGROUNDS = [
   'black', 'dark-navy', 'dark-purple', 'dark-blue',
   'dark-green', 'dark-red', 'gradient-dark', 'gradient-purple'
@@ -34,7 +32,6 @@ interface ProfileSettings {
   selectedBackground: string;
 }
 
-// Boolean-only setting keys for toggleSetting function
 type BooleanSettingKey = 'allowAnonymous' | 'showQuestionTypes' | 'displaySocialLinks';
 type BooleanDbField = 'allow_anonymous' | 'show_question_types' | 'display_social_links';
 
@@ -45,17 +42,20 @@ export const useProfileSettings = (
 ) => {
   const supabase = createClient();
   const [isLoading, setIsLoading] = useState(false);
+  const initializedRef = useRef(false);
   const [settings, setSettings] = useState<ProfileSettings>({
-    allowAnonymous: true,
-    showQuestionTypes: true,
-    displaySocialLinks: false,
-    selectedTheme: 'purple-pink',
-    selectedBackground: 'black',
+    allowAnonymous: profile?.allow_anonymous ?? true,
+    showQuestionTypes: profile?.show_question_types ?? true,
+    displaySocialLinks: profile?.display_social_links ?? false,
+    selectedTheme: profile?.selected_theme || 'purple-pink',
+    selectedBackground: profile?.selected_background || 'black',
   });
 
-  // Initialize state from profile
+  // Initialize state from profile (only once, to avoid overwriting optimistic updates)
   useEffect(() => {
+    if (initializedRef.current) return;
     if (profile) {
+      initializedRef.current = true;
       setSettings({
         allowAnonymous: profile.allow_anonymous ?? true,
         showQuestionTypes: profile.show_question_types ?? true,
@@ -66,8 +66,6 @@ export const useProfileSettings = (
     }
   }, [profile]);
 
-  // Update a setting in the database (with field validation)
-  // Returns true on success, false on failure
   const updateSetting = async (field: AllowedField, value: boolean | string): Promise<boolean> => {
     if (!user) return false;
 
@@ -117,7 +115,6 @@ export const useProfileSettings = (
 
       if (error) throw error;
 
-      // Refresh profile data
       await refreshProfile();
       return true;
     } catch (error) {
@@ -128,53 +125,40 @@ export const useProfileSettings = (
     }
   };
 
-  // Setting toggle handlers with error recovery (boolean fields only)
   const toggleSetting = (key: BooleanSettingKey, dbField: BooleanDbField) => {
     return async () => {
       const previousValue = settings[key];
       const newValue = !previousValue;
-      // Optimistic update
       setSettings((prev: ProfileSettings) => ({ ...prev, [key]: newValue }));
-      // Check return value to determine if update succeeded
       const success = await updateSetting(dbField, newValue);
       if (!success) {
-        // Revert on error
         setSettings((prev: ProfileSettings) => ({ ...prev, [key]: previousValue }));
       }
     };
   };
 
-  // Theme and background handlers with validation and error recovery
   const handleThemeChange = async (themeId: string) => {
-    // Validate theme before applying
     if (!VALID_THEMES.includes(themeId as typeof VALID_THEMES[number])) {
       console.error(`Invalid theme: ${themeId}`);
       return;
     }
     const previousTheme = settings.selectedTheme;
-    // Optimistic update
     setSettings((prev: ProfileSettings) => ({ ...prev, selectedTheme: themeId }));
-    // Check return value to determine if update succeeded
     const success = await updateSetting('selected_theme', themeId);
     if (!success) {
-      // Revert on error
       setSettings((prev: ProfileSettings) => ({ ...prev, selectedTheme: previousTheme }));
     }
   };
 
   const handleBackgroundChange = async (backgroundId: string) => {
-    // Validate background before applying
     if (!VALID_BACKGROUNDS.includes(backgroundId as typeof VALID_BACKGROUNDS[number])) {
       console.error(`Invalid background: ${backgroundId}`);
       return;
     }
     const previousBackground = settings.selectedBackground;
-    // Optimistic update
     setSettings((prev: ProfileSettings) => ({ ...prev, selectedBackground: backgroundId }));
-    // Check return value to determine if update succeeded
     const success = await updateSetting('selected_background', backgroundId);
     if (!success) {
-      // Revert on error
       setSettings((prev: ProfileSettings) => ({ ...prev, selectedBackground: previousBackground }));
     }
   };

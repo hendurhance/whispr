@@ -28,7 +28,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   
   const profileLink = getUsernameLink(username);
   
-  // Handle share link click
   const handleShareLink = async () => {
     const success = await copyToClipboard(profileLink);
     

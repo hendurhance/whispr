@@ -206,33 +206,22 @@ const LandingPageMainContent: React.FC = () => {
     }
   ];
 
-  const handleView = (_messageId: string) => {
-    // View message logic
-  };
+  const handleView = (_messageId: string) => {};
 
-  const handleShare = (_messageId: string) => {
-    // Share message logic
-  };
+  const handleShare = (_messageId: string) => {};
 
-  const handleDelete = (_messageId: string) => {
-    // Delete message logic
-  }
+  const handleDelete = (_messageId: string) => {}
 
-  const handleTabChange = (_tabId: string) => {
-    // Tab change logic
-  };
+  const handleTabChange = (_tabId: string) => {};
 
   return (
     <main>
-      {/* Hero Section */}
       <section className="py-12 md:py-24 px-4 md:px-8 relative overflow-hidden text-center">
-        {/* Background floating shapes - reduced or simplified on mobile */}
         <FloatingShapes
           shapes={shapesData}
           className="z-0 opacity-50 md:opacity-100"
         />
 
-        {/* Hero content */}
         <div className="relative z-10 max-w-screen-xl mx-auto">
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold mb-3 md:mb-5 bg-gradient-primary bg-clip-text text-transparent leading-tight">
             Be anonymous,<br />Be unstoppable
@@ -262,15 +251,12 @@ const LandingPageMainContent: React.FC = () => {
           </div>
         </div>
 
-        {/* App showcase with floating messages */}
         <div className="relative mt-10 md:mt-16 z-10">
-          {/* Hide some floating messages on small screens */}
           <FloatingMessagesContainer
             messages={floatingMessagesData}
             className="z-20 hidden sm:block"
           />
 
-          {/* App screenshot showcase */}
           <div className="relative z-10 mx-auto rounded-xl md:rounded-2xl overflow-hidden shadow-2xl shadow-primary/20 perspective-tilt">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -282,7 +268,6 @@ const LandingPageMainContent: React.FC = () => {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="py-24 px-4 md:px-8 bg-[#1a1a3a] relative noise-texture" id="features">
         <SectionTitle
           title="Share & receive"
@@ -296,7 +281,6 @@ const LandingPageMainContent: React.FC = () => {
         </div>
       </section>
 
-      {/* App Showcase Section */}
       <section className="py-24 px-4 md:px-8 relative bg-background-darker">
         <SectionTitle
           title="Designed for"
@@ -305,12 +289,10 @@ const LandingPageMainContent: React.FC = () => {
         />
 
         <div className="flex flex-col md:flex-row items-center justify-center gap-16 mt-16">
-          {/* Public Profile Phone */}
           <PhoneMockup>
             <ProfileView />
           </PhoneMockup>
 
-          {/* Dashboard Phone */}
           <PhoneMockup className="mt-12 md:mt-0">
             <DashboardView
               whispr={whispr}
@@ -324,14 +306,12 @@ const LandingPageMainContent: React.FC = () => {
         </div>
       </section>
 
-      {/* How It Works Section */}
       <section className="py-24 px-4 md:px-8 bg-[#1a1a3a] relative grid-pattern" id="how-it-works">
         <SectionTitle
           title="How it works"
           subtitle="Getting started with Whispr is simple, secure, and takes just minutes."
         />
         <div className="mt-12 max-w-6xl mx-auto">
-          {/* Desktop: Grid layout with arrows */}
           <div className="hidden lg:grid lg:grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr] items-stretch gap-4">
             {steps.map((step, index) => (
               <React.Fragment key={step.number}>
@@ -353,7 +333,6 @@ const LandingPageMainContent: React.FC = () => {
             ))}
           </div>
 
-          {/* Mobile/Tablet: Vertical layout */}
           <div className="lg:hidden flex flex-col items-center gap-10">
             {steps.map((step) => (
               <div key={step.number} className="w-full max-w-[300px]">
@@ -364,7 +343,6 @@ const LandingPageMainContent: React.FC = () => {
         </div>
       </section>
 
-      {/* Privacy & Security Section */}
       <section className="py-24 px-4 md:px-8 relative overflow-hidden noise-texture" id="privacy">
         <SectionTitle
           title="Privacy & Security First"
@@ -377,7 +355,6 @@ const LandingPageMainContent: React.FC = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
       <CTASection
         title="Ready to Whispr?"
         description="Join thousands of users who are connecting authentically and anonymously. Cause chaos or spread love—the choice is yours."

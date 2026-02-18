@@ -16,29 +16,20 @@ const LandingPageHeader: React.FC = () => {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   
-  // Get navigation links from the hook
   const { landingNavLinks } = useLinks();
   
-  // Track viewport width for responsive design
   const [viewportWidth, setViewportWidth] = useState<number>(0);
-  
-  // Handle screen resize
+
   useEffect(() => {
     const handleResize = () => {
       setViewportWidth(window.innerWidth);
     };
 
-    // Set initial value
     handleResize();
-
-    // Add event listener
     window.addEventListener('resize', handleResize);
-
-    // Clean up
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Close menu when clicking outside
   useEffect(() => {
     if (!menuOpen) return;
 
@@ -53,7 +44,6 @@ const LandingPageHeader: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [menuOpen]);
 
-  // Responsive layout classifications
   const isMobile = viewportWidth < 768;
   const isTablet = viewportWidth >= 768 && viewportWidth < 1024;
   const isDesktop = viewportWidth >= 1024;
@@ -62,7 +52,6 @@ const LandingPageHeader: React.FC = () => {
     <header className="py-4 px-4 md:px-8 flex justify-between items-center sticky top-0 bg-background-darkest/95 backdrop-blur-lg z-50 border-b border-overlay-light">
       <Logo />
       
-      {/* Mobile menu overlay */}
       {menuOpen && !isDesktop && (
         <div 
           className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40"
@@ -70,8 +59,6 @@ const LandingPageHeader: React.FC = () => {
         />
       )}
       
-      {/* Navigation - show by default on desktop, conditionally on mobile/tablet */}
-      {/* For tablet: only show auth buttons, hide navigation */}
       {(isDesktop || (!isTablet && (isMobile ? menuOpen : true))) && (
         <nav 
           className={`
@@ -91,7 +78,6 @@ const LandingPageHeader: React.FC = () => {
             ))}
           </ul>
           
-          {/* Mobile auth buttons (in nav menu) */}
           {!isDesktop && (
             <div className="mt-6 flex flex-col gap-4">
               <Button variant="secondary" onClick={() => router.push('/auth')}>Log In</Button>
@@ -101,13 +87,10 @@ const LandingPageHeader: React.FC = () => {
         </nav>
       )}
       
-      {/* Auth buttons */}
       <div className={`${isMobile ? 'hidden' : 'flex items-center gap-3'}`}>
-        {/* Only show outside of nav on desktop and tablet */}
         {(isDesktop || isTablet) && <AuthButtons />}
       </div>
       
-      {/* Mobile/Tablet menu toggle button - hide on tablet */}
       {!isDesktop && !isTablet && (
         <button
           className="flex items-center justify-center w-10 h-10 text-text rounded-full border-none bg-background-card hover:bg-background-highlight focus:outline-none transition-colors"

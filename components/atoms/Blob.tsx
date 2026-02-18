@@ -30,7 +30,6 @@ const Blob: React.FC<BlobProps> = ({
   rotate = 0,
   customPath
 }) => {
-  // Determine if it's a rounded shape (circle, rounded square) or a custom path blob
   const isCustomShape = customPath !== undefined;
   
   const blobStyle = {
@@ -41,10 +40,8 @@ const Blob: React.FC<BlobProps> = ({
     opacity
   };
   
-  // Position classes from utility (if provided)
   const positionClasses = position || 'absolute';
-  
-  // For standard shapes (circle, rounded square)
+
   if (!isCustomShape) {
     return (
       <div
@@ -55,7 +52,6 @@ const Blob: React.FC<BlobProps> = ({
     );
   }
   
-  // For custom path blobs
   return (
     <div 
       className={`absolute ${positionClasses} ${size} ${className}`}

@@ -41,7 +41,6 @@ const PublicProfileCard: React.FC<PublicProfileCardProps> = ({
   variant = 'standard',
   children
 }) => {
-  // Get the appropriate style classes based on variant
   const getStyleClasses = () => {
     if (variant === 'showcase') {
       return {
@@ -58,7 +57,6 @@ const PublicProfileCard: React.FC<PublicProfileCardProps> = ({
       };
     }
     
-    // Standard variant (actual profile)
     return {
       card: 'bg-background-card border-overlay-light',
       avatar: 'border-background-card bg-background-highlight',
@@ -77,11 +75,9 @@ const PublicProfileCard: React.FC<PublicProfileCardProps> = ({
   
   return (
     <div className={`max-w-md w-full rounded-xl overflow-hidden ${styles.card} ${className}`}>
-      {/* Theme gradient banner */}
       <div className="h-20" style={themeGradientStyle}></div>
       
       <div className="p-6 relative">
-        {/* Avatar */}
         <div className="absolute -top-10 left-6">
           <div className={`w-20 h-20 rounded-full border-4 ${styles.avatar} overflow-hidden`}>
             {avatarUrl ? (
@@ -95,7 +91,6 @@ const PublicProfileCard: React.FC<PublicProfileCardProps> = ({
           </div>
         </div>
         
-        {/* Profile info */}
         <div className="mt-10">
           <h1 className={`text-xl font-bold ${styles.title}`}>{displayName || username}</h1>
           <p className={styles.username}>@{username}</p>
@@ -104,14 +99,12 @@ const PublicProfileCard: React.FC<PublicProfileCardProps> = ({
             <p className={`mt-4 ${styles.bio}`}>{bio}</p>
           )}
           
-          {/* Whispr count if available */}
           {typeof totalWhisprs !== 'undefined' && (
             <div className={`mt-4 text-sm ${styles.stats}`}>
               {totalWhisprs} {totalWhisprs === 1 ? 'whispr' : 'whisprs'} received
             </div>
           )}
           
-          {/* Anonymous messages disabled notice */}
           {!allowAnonymous && (
             <div className="mt-6 text-center">
               <p className={`mb-2 ${styles.title}`}>Anonymous messages are disabled</p>
@@ -121,7 +114,6 @@ const PublicProfileCard: React.FC<PublicProfileCardProps> = ({
             </div>
           )}
           
-          {/* Social links */}
           {displaySocialLinks && socialLinks.length > 0 && (
             <div className="mt-6">
               <h3 className={`text-sm font-medium ${styles.social.title} mb-2`}>Connect with me</h3>
@@ -141,7 +133,6 @@ const PublicProfileCard: React.FC<PublicProfileCardProps> = ({
             </div>
           )}
           
-          {/* Optional additional content */}
           {children}
         </div>
       </div>

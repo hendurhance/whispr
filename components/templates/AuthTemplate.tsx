@@ -11,7 +11,6 @@ interface AuthTemplateProps {
 const AuthTemplate: React.FC<AuthTemplateProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-background-darkest flex flex-col overflow-hidden">
-      {/* Use the LandingPageHeader for consistency */}
       <LandingPageHeader />
       
       <main className="flex-grow flex items-center justify-center px-4 py-12">

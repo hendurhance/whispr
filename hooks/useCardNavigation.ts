@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Whispr } from '@/types/whispr';
 
 interface UseCardNavigationProps {
@@ -9,9 +9,9 @@ interface UseCardNavigationProps {
 /**
  * Custom hook for card navigation with optional swipe gestures
  */
-export const useCardNavigation = ({ 
-  whisprs, 
-  enableSwipe = true 
+export const useCardNavigation = ({
+  whisprs,
+  enableSwipe = true
 }: UseCardNavigationProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -20,29 +20,23 @@ export const useCardNavigation = ({
   const [, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const swipeContainerRef = useRef<HTMLDivElement>(null);
 
-  // Reset current index when whisprs change
-  useEffect(() => {
-    setCurrentIndex(0);
-  }, [whisprs]);
+  // Derive a safe index: clamp to valid range instead of resetting via Effect
+  const safeIndex = whisprs.length === 0 ? 0 : Math.min(currentIndex, whisprs.length - 1);
 
-  // Navigate to previous card
   const goToPrevCard = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
+    if (safeIndex > 0) {
+      setCurrentIndex(safeIndex - 1);
     }
   };
 
-  // Navigate to next card
   const goToNextCard = () => {
-    if (currentIndex < whisprs.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+    if (safeIndex < whisprs.length - 1) {
+      setCurrentIndex(safeIndex + 1);
     }
   };
 
-  // Minimum distance required for a swipe
   const minSwipeDistance = 50;
 
-  // Touch event handlers for swipe
   const onTouchStart = (e: React.TouchEvent) => {
     if (!enableSwipe) return;
     setTouchEnd(null);
@@ -54,7 +48,6 @@ export const useCardNavigation = ({
     if (!enableSwipe || !swiping) return;
     setTouchEnd(e.targetTouches[0].clientX);
 
-    // Calculate swipe direction and distance for animation
     if (touchStart !== null && touchEnd !== null) {
       const distance = touchEnd - touchStart;
       if (distance < 0) {
@@ -63,7 +56,6 @@ export const useCardNavigation = ({
         setSwipeDirection('right');
       }
 
-      // Apply transform during swipe
       if (swipeContainerRef.current) {
         const maxTranslate = 100; // Max pixels to translate
         const translate = Math.min(Math.abs(distance), maxTranslate) * (distance < 0 ? -1 : 1);
@@ -75,7 +67,6 @@ export const useCardNavigation = ({
 
   const onTouchEnd = () => {
     if (!enableSwipe || !touchStart || !touchEnd || !swiping) {
-      // Reset swipe animation
       if (swipeContainerRef.current) {
         swipeContainerRef.current.style.transform = 'translateX(0)';
         swipeContainerRef.current.style.opacity = '1';
@@ -89,21 +80,17 @@ export const useCardNavigation = ({
     const isLeftSwipe = distance < -minSwipeDistance;
     const isRightSwipe = distance > minSwipeDistance;
 
-    // Reset swipe animation first
     if (swipeContainerRef.current) {
       swipeContainerRef.current.style.transform = 'translateX(0)';
       swipeContainerRef.current.style.opacity = '1';
     }
 
-    if (isLeftSwipe && currentIndex < whisprs.length - 1) {
-      // Go to next card
+    if (isLeftSwipe && safeIndex < whisprs.length - 1) {
       goToNextCard();
-    } else if (isRightSwipe && currentIndex > 0) {
-      // Go to previous card
+    } else if (isRightSwipe && safeIndex > 0) {
       goToPrevCard();
     }
 
-    // Reset state
     setSwiping(false);
     setSwipeDirection(null);
     setTouchStart(null);
@@ -111,7 +98,7 @@ export const useCardNavigation = ({
   };
 
   return {
-    currentIndex,
+    currentIndex: safeIndex,
     setCurrentIndex,
     goToNextCard,
     goToPrevCard,
@@ -119,9 +106,9 @@ export const useCardNavigation = ({
     onTouchStart: enableSwipe ? onTouchStart : undefined,
     onTouchMove: enableSwipe ? onTouchMove : undefined,
     onTouchEnd: enableSwipe ? onTouchEnd : undefined,
-    hasPrevious: currentIndex > 0,
-    hasNext: currentIndex < whisprs.length - 1,
+    hasPrevious: safeIndex > 0,
+    hasNext: safeIndex < whisprs.length - 1,
     totalCount: whisprs.length,
-    currentItem: whisprs[currentIndex]
+    currentItem: whisprs[safeIndex]
   };
 };

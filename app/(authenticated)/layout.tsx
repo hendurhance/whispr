@@ -13,16 +13,13 @@ export default async function AuthenticatedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Fetch user and profile data server-side
   const user = await getUserSession();
   const profile = await getProfileData();
-  
-  // Redirect to auth if not logged in
+
   if (!user) {
     redirect('/auth');
   }
-  
-  // Wrap children with StaticAuthProvider to provide auth context
+
   return (
     <StaticAuthProvider user={user} profile={profile}>
       {children}

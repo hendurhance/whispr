@@ -13,13 +13,8 @@ export const usePageVisibility = () => {
       const visible = !document.hidden;
       setIsVisible(visible);
       setLastVisibilityChange(Date.now());
-      
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`Page visibility changed: ${visible ? 'visible' : 'hidden'}`);
-      }
     };
 
-    // Add event listener for visibility changes
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {

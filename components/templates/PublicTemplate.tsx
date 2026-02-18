@@ -11,7 +11,6 @@ interface PublicTemplateProps {
 const PublicTemplate: React.FC<PublicTemplateProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-background-darkest flex flex-col overflow-hidden">
-      {/* Use the LandingPageHeader for consistency */}
       <LandingPageHeader />
       
       <main className="flex-grow px-4 py-12">

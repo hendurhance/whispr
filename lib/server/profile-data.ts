@@ -12,14 +12,12 @@ export const getProfileData = cache(async (): Promise<Profile | null> => {
   const supabase = await createClient();
   
   try {
-    // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
+
     if (userError || !user) {
       return null;
     }
-    
-    // Fetch profile with Next.js cache
+
     const getCachedProfile = unstable_cache(
       async (userId: string) => {
         const { data: profile, error: profileError } = await supabase
@@ -58,14 +56,12 @@ export const getWhisprsData = cache(async () => {
   const supabase = await createClient();
   
   try {
-    // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
+
     if (userError || !user) {
       return { whisprs: [], user: null };
     }
-    
-    // Fetch whisprs with Next.js cache
+
     const getCachedWhisprs = unstable_cache(
       async (userId: string) => {
         const { data: whisprs, error: whisprsError } = await supabase

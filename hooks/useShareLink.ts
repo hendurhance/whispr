@@ -10,9 +10,7 @@ export const useShareLink = () => {
     const [copied, setCopied] = useState(false);
     const [shareError, setShareError] = useState<string | null>(null);
 
-    // Copy text to clipboard
     const copyToClipboard = useCallback(async (text: string): Promise<boolean> => {
-        // Server-side or no clipboard support
         if (typeof window === 'undefined' || typeof navigator === 'undefined') {
             return false;
         }
@@ -22,7 +20,6 @@ export const useShareLink = () => {
                 text = 'https://' + text;
             }
 
-            // Try modern clipboard API first
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 await navigator.clipboard.writeText(text);
                 setCopied(true);
@@ -58,7 +55,6 @@ export const useShareLink = () => {
         }
     }, []);
 
-    // Share link using Web Share API with clipboard fallback
     const shareLink = useCallback(async (
         url: string,
         options: ShareLinkOptions = {}
@@ -68,7 +64,6 @@ export const useShareLink = () => {
         try {
             setShareError(null);
             
-            // Check if we're in a browser environment
             if (typeof window === 'undefined') {
                 return false;
             }
@@ -76,7 +71,6 @@ export const useShareLink = () => {
             if (!url.startsWith('http://') && !url.startsWith('https://')) {
                 url = 'https://' + url;
             }
-            // Check if Web Share API is available
             if (navigator?.share) {
                 await navigator.share({
                     title,

@@ -19,15 +19,12 @@ const SocialLinksManager: React.FC<SocialLinksManagerProps> = ({ className = '' 
     platformOptions 
   } = useSocialLinks();
   
-  // Local form state
   const [newPlatform, setNewPlatform] = useState('');
   const [newUrl, setNewUrl] = useState('');
-  
-  // Handle form submission
+
   const handleAddLink = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // If link was successfully added, reset form
+
     const added = await addSocialLink(newPlatform, newUrl);
     if (added) {
       setNewPlatform('');
@@ -39,7 +36,6 @@ const SocialLinksManager: React.FC<SocialLinksManagerProps> = ({ className = '' 
     <div className={`space-y-6 ${className}`}>
       <h3 className="text-lg font-medium text-text-bright">Social Media Links</h3>
       
-      {/* List of current links */}
       {socialLinks.length > 0 ? (
         <div className="space-y-3">
           {socialLinks.map(link => (
@@ -75,7 +71,6 @@ const SocialLinksManager: React.FC<SocialLinksManagerProps> = ({ className = '' 
         <p className="text-text-muted italic">No social links added yet.</p>
       )}
       
-      {/* Add new link form */}
       <form onSubmit={handleAddLink} className="space-y-4 pt-4 border-t border-overlay-light">
         <div>
           <label htmlFor="platform" className="block text-sm text-text-bright mb-1">

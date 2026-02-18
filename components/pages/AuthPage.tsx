@@ -15,18 +15,15 @@ const AuthPage: React.FC = () => {
   const [isEmailSent, setIsEmailSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // Handle the case where user is redirected here from an expired link
   const redirectError = searchParams.get('error');
   const errorMessage = searchParams.get('error_description');
   
-  // Set error from query params if present
   useEffect(() => {
     if (redirectError && errorMessage) {
       setError(decodeURIComponent(errorMessage.replace(/\+/g, ' ')));
     }
   }, [redirectError, errorMessage]);
   
-  // If user is already logged in, redirect to appropriate page
   useEffect(() => {
     if (!isLoading && user) {
       const targetPath = profile ? '/dashboard' : '/setup-profile';
@@ -40,7 +37,6 @@ const AuthPage: React.FC = () => {
     setError(null);
     
     try {
-      // Send magic link using Supabase
       const { error } = await signIn(email);
       
       if (error) {
@@ -56,7 +52,6 @@ const AuthPage: React.FC = () => {
     }
   };
 
-  // Show loading while checking auth state
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background-darkest flex items-center justify-center">
@@ -73,8 +68,6 @@ const AuthPage: React.FC = () => {
     );
   }
   
-  // If already authenticated, we'll redirect in the effect above
-  // Otherwise, show the login form
   return (
     <AuthTemplate>
       <div className="text-center mb-8">

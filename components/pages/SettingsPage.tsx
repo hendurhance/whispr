@@ -20,22 +20,17 @@ interface SettingsPageProps {
 const SettingsPage: React.FC<SettingsPageProps> = ({ initialUser, initialProfile }) => {
   const { isMobile } = useResponsive();
   const {
-    // Form values
     username,
     displayName,
     bio,
     avatarUrl,
     emailNotifications,
-    
-    // UI state
     isCheckingUsername,
     isUsernameAvailable,
     isSubmitting,
     isDeleting,
     error,
     successMessage,
-    
-    // Handlers
     handleUsernameChange,
     setDisplayName,
     setBio,
@@ -45,14 +40,12 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ initialUser, initialProfile
     handleDeleteAccount
   } = useSetting({ initialUser, initialProfile });
 
-  // Profile information for MobilePageContainer
   const profileDisplayName = initialProfile?.display_name || initialUser?.user_metadata?.username || 'User';
   const profileAvatarUrl = initialProfile?.avatar_url || initialUser?.user_metadata?.avatar_url || '';
 
-  // Empty handler for sign out everywhere - will be handled by AccountManagement component
+  // Handled internally by AccountManagement component
   const handleSignOutEverywhere = () => {};
 
-  // Mobile view
   if (isMobile) {
     return (
       <MobilePageContainer 
@@ -97,7 +90,6 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ initialUser, initialProfile
     );
   }
 
-  // Desktop view
   return (
     <DashboardTemplate>
       <h1 className="text-3xl font-bold text-text-bright mb-6">Account Settings</h1>

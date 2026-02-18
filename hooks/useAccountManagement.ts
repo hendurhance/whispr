@@ -15,7 +15,6 @@ export const useAccountManagement = ({
   const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   
-  // Delete account handlers
   const openDeleteModal = useCallback(() => {
     setIsDeleteModalOpen(true);
   }, []);
@@ -29,7 +28,6 @@ export const useAccountManagement = ({
     // Modal will be closed after the delete operation completes
   }, [onDeleteAccount]);
   
-  // Sign out everywhere handlers
   const openSignOutModal = useCallback(() => {
     setIsSignOutModalOpen(true);
   }, []);
@@ -42,7 +40,6 @@ export const useAccountManagement = ({
     setIsSigningOut(true);
     
     try {
-      // Sign out from all devices using the global scope
       await supabase.auth.signOut({ scope: 'global' });
       onSignOutEverywhere();
       closeSignOutModal();
@@ -58,17 +55,14 @@ export const useAccountManagement = ({
   }, [onSignOutEverywhere, closeSignOutModal]);
   
   return {
-    // Modal states
     isDeleteModalOpen,
     isSignOutModalOpen,
     isSigningOut,
-    
-    // Delete account methods
+
     openDeleteModal,
     closeDeleteModal,
     confirmDelete,
-    
-    // Sign out methods
+
     openSignOutModal,
     closeSignOutModal,
     confirmSignOut

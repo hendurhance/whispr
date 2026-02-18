@@ -6,12 +6,10 @@ import PublicTemplate from '@/components/templates/PublicTemplate';
 import useLinks from '@/hooks/useLinks';
 
 const TermsPage: React.FC = () => {
-    // Auto-scroll to top on page load
     React.useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
 
-    // Get links from hook for the privacy policy link
     const { footerColumns } = useLinks();
     const privacyLink = footerColumns
         .find(column => column.title === "Legal")

@@ -3,7 +3,6 @@
 import React from 'react';
 import { WhisprType, getWhisprTypeIcon, ViewMode, SortOption, getWhisprTypeLabel } from '@/types/whispr';
 
-// Type definitions
 interface TypeOption {
   type: WhisprType | 'all';
   count: number;
@@ -61,7 +60,6 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     return option ? option.count : 0;
   };
 
-  // Get class names based on active state
   const getViewModeButtonClass = (mode: ViewMode, isMobileView: boolean): string => {
     const isActive = viewMode === mode;
     
@@ -82,7 +80,6 @@ const FilterControls: React.FC<FilterControlsProps> = ({
         : 'bg-background-highlight text-text-muted hover:text-text-bright';
   };
 
-  // Render search input for both mobile and desktop
   const renderSearchInput = () => (
     <div className={`relative ${isMobile ? 'w-full' : 'flex-1'}`}>
       <input
@@ -104,7 +101,6 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     </div>
   );
 
-  // Render type filters for both mobile and desktop
   const renderTypeFilters = () => (
     <div className={isMobile ? "flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide" : "flex flex-wrap gap-2"}>
       {formattedTypeOptions.map((option) => {
@@ -134,7 +130,6 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     </div>
   );
 
-  // Render sort dropdown for both views
   const renderSortDropdown = () => (
     <select
       value={sortOption}
@@ -151,7 +146,6 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     </select>
   );
 
-  // Mobile view specific components
   const renderMobileView = () => (
     <div className={`p-3 border-b border-background-highlight space-y-3 ${className}`}>
       {renderSearchInput()}
@@ -188,7 +182,6 @@ const FilterControls: React.FC<FilterControlsProps> = ({
     </div>
   );
 
-  // Desktop view specific components
   const renderDesktopView = () => (
     <div className={`space-y-4 ${className}`}>
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">

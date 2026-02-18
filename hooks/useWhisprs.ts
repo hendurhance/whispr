@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { toast } from 'react-hot-toast';
 import { createClient } from '@/utils/supabase/client';
+import { markWhisprAsRead, deleteWhisprById } from '@/lib/client/whisprs';
 import { Whispr, WhisprType, WhisprStats } from '@/types/whispr';
 import { User } from '@supabase/supabase-js';
 
@@ -14,11 +15,10 @@ export const useWhisprs = ({ user, username }: UseWhisprsProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const supabase = createClient();
 
-  // Fetch whisprs from Supabase
   useEffect(() => {
     const fetchWhisprs = async () => {
       setIsLoading(true);
-      
+
       try {
         if (!user) {
           setIsLoading(false);
@@ -37,7 +37,6 @@ export const useWhisprs = ({ user, username }: UseWhisprsProps) => {
           return;
         }
 
-        // Transform the data to match our Whispr interface
         const transformedData: Whispr[] = data.map(whispr => ({
           id: whispr.id,
           content: whispr.content,
@@ -64,8 +63,7 @@ export const useWhisprs = ({ user, username }: UseWhisprsProps) => {
     }
   }, [user, username]);
 
-  // Calculate stats for whisprs
-  const calculateStats = (): WhisprStats => {
+  const stats = useMemo((): WhisprStats => {
     const byType = whisprs.reduce((acc, whispr) => {
       acc[whispr.type] = (acc[whispr.type] || 0) + 1;
       return acc;
@@ -76,63 +74,31 @@ export const useWhisprs = ({ user, username }: UseWhisprsProps) => {
       unread: whisprs.filter(w => !w.isRead).length,
       byType
     };
-  };
+  }, [whisprs]);
 
-  // Mark whispr as read
   const markAsRead = async (whisprId: string): Promise<boolean> => {
-    try {
-      const { data, error } = await supabase
-        .rpc('mark_whispr_read', {
-          whispr_id: whisprId,
-        });
-
-      if (error) {
-        console.error('Error marking whispr as read:', error);
-        return false;
-      }
-
-      if (data) {
-        // Update local state
-        setWhisprs(whisprs.map(w =>
-          w.id === whisprId ? { ...w, isRead: true } : w
-        ));
-        return true;
-      }
-      
-      return false;
-    } catch (error) {
-      console.error('Error in markAsRead:', error);
-      return false;
+    const success = await markWhisprAsRead(whisprId);
+    if (success) {
+      setWhisprs(prev => prev.map(w =>
+        w.id === whisprId ? { ...w, isRead: true } : w
+      ));
     }
+    return success;
   };
 
-  // Delete whispr
   const deleteWhispr = async (whisprId: string): Promise<boolean> => {
-    try {
-      const { error } = await supabase
-        .rpc('delete_whispr', { whispr_id: whisprId });
-
-      if (error) {
-        console.error('Error deleting whispr:', error);
-        toast.error('Failed to delete whispr');
-        return false;
-      }
-
-      // Update local state
-      setWhisprs(whisprs.filter(w => w.id !== whisprId));
+    const success = await deleteWhisprById(whisprId);
+    if (success) {
+      setWhisprs(prev => prev.filter(w => w.id !== whisprId));
       toast.success('Whispr deleted successfully');
-      return true;
-    } catch (error) {
-      console.error('Error in deleteWhispr:', error);
-      toast.error('Something went wrong');
-      return false;
     }
+    return success;
   };
 
   return {
     whisprs,
     isLoading,
-    stats: calculateStats(),
+    stats,
     markAsRead,
     deleteWhispr
   };

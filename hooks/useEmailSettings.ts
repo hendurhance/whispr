@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { createClient } from '@/utils/supabase/client';
 
 interface UseEmailSettingsProps {
@@ -13,23 +13,16 @@ export const useEmailSettings = ({
   onToggleNotifications
 }: UseEmailSettingsProps) => {
   const supabase = createClient();
-  // Modal state
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
 
-  // Email notification states
   const [isUpdatingNotification, setIsUpdatingNotification] = useState(false);
-  const [notificationState, setNotificationState] = useState(enableNotifications);
+  // Track optimistic override; null means "use the prop value"
+  const [optimisticOverride, setOptimisticOverride] = useState<boolean | null>(null);
 
-  // Error handling
+  const notificationState = optimisticOverride ?? enableNotifications;
+
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (enableNotifications !== notificationState && !isUpdatingNotification) {
-      setNotificationState(enableNotifications);
-    }
-  }, [enableNotifications, notificationState, isUpdatingNotification]);
-
-  // Email modal handlers
   const openEmailModal = useCallback(() => {
     setIsEmailModalOpen(true);
   }, []);
@@ -38,7 +31,6 @@ export const useEmailSettings = ({
     setIsEmailModalOpen(false);
   }, []);
 
-  // Toggle email notifications
   const toggleNotifications = useCallback(async () => {
     if (!userId) {
       setError('User ID is required to update notification preferences');
@@ -50,11 +42,9 @@ export const useEmailSettings = ({
     setError(null);
 
     try {
-      // Toggle the notification state locally first for immediate feedback
       const newState = !notificationState;
-      setNotificationState(newState);
+      setOptimisticOverride(newState);
 
-      // Update the notification preference in the profiles table
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
@@ -65,13 +55,13 @@ export const useEmailSettings = ({
 
       if (updateError) throw updateError;
 
-      // Call the parent handler to sync state upstream
       onToggleNotifications();
+      // Clear override so we follow the prop again
+      setOptimisticOverride(null);
     } catch (error: unknown) {
       const errorMessage = (error as Error).message || 'Failed to update notification preferences';
       console.error('Error updating notification preferences:', errorMessage);
-      // Revert state if update fails
-      setNotificationState(notificationState);
+      setOptimisticOverride(null);
       setError(errorMessage);
       setTimeout(() => setError(null), 5000);
     } finally {
@@ -80,13 +70,11 @@ export const useEmailSettings = ({
   }, [userId, notificationState, onToggleNotifications]);
 
   return {
-    // States
     isEmailModalOpen,
     isUpdatingNotification,
     notificationState,
     error,
 
-    // Actions
     openEmailModal,
     closeEmailModal,
     toggleNotifications

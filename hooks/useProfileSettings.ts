@@ -3,37 +3,32 @@ import { createClient } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { Profile } from '@/types';
 
-// Allowed fields that can be updated via this hook (security whitelist)
 const ALLOWED_UPDATE_FIELDS = [
   'allow_anonymous',
   'show_question_types',
   'display_social_links',
   'selected_theme',
-  'selected_background'
+  'selected_background',
+  'is_indexable'
 ] as const;
 
 type AllowedField = typeof ALLOWED_UPDATE_FIELDS[number];
 
-const VALID_THEMES = [
-  'purple-pink', 'blue-cyan', 'green-teal', 'orange-yellow',
-  'pink-purple', 'red-orange', 'teal-green', 'cyan-blue'
-] as const;
+const VALID_THEMES = ['flame', 'ultra', 'mint', 'grape', 'pink', 'lime', 'sun', 'sky'] as const;
 
-const VALID_BACKGROUNDS = [
-  'black', 'dark-navy', 'dark-purple', 'dark-blue',
-  'dark-green', 'dark-red', 'gradient-dark', 'gradient-purple'
-] as const;
+const VALID_BACKGROUNDS = ['light', 'dark'] as const;
 
 interface ProfileSettings {
   allowAnonymous: boolean;
   showQuestionTypes: boolean;
   displaySocialLinks: boolean;
+  isIndexable: boolean;
   selectedTheme: string;
   selectedBackground: string;
 }
 
-type BooleanSettingKey = 'allowAnonymous' | 'showQuestionTypes' | 'displaySocialLinks';
-type BooleanDbField = 'allow_anonymous' | 'show_question_types' | 'display_social_links';
+type BooleanSettingKey = 'allowAnonymous' | 'showQuestionTypes' | 'displaySocialLinks' | 'isIndexable';
+type BooleanDbField = 'allow_anonymous' | 'show_question_types' | 'display_social_links' | 'is_indexable';
 
 export const useProfileSettings = (
   profile: Profile | null, 
@@ -47,11 +42,11 @@ export const useProfileSettings = (
     allowAnonymous: profile?.allow_anonymous ?? true,
     showQuestionTypes: profile?.show_question_types ?? true,
     displaySocialLinks: profile?.display_social_links ?? false,
-    selectedTheme: profile?.selected_theme || 'purple-pink',
-    selectedBackground: profile?.selected_background || 'black',
+    isIndexable: profile?.is_indexable ?? true,
+    selectedTheme: profile?.selected_theme || 'flame',
+    selectedBackground: profile?.selected_background || 'light',
   });
 
-  // Initialize state from profile (only once, to avoid overwriting optimistic updates)
   useEffect(() => {
     if (initializedRef.current) return;
     if (profile) {
@@ -60,8 +55,9 @@ export const useProfileSettings = (
         allowAnonymous: profile.allow_anonymous ?? true,
         showQuestionTypes: profile.show_question_types ?? true,
         displaySocialLinks: profile.display_social_links ?? false,
-        selectedTheme: profile.selected_theme || 'purple-pink',
-        selectedBackground: profile.selected_background || 'black',
+        isIndexable: profile.is_indexable ?? true,
+        selectedTheme: profile.selected_theme || 'flame',
+        selectedBackground: profile.selected_background || 'light',
       });
     }
   }, [profile]);
@@ -69,13 +65,11 @@ export const useProfileSettings = (
   const updateSetting = async (field: AllowedField, value: boolean | string): Promise<boolean> => {
     if (!user) return false;
 
-    // Runtime validation as defense-in-depth (TypeScript provides compile-time safety)
     if (!ALLOWED_UPDATE_FIELDS.includes(field)) {
       console.error(`Attempted to update unauthorized field: ${field}`);
       return false;
     }
 
-    // Enforce correct types and allowed values based on field
     if (field === 'selected_theme') {
       if (typeof value !== 'string') {
         console.error(`Invalid type for theme value: expected string, got ${typeof value}`);
@@ -95,7 +89,6 @@ export const useProfileSettings = (
         return false;
       }
     } else {
-      // All remaining allowed fields are booleans; enforce boolean type
       if (typeof value !== 'boolean') {
         console.error(`Invalid type for boolean setting ${field}: expected boolean, got ${typeof value}`);
         return false;

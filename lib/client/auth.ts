@@ -1,14 +1,5 @@
 import { createClient } from '@/utils/supabase/client';
 
-/**
- * Client-side utilities for authentication without AuthProvider
- * These functions don't trigger context re-renders
- */
-
-/**
- * Sign out the current user
- * Returns true if successful, false otherwise
- */
 export async function signOutUser(): Promise<boolean> {
   try {
     const supabase = createClient();
@@ -25,10 +16,6 @@ export async function signOutUser(): Promise<boolean> {
   }
 }
 
-/**
- * Sign in with magic link
- * Returns error if any
- */
 export async function signInWithMagicLink(email: string, redirectUrl: string): Promise<{ error: Error | null }> {
   try {
     const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

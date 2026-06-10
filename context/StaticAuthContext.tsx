@@ -22,10 +22,6 @@ interface StaticAuthProviderProps {
   children: React.ReactNode;
 }
 
-/**
- * Static Auth Provider - doesn't re-fetch data, uses server-provided data
- * This prevents the 2-4s delay on navigation caused by AuthProvider re-renders
- */
 export const StaticAuthProvider: React.FC<StaticAuthProviderProps> = ({
   user,
   profile,

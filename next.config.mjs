@@ -1,10 +1,22 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Pin the workspace root so Turbopack ignores a stray lockfile in the home dir
+  turbopack: {
+    root: import.meta.dirname,
+  },
+  // Ensure the next/og font files are traced into serverless bundles
+  outputFileTracingIncludes: {
+    '/**': ['./app/og/fonts/**'],
+  },
   images: {
     remotePatterns: [
       {
         protocol: 'https',
         hostname: '**.supabase.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'api.dicebear.com',
       },
     ],
   },
@@ -14,7 +26,6 @@ const nextConfig = {
       'qrcode.react',
       '@supabase/ssr',
       '@supabase/supabase-js',
-      'framer-motion',
     ],
     // Enable staleTimes for client-side router cache
     staleTimes: {

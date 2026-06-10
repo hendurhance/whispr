@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import PrivacyPage from '@/components/pages/PrivacyPage';
+import { PrivacyContent } from '@/components/legal/privacy-content';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy - Whispr',
@@ -15,5 +15,5 @@ export const metadata: Metadata = {
 };
 
 export default function Privacy() {
-  return <PrivacyPage />;
+  return <PrivacyContent />;
 }

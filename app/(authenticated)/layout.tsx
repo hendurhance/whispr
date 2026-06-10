@@ -2,12 +2,6 @@ import { redirect } from 'next/navigation';
 import { getUserSession, getProfileData } from '@/lib/server/profile-data';
 import { StaticAuthProvider } from '@/context/StaticAuthContext';
 
-/**
- * Layout for authenticated pages (dashboard, profile, settings)
- * This layout wraps children with StaticAuthProvider which uses
- * server-provided data instead of fetching client-side.
- * 
- */
 export default async function AuthenticatedLayout({
   children,
 }: {

@@ -145,7 +145,7 @@ export const useWhisprSubmission = ({
       const randomIndex = Math.floor(Math.random() * typeSuggestions.length);
       setContent(typeSuggestions[randomIndex]);
       setIsDiceRolling(false);
-    }, 800); // Animation duration
+    }, 800);
   }, [selectedType]);
 
   const resetForm = useCallback(() => {
@@ -203,20 +203,16 @@ export const useWhisprSubmission = ({
 
   return {
     content,
-    setContent,
     selectedType,
     setSelectedType,
     isSubmitting,
     charCount,
     isDiceRolling,
-    isMobile,
     typeScrollContainerRef,
     handleContentChange,
     generateSuggestion,
     handleSubmit,
-    resetForm,
     whisprTypes: WHISPR_TYPES,
     maxChars: MAX_WHISPR_CHARS,
-    suggestions: SUGGESTIONS
   };
 };

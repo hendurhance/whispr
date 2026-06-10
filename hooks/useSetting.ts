@@ -18,10 +18,6 @@ interface UseSettingProps {
     initialProfile: Profile | null;
 }
 
-/**
- * Hook for managing user settings without AuthProvider dependency
- * Uses server-provided data passed as props
- */
 export const useSetting = ({ initialUser, initialProfile }: UseSettingProps) => {
     const router = useRouter();
     const supabase = createClient();
@@ -219,7 +215,6 @@ export const useSetting = ({ initialUser, initialProfile }: UseSettingProps) => 
 
     const handleToggleNotifications = async () => {
         setEmailNotifications(!emailNotifications);
-        // Actual database update is handled in the EmailSettings component
         setTimeout(() => {
             refreshProfile();
         }, 500);

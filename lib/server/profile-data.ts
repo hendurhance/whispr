@@ -3,11 +3,6 @@ import { unstable_cache } from 'next/cache';
 import { createClient } from '@/utils/supabase/server';
 import { Profile } from '@/types';
 
-/**
- * Fetch user profile data server-side
- * Returns null if no profile exists or user is not authenticated
- * Cached per request to avoid duplicate fetches
- */
 export const getProfileData = cache(async (): Promise<Profile | null> => {
   const supabase = await createClient();
   
@@ -37,7 +32,7 @@ export const getProfileData = cache(async (): Promise<Profile | null> => {
       },
       ['profile-data'],
       {
-        revalidate: 60, // Cache for 60 seconds
+        revalidate: 60,
         tags: ['profile']
       }
     );
@@ -48,10 +43,6 @@ export const getProfileData = cache(async (): Promise<Profile | null> => {
   }
 });
 
-/**
- * Fetch user whisprs server-side
- * Cached per request to avoid duplicate fetches
- */
 export const getWhisprsData = cache(async () => {
   const supabase = await createClient();
   
@@ -68,6 +59,7 @@ export const getWhisprsData = cache(async () => {
           .from('whisprs')
           .select('*')
           .eq('user_id', userId)
+          .eq('status', 'active')
           .order('created_at', { ascending: false });
         
         if (whisprsError) {
@@ -78,7 +70,7 @@ export const getWhisprsData = cache(async () => {
       },
       ['whisprs-data'],
       {
-        revalidate: 30, // Cache for 30 seconds
+        revalidate: 30,
         tags: ['whisprs']
       }
     );
@@ -94,10 +86,6 @@ export const getWhisprsData = cache(async () => {
   }
 });
 
-/**
- * Get user session server-side
- * Cached per request to avoid duplicate fetches
- */
 export const getUserSession = cache(async () => {
   const supabase = await createClient();
   

@@ -12,19 +12,31 @@ export interface SocialLinkOperation {
 
 export const platformOptions = [
   { id: 'instagram', name: 'Instagram' },
-  { id: 'twitter', name: 'Twitter' },
   { id: 'tiktok', name: 'TikTok' },
+  { id: 'twitter', name: 'X (Twitter)' },
+  { id: 'snapchat', name: 'Snapchat' },
   { id: 'youtube', name: 'YouTube' },
+  { id: 'threads', name: 'Threads' },
   { id: 'facebook', name: 'Facebook' },
   { id: 'linkedin', name: 'LinkedIn' },
+  { id: 'discord', name: 'Discord' },
+  { id: 'twitch', name: 'Twitch' },
+  { id: 'spotify', name: 'Spotify' },
+  { id: 'reddit', name: 'Reddit' },
+  { id: 'pinterest', name: 'Pinterest' },
+  { id: 'whatsapp', name: 'WhatsApp' },
+  { id: 'telegram', name: 'Telegram' },
   { id: 'github', name: 'GitHub' },
   { id: 'website', name: 'Website' }
 ] as const;
 
-// Maximum number of social links allowed per user
 const MAX_SOCIAL_LINKS = 10;
 
-const VALID_PLATFORM_IDS = ['instagram', 'twitter', 'tiktok', 'youtube', 'facebook', 'linkedin', 'github', 'website'] as const;
+const VALID_PLATFORM_IDS = [
+  'instagram', 'tiktok', 'twitter', 'snapchat', 'youtube', 'threads', 'facebook',
+  'linkedin', 'discord', 'twitch', 'spotify', 'reddit', 'pinterest', 'whatsapp',
+  'telegram', 'github', 'website',
+] as const;
 
 export const useSocialLinks = () => {
   const supabase = createClient();
@@ -82,7 +94,6 @@ export const useSocialLinks = () => {
   const addSocialLink = async (platform: string, url: string): Promise<boolean> => {
     if (!user) return false;
 
-    // Prevent concurrent operations (race condition protection)
     if (operation.isLoading) {
       return false;
     }
@@ -123,9 +134,6 @@ export const useSocialLinks = () => {
         ? Math.max(...socialLinks.map(link => link.display_order || 0)) + 1
         : 0;
 
-      // NOTE: Server-side validation (unique constraint, row count limits) should be
-      // implemented in the database to handle TOCTOU race conditions. The client-side
-      // checks above are for UX optimization only.
       const { error } = await supabase
         .from('social_links')
         .insert([{

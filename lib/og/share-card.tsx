@@ -133,7 +133,7 @@ export function ShareCard({ content, type, handle, kind, format, accent = DEFAUL
               fontSize: s.sticker,
             }}
           >
-            {kind === 'whispr' ? getWhisprTypeLabel(type) : 'ANON MAIL'}
+            {kind === 'whispr' ? getWhisprTypeLabel(type) : 'ANON MESSAGE'}
           </div>
         </div>
       </div>

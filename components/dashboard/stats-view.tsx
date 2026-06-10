@@ -56,9 +56,9 @@ export function StatsView({ user, profile, whisprs }: StatsViewProps) {
           {weekTotal === 0 ? (
             <p className="py-10 text-center text-sm text-ink-faint">No whisprs in the last 7 days yet.</p>
           ) : (
-            <div className="mt-6 flex h-44 items-end gap-3">
+            <div className="mt-6 flex h-44 gap-3">
               {days.map((d, i) => (
-                <div key={i} className="flex flex-1 flex-col items-center gap-2">
+                <div key={i} className="flex h-full flex-1 flex-col items-center gap-2">
                   <div className="flex w-full flex-1 items-end">
                     <div
                       className="w-full rounded-t bg-flame/80"

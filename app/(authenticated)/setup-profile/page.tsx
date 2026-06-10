@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import SetupProfilePage from '@/components/pages/SetupProfilePage';
+import { SetupProfileForm } from '@/components/setup-profile/setup-profile-form';
 import { getUserSession, getProfileData } from '@/lib/server/profile-data';
 
 export const metadata: Metadata = {
@@ -24,5 +24,5 @@ export default async function SetupProfile() {
     redirect('/dashboard');
   }
   
-  return <SetupProfilePage initialUser={user} />;
+  return <SetupProfileForm />;
 }

@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 interface QRCodeOptions {
   padding?: number;
   backgroundColor?: string;
+  drawOverlay?: (ctx: CanvasRenderingContext2D, dims: { width: number; height: number; qrSize: number }) => void;
 }
 
 export const useQRCode = (initialSize: number = 200) => {
@@ -28,7 +29,7 @@ export const useQRCode = (initialSize: number = 200) => {
   }, [initialSize]);
 
   const downloadQRCode = useCallback((filename: string, options: QRCodeOptions = {}) => {
-    const { padding = 16, backgroundColor = 'white' } = options;
+    const { padding = 16, backgroundColor = 'white', drawOverlay } = options;
 
     if (typeof window === 'undefined' || typeof document === 'undefined') {
       console.error('Download not available in server environment');
@@ -61,6 +62,8 @@ export const useQRCode = (initialSize: number = 200) => {
         img.onload = () => {
           const paddingHalf = padding / 2;
           ctx.drawImage(img, paddingHalf, paddingHalf, qrSize, qrSize);
+
+          if (drawOverlay) drawOverlay(ctx, { width: canvas.width, height: canvas.height, qrSize });
 
           const dataUrl = canvas.toDataURL('image/png');
 

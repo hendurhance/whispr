@@ -7,76 +7,33 @@ interface UseEmailSettingsProps {
   onToggleNotifications: () => void;
 }
 
-export const useEmailSettings = ({
-  userId,
-  enableNotifications,
-  onToggleNotifications
-}: UseEmailSettingsProps) => {
+export const useEmailSettings = ({ userId, enableNotifications, onToggleNotifications }: UseEmailSettingsProps) => {
   const supabase = createClient();
-  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
-
   const [isUpdatingNotification, setIsUpdatingNotification] = useState(false);
-  // Track optimistic override; null means "use the prop value"
   const [optimisticOverride, setOptimisticOverride] = useState<boolean | null>(null);
-
   const notificationState = optimisticOverride ?? enableNotifications;
 
-  const [error, setError] = useState<string | null>(null);
-
-  const openEmailModal = useCallback(() => {
-    setIsEmailModalOpen(true);
-  }, []);
-
-  const closeEmailModal = useCallback(() => {
-    setIsEmailModalOpen(false);
-  }, []);
-
   const toggleNotifications = useCallback(async () => {
-    if (!userId) {
-      setError('User ID is required to update notification preferences');
-      setTimeout(() => setError(null), 5000);
-      return;
-    }
+    if (!userId) return;
 
+    const next = !notificationState;
     setIsUpdatingNotification(true);
-    setError(null);
+    setOptimisticOverride(next);
 
     try {
-      const newState = !notificationState;
-      setOptimisticOverride(newState);
-
-      const { error: updateError } = await supabase
+      const { error } = await supabase
         .from('profiles')
-        .update({
-          email_notifications: newState,
-          updated_at: new Date().toISOString()
-        })
+        .update({ email_notifications: next, updated_at: new Date().toISOString() })
         .eq('user_id', userId);
-
-      if (updateError) throw updateError;
-
+      if (error) throw error;
       onToggleNotifications();
-      // Clear override so we follow the prop again
-      setOptimisticOverride(null);
-    } catch (error: unknown) {
-      const errorMessage = (error as Error).message || 'Failed to update notification preferences';
-      console.error('Error updating notification preferences:', errorMessage);
-      setOptimisticOverride(null);
-      setError(errorMessage);
-      setTimeout(() => setError(null), 5000);
+    } catch (error) {
+      console.error('Failed to update notification preference:', error);
     } finally {
+      setOptimisticOverride(null);
       setIsUpdatingNotification(false);
     }
-  }, [userId, notificationState, onToggleNotifications]);
+  }, [userId, notificationState, onToggleNotifications, supabase]);
 
-  return {
-    isEmailModalOpen,
-    isUpdatingNotification,
-    notificationState,
-    error,
-
-    openEmailModal,
-    closeEmailModal,
-    toggleNotifications
-  };
+  return { notificationState, isUpdatingNotification, toggleNotifications };
 };

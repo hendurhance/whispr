@@ -27,7 +27,6 @@ export const useShareLink = () => {
                 return true;
             }
 
-            // Fallback to execCommand for older browsers or insecure contexts
             const textArea = document.createElement('textarea');
             textArea.value = text;
             textArea.style.position = 'fixed';

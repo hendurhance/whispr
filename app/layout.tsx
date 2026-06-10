@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
-import ToastProvider from "@/components/atoms/ToastProvider";
-// @ts-ignore: CSS module declaration missing; add a '*.css' .d.ts file (e.g. global.d.ts) to provide proper types
+import Script from "next/script";
+import { AppToaster } from "@/components/ui/toaster";
+import { ServiceWorker } from "@/components/pwa/service-worker";
 import "./globals.css";
+import { fontDisplay, fontBody, fontVoice, fontSerif } from "@/lib/fonts";
 import CONFIGURATIONS from "@/configs";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://trywhispr.me';
 const APP_NAME = "Whispr";
-const APP_DESCRIPTION = "Send and receive anonymous messages, confessions, and honest feedback. Play Q&A games, get real opinions, and connect with friends through anonymous questions.";
+const APP_DESCRIPTION = "Send and receive anonymous messages, questions, confessions and honest feedback. Share your Whispr link, find out what people really think, and turn the best into a share card.";
 
 export const metadata: Metadata = {
   title: {
@@ -19,17 +21,15 @@ export const metadata: Metadata = {
     "anonymous messages",
     "anonymous feedback",
     "ngl",
+    "ngl alternative",
     "send anonymous messages",
     "anonymous questions",
+    "anonymous q&a",
     "honest feedback",
     "anonymous confessions",
-    "q&a games",
     "ask me anything",
-    "never have I ever",
     "anonymous compliments",
-    "3 words",
-    "real friends",
-    "honest opinions",
+    "anonymous roast",
     "whispr",
     "anonymous app",
     "secret messages",
@@ -91,7 +91,7 @@ export const metadata: Metadata = {
       { url: '/icons/favicon.svg', type: 'image/svg+xml' },
     ],
     apple: [
-      { url: '/apple-icon.png' },
+      { url: '/icons/apple-touch-icon.png' },
     ],
   },
   manifest: '/manifest.json',
@@ -113,30 +113,42 @@ export default function RootLayout({
 }>) {
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'WebApplication',
-    name: 'Whispr',
-    applicationCategory: 'SocialNetworkingApplication',
-    operatingSystem: 'Web, iOS, Android',
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
-    },
-    description: 'Send and receive anonymous messages, confessions, and honest feedback. Play Q&A games, get real opinions, and connect with friends.',
-    url: APP_URL,
-    sameAs: [
-      'https://twitter.com/trywhispr',
-      'https://instagram.com/trywhispr',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': `${APP_URL}/#organization`,
+        name: APP_NAME,
+        url: APP_URL,
+        logo: `${APP_URL}/icons/favicon.svg`,
+        sameAs: [
+          'https://twitter.com/trywhispr',
+          'https://instagram.com/trywhispr',
+          'https://github.com/hendurhance/whispr',
+        ],
+      },
+      {
+        '@type': 'WebSite',
+        '@id': `${APP_URL}/#website`,
+        name: APP_NAME,
+        url: APP_URL,
+        inLanguage: 'en',
+        publisher: { '@id': `${APP_URL}/#organization` },
+      },
+      {
+        '@type': 'SoftwareApplication',
+        name: APP_NAME,
+        applicationCategory: 'SocialNetworkingApplication',
+        operatingSystem: 'Web, iOS, Android',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        description: APP_DESCRIPTION,
+        url: APP_URL,
+        publisher: { '@id': `${APP_URL}/#organization` },
+      },
     ],
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.8',
-      ratingCount: '10000',
-    },
   };
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning className={`${fontDisplay.variable} ${fontBody.variable} ${fontVoice.variable} ${fontSerif.variable}`}>
       <head>
         <script
           type="application/ld+json"
@@ -144,9 +156,13 @@ export default function RootLayout({
         />
       </head>
       <body suppressHydrationWarning>
+        <Script id="desk-theme" strategy="beforeInteractive">
+          {`(function(){try{if(/^\\/(dashboard|stats|profile|settings|setup-profile)/.test(location.pathname)){var t=localStorage.getItem('desk-theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.setAttribute('data-appearance','dark')}}}catch(e){}})()`}
+        </Script>
         <div id="root">
           {children}
-          <ToastProvider />
+          <AppToaster />
+          <ServiceWorker />
         </div>
       </body>
     </html>

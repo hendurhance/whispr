@@ -3,10 +3,6 @@ import { toast } from 'react-hot-toast';
 import CONFIGURATIONS from '@/configs';
 import { isValidWhisprType } from '@/utils/validation';
 
-/**
- * Mark a whispr as read via RPC.
- * Returns true if the whispr was successfully marked.
- */
 export const markWhisprAsRead = async (whisprId: string): Promise<boolean> => {
   const supabase = createClient();
   try {
@@ -25,10 +21,6 @@ export const markWhisprAsRead = async (whisprId: string): Promise<boolean> => {
   }
 };
 
-/**
- * Delete a whispr via RPC.
- * Returns true on success. Shows a toast on error.
- */
 export const deleteWhisprById = async (whisprId: string): Promise<boolean> => {
   const supabase = createClient();
   try {
@@ -49,9 +41,25 @@ export const deleteWhisprById = async (whisprId: string): Promise<boolean> => {
   }
 };
 
-/**
- * Submit an anonymous whispr via edge function.
- */
+export const reportWhisprById = async (whisprId: string, reason: string): Promise<boolean> => {
+  const supabase = createClient();
+  try {
+    const { data, error } = await supabase.rpc('report_whispr', { whispr_id: whisprId, reason });
+
+    if (error) {
+      console.error('Error reporting whispr:', error);
+      toast.error('Failed to report whispr');
+      return false;
+    }
+
+    return !!data;
+  } catch (error) {
+    console.error('Error in reportWhisprById:', error);
+    toast.error('Something went wrong');
+    return false;
+  }
+};
+
 export const submitWhispr = async (username: string, content: string, type: string) => {
   if (!isValidWhisprType(type)) {
     throw new Error(`Invalid whispr type: ${type}`);
@@ -72,10 +80,6 @@ export const submitWhispr = async (username: string, content: string, type: stri
   return data;
 };
 
-/**
- * Update the whispr count for a profile via edge function.
- * Returns the new count, or null on failure.
- */
 export const updateWhisprCount = async (username: string): Promise<number | null> => {
   try {
     const response = await fetch(CONFIGURATIONS.FUNCTIONS.UPDATE_WHISPR_COUNTS, {

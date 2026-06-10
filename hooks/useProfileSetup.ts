@@ -29,7 +29,6 @@ export const useProfileSetup = () => {
   const [user, setUser] = useState<User | null>(null);
 
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Tracks the latest request to prevent stale async availability checks from updating state
   const latestRequestIdRef = useRef<number>(0);
 
   useEffect(() => {
@@ -42,7 +41,6 @@ export const useProfileSetup = () => {
           return;
         }
       } else {
-        // Fallback to direct Supabase call if auth context is unavailable
         const { data, error } = await supabase.auth.getUser();
 
         if (error || !data?.user) {
@@ -91,7 +89,6 @@ export const useProfileSetup = () => {
         .eq('username', normalizedValue)
         .single();
 
-      // Ignore stale response if a newer request has been made
       if (requestId !== latestRequestIdRef.current) {
         return;
       }

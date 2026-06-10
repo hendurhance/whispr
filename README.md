@@ -1,13 +1,13 @@
 <div id="top"></div>
 
 <div align="center">
-  <img src="/doc/images/logo.png" width="200px">
+  <img src="public/og-image.png" width="640px" alt="Whispr" />
   <h2>Whispr</h2>
-  <p>An open-source anonymous platform to receive questions, dares, roast, confessions, feedback, and more — you decide whether to spark chaos or spread love. 
-  </p> <p> It's an open source alternative to "NGL", "Sarahah" and "Kubool". </p>
+  <p>The open-source way to collect anonymous questions, confessions, roasts and honest feedback. Share your link, find out what people really think, and turn the best replies into a share card.</p>
+  <p>An open-source alternative to <b>NGL</b>, <b>Sarahah</b> and <b>Kubool</b>.</p>
 
-  <p  align="center">
-    <a href="https://trywhispr.me">View Demo</a>
+  <p align="center">
+    <a href="https://trywhispr.me">Live Demo</a>
     ·
     <a href="https://github.com/hendurhance/whispr/issues/new?assignees=&labels=bug&template=bug.yml&title=%5BBUG%5D+%3Cdescription%3E">Report Bug</a>
     ·
@@ -21,137 +21,146 @@
 </div>
 
 ## What is Whispr?
-Whispr is an open-source alternative to anonymous Q&A apps like NGL, Sarahah, or Kubool, built with privacy and security in mind. It allows users to create a personal profile and share a unique link to receive anonymous messages from others. People can send questions, feedback, compliments, confessions, or any message completely anonymously through the link, and the recipient can read them in their Whispr dashboard. Whispr’s goal is to provide a fun and safe environment for honest communication, while respecting user privacy.
+
+Whispr is an open-source, privacy-first alternative to anonymous-messaging apps like NGL, Sarahah and Kubool. Claim a username, share one link (`trywhispr.me/<username>`), and anyone — no account needed — can send you anonymous questions, confessions, roasts, compliments or honest feedback. You read everything in a private inbox and answer the best ones by posting a printed-zine **share card** to your socials. No public comment wall, no fake metrics, no dark patterns.
 
 ## Features
-- **Anonymous Messages**: Receive messages or questions from anyone without knowing the sender’s identity. Supports various categories of messages such as Q&A, compliments, advice, opinions, confessions, and more.
-- **Personal Link**: Every user gets a unique shareable link (e.g.` https://trywhispr.me/<yourUsername>`) that others can use to send them messages
-- **Customizable Profile**: Users can choose theme colors, add a profile picture, and write a short bio to personalize their profile
-- **Dashboard & Filters**: Logged-in users have a dashboard to view all incoming “whisprs.” Messages can be filtered by type (question, confession, compliment, etc.) and marked as read/unread for better organization
-- **Password-less Login**: Easy account creation via passwordless email magic link
-- **Random Prompts**: A fun “dice” feature provides random pre-written questions or prompts for senders who aren’t sure what to ask
-- **Privacy Controls**: Only the intended recipient can read the messages they receive – senders remain anonymous. Sender metadata (like IP address) is encrypted and not exposed to the recipient, ensuring privacy while still allowing abuse prevention if needed
-- **Responsive UI**: A clean, mobile-friendly web interface built with a modern tech stack (React + Tailwind CSS) for a smooth user experience.
 
-## 💻 Tech Stack
-Whispr is built with Next.js (React framework) and TypeScript, styled with Tailwind CSS, and deployed on Vercel for hosting. It uses Supabase (a Backend-as-a-Service) for its entire back-end needs and edge functions to handle server-side logic. The app is designed to be responsive and user-friendly, ensuring a seamless experience across devices.
+- **Anonymous messages, nine ways** — questions, compliments, roasts, confessions, dares, secrets, hot takes, suggestions and rumors. Senders stay anonymous; you read it all in a private inbox.
+- **One shareable link** — `trywhispr.me/<username>`, drop it in a bio or story.
+- **Share cards (the viral loop)** — turn any whispr into an editorial share card (story / square / OG sizes) rendered server-side with `next/og`, with one-tap share to Instagram / TikTok / X, a QR code, and PNG download. There is **no in-app answering** — you reply by posting the card to your socials (the NGL model), so the link loops new senders back.
+- **Near-real-time inbox** — the dashboard polls for new whisprs and surfaces them instantly, with filters by type and read/unread state.
+- **Installable PWA** — add to home screen, offline fallback, app-icon unread badge, and **Web Push notifications** when a new whispr lands.
+- **Dark mode** for the dashboard.
+- **Passwordless login** — magic-link email, no passwords.
+- **Random prompts** — a dice hands senders ready-made prompts when they're stuck.
+- **Per-creator look** — accent "inks" and light/dark "paper" modes within the Ink & Riso design system.
+- **Privacy & safety** — senders are anonymous to you and sender metadata is never exposed. Built-in abuse defense: server-side Zod validation, sliding-window rate limiting, a one-tap report flow, reserved-username enforcement, and an SEO/privacy `is_indexable` toggle.
+- **SEO surface** — programmatic use-case / platform / comparison pages, a blog, and a copy-and-send prompts library.
+
+## Design
+
+Whispr ships a custom **"Ink & Riso"** editorial-risograph design system (brand colour **Klein Blue `#2433CC`**), split into two tiers: a loud **Press** tier for public and marketing surfaces, and a calm **Desk** tier for the authenticated app.
+
+## Tech Stack
+
 <table>
   <tr>
     <td align="center"><a href="https://nextjs.org/"><img src="https://cdn.worldvectorlogo.com/logos/next-js.svg" width="100px;" alt=""/><br /><sub><b>Next.js</b></sub></a><br /></td>
     <td align="center"><a href="https://reactjs.org/"><img src="https://cdn.worldvectorlogo.com/logos/react-2.svg" width="100px;" alt=""/><br /><sub><b>React</b></sub></a><br /></td>
-    <td align="center"><a href="https://www.typescriptlang.org/"><img src="https://cdn.worldvectorlogo.com/logos/typescript.svg" width="100px;" alt=""/><br /><sub><b>Typescript</b></sub></a><br /></td>
+    <td align="center"><a href="https://www.typescriptlang.org/"><img src="https://cdn.worldvectorlogo.com/logos/typescript.svg" width="100px;" alt=""/><br /><sub><b>TypeScript</b></sub></a><br /></td>
     <td align="center"><a href="https://www.supabase.io/"><img src="https://vectorlogo.zone/logos/supabase/supabase-icon.svg" width="100px;" alt=""/><br /><sub><b>Supabase</b></sub></a><br /></td>
     <td align="center"><a href="https://tailwindcss.com/"><img src="https://cdn.worldvectorlogo.com/logos/tailwindcss.svg" width="100px;" alt=""/><br /><sub><b>Tailwind CSS</b></sub></a><br /></td>
     <td align="center"><a href="https://vercel.com/"><img src="https://cdn.worldvectorlogo.com/logos/vercel.svg" width="100px;" alt=""/><br /><sub><b>Vercel</b></sub></a><br /></td>
   </tr>
 </table>
 
-- **Next.js 15**: Modern React framework with App Router, Server Components, and Server Actions for optimal performance and SEO
-- **React & TypeScript**: For building a dynamic application with robust, maintainable code (leveraging static typing)
-- **Tailwind CSS**: Utility-first CSS framework for rapid UI development and consistent design
-- **Supabase (PostgreSQL database + Auth + Storage)**: Handles user authentication, data persistence, and file storage. This replaces a custom server/backend – all data operations and authentication are done via Supabase's secure APIs with Server-Side Rendering (SSR) support
-- **Vercel**: Hosts the application, providing easy deployment, edge functions, and scaling. The app can be accessed publicly (and via the demo link above) with automatic SSL and global CDN
+- **Next.js 16** — App Router, React Server Components, Turbopack, `next/og` and `next/image`.
+- **React 19** + **TypeScript 5** (strict, zero `any`).
+- **Tailwind CSS v4** — CSS-first `@theme` tokens, with **shadcn/ui** + **Radix** primitives.
+- **Supabase** — Postgres + magic-link Auth + Row Level Security + `SECURITY DEFINER` RPCs + Deno **Edge Functions**.
+- **Zod v4** for validation at every trust boundary, **GSAP** for motion, **qrcode.react** for QR.
+- **Vercel** for hosting (automatic SSL + global CDN).
 
-> **Why these technologies**? We chose Next.js for its powerful features including Server-Side Rendering (SSR), Static Site Generation (SSG), API routes, and excellent SEO capabilities. The framework provides an optimal developer experience while delivering superior performance to end users. Using Supabase for the back-end greatly speeds up development by offloading infrastructure, security, and scaling concerns to a reliable service. This way, we focus on building features rather than reinventing the wheel for authentication or database management. The Atomic Design pattern is used in the front-end codebase to keep components modular and maintainable (see [Technical Specifications](/doc/technical-specifications.md) for more details).
+> **Why this stack?** Next.js gives us RSC, great SEO and a first-class image/OG pipeline; Supabase removes the need for a custom backend (auth, database, RLS and edge logic in one place); Tailwind v4's token system powers the two-tier design. The frontend uses a **lean shadcn-primitive + feature-component** model — no atomic-design explosion — so components stay few and strong.
 
-## 📸 Screenshots
-### Landing Page
-![Screenshot 1](/doc/images/landing_page.png)
-### Dashboard
-![Screenshot 2](/doc/images/dashboard.png)
-### Profile Page
-![Screenshot 3](/doc/images/profile.png)
-### Settings Page
-![Screenshot 4](/doc/images/settings.png)
+## Getting Started
 
-## 🚀 Getting Started
-Follow these steps to set up a local development environment for Whispr.
 ### Prerequisites
-Make sure you have the following installed/setup on your system:
-- Git – for cloning the repository
-- Node.js (v18.17 or above recommended) – JavaScript runtime
-- npm (comes with Node.js) – for installing dependencies
-- Supabase account – You'll need a Supabase project to use as the back-end (sign up at supabase.com). In the project, obtain your Supabase API URL and anon API key for the next step
+
+- **Git**, **Node.js 20+** (18.17+ works), and **npm**.
+- A **Supabase** project — grab your project URL, anon key and functions URL.
 
 ### Installation
-1. **Clone the repo**
+
+1. **Clone & install**
    ```sh
    git clone https://github.com/hendurhance/whispr.git
    cd whispr
+   npm install
    ```
-2. **Install NPM packages**
+
+2. **Configure environment** — create `.env.local` in the root:
    ```sh
-    npm install
-    ```
-3. **Configure environment variables**: Create a `.env.local` file in the root directory and add the following variables
-    ```sh
-    NEXT_PUBLIC_APP_URL=http://localhost:3000
-    NEXT_PUBLIC_SUPABASE_URL=<your_supabase_project_url>
-    NEXT_PUBLIC_SUPABASE_ANON_KEY=<your_supabase_anon_key>
-    ```
-    Replace the placeholders with your actual Supabase project credentials.
-4. **Run the development server**
-    ```sh
-    npm run dev
-    ```
-  This will run the app in development mode. Open http://localhost:3000 in your browser to view it.
-5. **Setup Supabase Database**: In your Supabase project, set up the database schema:
-   - Navigate to the SQL Editor in your Supabase dashboard
-   - Run the SQL script from `/migrations/init.sql` to create the necessary tables, functions, and Row Level Security (RLS) policies
-   - This will create tables for profiles, whisprs, social_links, and weekly_stats
-   
-6. **Setup Supabase Edge Functions** (Optional but recommended for production):
-   In your Supabase project, you may want to deploy edge functions for server-side operations:
-   - `update-profile-views`: Handles updating profile view counts
-   - `update-whispr-counts`: Handles updating whispr statistics
-   - `submit-whispr`: Handles anonymous message submissions with validation
-   - `delete-user`: Handles user account deletion with proper cleanup
-   
-7. **Create an account**: Once the app is running locally, navigate to http://localhost:3000 and click Sign Up. You can create an account using email (you'll receive a magic login link). After your first login, you'll be prompted to set up your profile and choose a unique username.
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
+   NEXT_PUBLIC_SUPABASE_URL=<your_supabase_project_url>
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=<your_supabase_anon_key>
+   NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL=https://<project-ref>.supabase.co/functions/v1
 
-8. **Set up your profile**: After signing up, configure your profile settings including your username, display name, bio, and avatar. Your personal Whispr link will be `http://localhost:3000/<username>` (or `trywhispr.me/<username>` in production).
+   # optional
+   NEXT_PUBLIC_VAPID_PUBLIC_KEY=<vapid_public_key> # Web Push (see below)
+   NEXT_PUBLIC_GOOGLE_VERIFICATION=<gsc_token> # Google Search Console
+   ```
 
-9. **Test the app**: 
-   - Share your profile link with friends or open it in an incognito browser
-   - Submit an anonymous message to yourself
-   - Check your dashboard to see the received message
-   - Explore customization options, filters, and other features
+3. **Set up the database** — in the Supabase **SQL Editor**, run every file in [`/migrations`](/migrations) **in order** (`001-init.sql` `007-web-push.sql`). They create the tables, RLS policies, RPCs and triggers (profiles, whisprs, social_links, weekly_stats, content_reports, rate_limit_hits, push_subscriptions, …).
 
-> Happy Hacking! You now have Whispr running locally with Next.js. Feel free to explore the code, tweak features, or contribute improvements. For a deep dive into the architecture and design of Whispr, see the [Technical Specifications](/doc/technical-specifications.md) document.
-6. **Create an account on Whispr:** Once the app is running locally, click Sign Up and create an account. You can sign up with an email (you’ll receive a magic login link). After your first login, you’ll be prompted to choose a username for your profile link.
-7. Set up your profile link: After signing up, Whispr will associate your chosen username with a personal link (e.g., `http://localhost:3000/<username>` for local dev, or `trywhispr.me/<username>` in production)
-github.com. Share this link with friends or on social media so others can send you anonymous messages!
-9. Test sending/receiving messages: Try opening your profile link in an incognito browser (or have a friend open it). You’ll see a message submission page where anyone can send you a Whispr anonymously. Submit a test message. Then, log back into your account and check your dashboard – the message should appear there, along with any metadata like the type of message and timestamp.
-> Happy Hacking! You now have Whispr running locally. Feel free to explore the code, tweak features, or contribute improvements. For a deep dive into the architecture and design of Whispr, see the Technical Specifications document.
+4. **Deploy the Edge Functions** (in [`/supabase-fns`](/supabase-fns), via the Supabase CLI) — needed for production:
+   - `submit-whispr` — anonymous submission with Zod validation + per-IP rate limiting (set `RATE_LIMIT_SALT`).
+   - `send-push` — Web Push sender (set `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`).
+   - `update-profile-views`, `update-whispr-count`, `delete-user`.
 
-## 💬 Usage Example
-Scenario: _You want to gather honest feedback and fun messages from your friends. Here’s how you can use Whispr:_
-- Sign Up & Get Your Link: Register on Whispr (using the demo or your deployed instance) and create a unique username. For example, if you choose alex, your anonymous message link will be `trywhispr.me/alex`. This link is displayed on your dashboard.
-- **Share the Link**: Post your Whispr link on social platforms or send it directly to friends. Invite people to “send me anything – anonymously.”
-**Receive Messages**: Others can click your link and be taken to the Whispr submission page for your profile. They do not need to log in or reveal who they are. They can select a category (question, compliment, confession, etc.), type a message, and send it completely anonymously
-**Read and Respond**: When someone sends you a message, it gets saved to the database with no identifying information about the sender (aside from hidden metadata). You can respond by sharing the message or downloading it as an image. You will get an image like this:
-  > ![Screenshot 5](/doc/images/whispr.png)
+5. **Run the dev server**
+   ```sh
+   npm run dev
+   ```
+   Open <http://localhost:3000>.
 
-You can log into Whispr and see the new message on your dashboard. New messages are marked as unread. You might choose to respond to these messages publicly by sharing them (outside the app), or just keep the feedback privately.
-**Manage Your Whisprs**: In your dashboard, you can filter messages by type (e.g., only show compliments) and sort them by date received or other criteria. This helps in managing a large number of incoming whisprs. You can also mark messages as read, or delete any message that is inappropriate.
+6. **Create an account** — click **Sign in**, enter your email, and click the magic link. You'll be prompted to choose a username and set up your profile. Your link is `http://localhost:3000/<username>` locally (`trywhispr.me/<username>` in production).
 
-This simple flow allows for open communication – you get honest messages, and senders get the freedom of anonymity. Whispr’s design ensures that while messages are anonymous to users, there are protections behind the scenes to prevent abuse (like rate limiting and encrypted tracking of submissions).
+7. **Test it** — open your link in an incognito window, send yourself a whispr, and watch it appear in your dashboard.
 
-## 🤝 Contributing
-Contributions are what make the open-source community amazing! **We welcome all contributions** – whether it’s bug fixes, new features, or improvements to documentation. If you’re interested in contributing to Whispr, please take a moment to read our [contributing guidelines](/CONTRIBUTING.md).
-Some ways you can contribute:
-- **Report Bugs**: If you find a bug, you can use the GitHub issue tracker to let us know. Please include details and steps to reproduce.
-- **Request Features**: Have an idea for a new feature or improvement? Open an issue to discuss it, or submit a pull request if you’re ready to code it.
-- **Improve Documentation**: Spot an error or have suggestions for better docs? We’d love your help to make our documentation clearer and more comprehensive.
-Please note we have a Code of Conduct to ensure a respectful, harassment-free experience for everyone. By participating, you agree to abide by it
+### Web Push (optional)
 
-## 📝 License
-Distributed under the [AGPL-3.0 License](/LICENSE).You are free to use, modify, and distribute this software. See the LICENSE file for the full license text.
+1. Generate keys: `npx web-push generate-vapid-keys`.
+2. Set `NEXT_PUBLIC_VAPID_PUBLIC_KEY` in the app env, and `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` / `VAPID_SUBJECT` as secrets on the `send-push` function.
+3. In Supabase **Database Webhooks**, create a hook on `whisprs` **INSERT** that calls the `send-push` Edge Function. Push then fires on every new whispr (and the inbox also updates via polling while open).
 
-## 🙏🏽 Support
-If you like this project, please consider supporting it by starring ⭐ and sharing it with your friends! You can also [sponsor](https://github.com/sponsors/hendurhance) me or [buy me a coffee](https://www.buymeacoffee.com/hendurhance) to help me continue developing it. Thanks for your support!
+## Project structure
 
-If you find Whispr useful or fun, please consider supporting the project:
-- Star this repository on GitHub ⭐ to show your appreciation.
-- Share Whispr with your friends or on social media to help others discover it.
-- Sponsor the Maintainer:  You can [sponsor](https://github.com/sponsors/hendurhance) or [buy me them coffee](https://www.buymeacoffee.com/hendurhance) to contribute to ongoing development.
+```
+app/ # routes — (public) / (authenticated) / (marketing) groups, og/ image routes, robots & sitemap
+components/ # ui (shadcn), dashboard, public-profile, landing, marketing, brand, pwa, ...
+lib/ # next/og share-card renderers, client/server data, prompts & marketing & blog content
+hooks/ # client-interaction hooks (no data fetching)
+utils/ # supabase clients + Zod validation (source of truth)
+configs/ # env config
+migrations/ # 001–007 SQL — RLS, RPCs, triggers
+supabase-fns/ # Deno Edge Functions
+public/ # PWA manifest, service worker, icons, OG image
+```
+
+## Usage
+
+You want honest, anonymous messages from your audience. Here's the flow:
+
+1. **Get your link** — sign up and claim a username; your link (`trywhispr.me/alex`) shows on your dashboard.
+2. **Share it** — post it in a bio or story: *"send me anything — anonymously."*
+3. **People send** — anyone opening your link lands on your submission page. No login, no name. They pick a category, type a message, and send.
+4. **You read & reply** — new whisprs land in your private inbox (unread-flagged, push-notified). Answer the good ones by turning them into a **share card** and posting it to your socials — the card carries your link, looping new senders back.
+5. **You stay in control** — filter by type, mark read, delete, or report. Pause incoming messages or hide your profile from search anytime.
+
+Anonymous to senders, private to you, with rate limiting and a report flow working behind the scenes to keep it safe.
+
+## Contributing
+
+Contributions of all kinds are welcome — bug fixes, features, docs. Please read the [contributing guidelines](/CONTRIBUTING.md) first. Some ways to help:
+
+- **Report bugs** via the [issue tracker](https://github.com/hendurhance/whispr/issues) (include reproduction steps).
+- **Request features** — open an issue to discuss, or send a PR.
+- **Improve docs** — clearer docs help everyone.
+
+By participating you agree to abide by our [Code of Conduct](/CODE_OF_CONDUCT.md).
+
+## License
+
+Distributed under the [AGPL-3.0 License](/LICENSE). You're free to use, modify and distribute this software; see the LICENSE file for the full text.
+
+## Support
+
+If Whispr is useful or fun, please:
+
+- **Star** this repository to show your appreciation.
+- **Share** Whispr with friends or on social media.
+- **Sponsor** the maintainer — [GitHub Sponsors](https://github.com/sponsors/hendurhance) or [buy me a coffee](https://www.buymeacoffee.com/hendurhance).
+
+<p align="right"><a href="#top">back to top</a></p>

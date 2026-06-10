@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import PublicProfilePage from '@/components/pages/PublicProfilePage';
+import { PublicProfile } from '@/components/public-profile/public-profile';
 import { createClient } from '@/utils/supabase/server';
-import { FUNCTIONS } from '@/configs';
+import { FUNCTIONS, APP_URL } from '@/configs';
 
 type Props = {
   params: Promise<{ username: string }>;
@@ -24,7 +24,8 @@ async function fetchProfileData(username: string) {
         allow_anonymous,
         show_question_types,
         selected_theme,
-        selected_background
+        selected_background,
+        is_indexable
       `)
       .eq('username', username)
       .single();
@@ -58,6 +59,7 @@ async function fetchProfileData(username: string) {
       showQuestionTypes: data.show_question_types,
       selectedTheme: data.selected_theme,
       selectedBackground: data.selected_background,
+      isIndexable: data.is_indexable ?? true,
     };
   } catch (error) {
     console.error('Error fetching profile data:', error);
@@ -73,9 +75,18 @@ async function updateProfileViews(username: string) {
       body: JSON.stringify({ username })
     });
   } catch (error) {
-    // Silent fail - views are non-critical
     console.error('Error updating profile views:', error);
   }
+}
+
+type ProfileData = NonNullable<Awaited<ReturnType<typeof fetchProfileData>>>;
+
+function isIndexableProfile(profile: ProfileData, username: string): boolean {
+  const hasContent =
+    Boolean(profile.bio?.trim()) ||
+    Boolean(profile.displayName && profile.displayName.trim().toLowerCase() !== username.toLowerCase()) ||
+    Boolean(profile.displaySocialLinks && profile.socialLinks?.length);
+  return (profile.isIndexable ?? true) && hasContent;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -100,9 +111,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   
   const title = `${displayName} (@${username}) - Send Anonymous Messages | Whispr`;
 
+  const isIndexable = isIndexableProfile(profile, username);
+
   return {
     title,
     description,
+    robots: { index: isIndexable, follow: true },
     keywords: [
       `${username}`,
       `${displayName}`,
@@ -118,29 +132,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       type: 'profile',
       url: `/${username}`,
-      images: profile.avatarUrl ? [
-        {
-          url: profile.avatarUrl,
-          width: 400,
-          height: 400,
-          alt: `${displayName}'s profile picture`,
-          type: 'image/jpeg',
-        }
-      ] : [
-        {
-          url: '/og-image.png',
-          width: 1200,
-          height: 630,
-          alt: `Send ${displayName} anonymous messages on Whispr`,
-        }
-      ],
       siteName: 'Whispr',
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: profile.avatarUrl ? [profile.avatarUrl] : ['/og-image.png'],
     },
     alternates: {
       canonical: `/${username}`,
@@ -152,7 +149,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function PublicProfile({ params }: Props) {
+export default async function Page({ params }: Props) {
   const { username } = await params;
 
   const profile = await fetchProfileData(username);
@@ -160,6 +157,29 @@ export default async function PublicProfile({ params }: Props) {
   if (profile) {
     updateProfileViews(username).catch(console.error);
   }
-  
-  return <PublicProfilePage initialProfile={profile} username={username} />;
+
+  const jsonLd =
+    profile && isIndexableProfile(profile, username)
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'ProfilePage',
+          mainEntity: {
+            '@type': 'Person',
+            name: profile.displayName || username,
+            alternateName: username,
+            ...(profile.bio ? { description: profile.bio } : {}),
+            ...(profile.avatarUrl ? { image: profile.avatarUrl } : {}),
+            url: `${APP_URL}/${username}`,
+          },
+        }
+      : null;
+
+  return (
+    <>
+      {jsonLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
+      )}
+      <PublicProfile initialProfile={profile} username={username} />
+    </>
+  );
 }

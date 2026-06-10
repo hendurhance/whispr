@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import TermsPage from '@/components/pages/TermsPage';
+import { TermsContent } from '@/components/legal/terms-content';
 
 export const metadata: Metadata = {
   title: 'Terms of Service - Whispr',
@@ -15,5 +15,5 @@ export const metadata: Metadata = {
 };
 
 export default function Terms() {
-  return <TermsPage />;
+  return <TermsContent />;
 }

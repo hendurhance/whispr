@@ -153,11 +153,13 @@ export function Dashboard({ initialWhisprs, initialStats, initialUser, initialPr
 
         <div className="grid min-h-0 flex-1 overflow-hidden xl:grid-cols-[1fr_360px]">
           <section className="min-w-0 overflow-y-auto px-5 py-5 pb-24 lg:pb-5">
-            <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <StatTile label="Total whisprs" value={stats.total} />
-              <StatTile label="Unread" value={stats.unread} />
-              <StatTile label="Profile views" value={initialProfile?.total_views ?? 0} />
-            </div>
+            <p className="mb-4 flex flex-wrap gap-x-3 gap-y-1 text-sm text-ink-faint">
+              <Stat value={stats.unread} label="unread" isEmphasized={stats.unread > 0} />
+              <span aria-hidden="true">·</span>
+              <Stat value={stats.total} label="total" />
+              <span aria-hidden="true">·</span>
+              <Stat value={initialProfile?.total_views ?? 0} label="profile views" />
+            </p>
 
             <div className="mb-4 flex flex-wrap items-center gap-1.5">
               <FilterChip active={selectedType === 'all'} onClick={() => setSelectedType('all')}>
@@ -270,12 +272,11 @@ export function Dashboard({ initialWhisprs, initialStats, initialUser, initialPr
   )
 }
 
-function StatTile({ label, value }: { label: string; value: number }) {
+function Stat({ value, label, isEmphasized }: { value: number; label: string; isEmphasized?: boolean }) {
   return (
-    <div className="rounded-xl border border-border bg-paper p-4">
-      <p className="text-xs font-medium text-ink-faint">{label}</p>
-      <p className="mt-1.5 font-display text-2xl font-bold tracking-tight text-ink tabular-nums">{value.toLocaleString()}</p>
-    </div>
+    <span>
+      <span className={cn('font-semibold tabular-nums', isEmphasized ? 'text-flame-ink' : 'text-ink')}>{value.toLocaleString()}</span> {label}
+    </span>
   )
 }
 

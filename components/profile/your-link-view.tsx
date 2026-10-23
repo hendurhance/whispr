@@ -80,7 +80,7 @@ export function YourLinkView({ initialUser, initialProfile, unreadCount }: YourL
 
       <div className="mx-auto w-full max-w-3xl space-y-6 px-5 py-6">
         <section className="rounded-xl border border-border bg-paper p-5 shadow-sm">
-          <p className="text-sm font-semibold text-ink">Your public link</p>
+          <h2 className="font-display text-base font-bold text-ink">Your public link</h2>
           <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0 flex-1">
               <div className="flex items-center rounded-lg border border-border bg-muted px-3 py-3 font-voice text-sm text-ink">
@@ -126,7 +126,8 @@ export function YourLinkView({ initialUser, initialProfile, unreadCount }: YourL
         </section>
 
         <section className="rounded-xl border border-border bg-paper p-5 shadow-sm">
-          <p className="text-sm font-semibold text-ink">Controls</p>
+          <h2 className="font-display text-base font-bold text-ink">Controls</h2>
+          <p className="mt-1 text-xs text-ink-faint">Changes save as soon as you flip a switch.</p>
           <div className="mt-4 space-y-4">
             <ToggleRow
               title="Accept anonymous messages"
@@ -150,8 +151,8 @@ export function YourLinkView({ initialUser, initialProfile, unreadCount }: YourL
         </section>
 
         <section className="rounded-xl border border-border bg-paper p-5 shadow-sm">
-          <p className="text-sm font-semibold text-ink">Appearance</p>
-          <p className="mt-1 text-xs text-ink-faint">Personalize your public page and share card — stays on-brand.</p>
+          <h2 className="font-display text-base font-bold text-ink">Appearance</h2>
+          <p className="mt-1 text-xs text-ink-faint">Personalize your public page and share card. Changes save automatically.</p>
 
           <p className="mt-4 text-xs font-medium text-ink-soft">Accent ink</p>
           <div className="mt-2 flex flex-wrap gap-2.5">
@@ -194,7 +195,7 @@ export function YourLinkView({ initialUser, initialProfile, unreadCount }: YourL
         </section>
 
         <section className="rounded-xl border border-border bg-paper p-5 shadow-sm">
-          <p className="text-sm font-semibold text-ink">Social links</p>
+          <h2 className="font-display text-base font-bold text-ink">Social links</h2>
           <p className="mt-1 text-xs text-ink-faint">Up to 10, one per platform. Shown on your page when “Show social links” is on.</p>
 
           {social.socialLinks.length > 0 && (
@@ -205,7 +206,7 @@ export function YourLinkView({ initialUser, initialProfile, unreadCount }: YourL
                   <span className="min-w-0 flex-1 truncate font-voice text-xs text-ink-faint">{l.url}</span>
                   <button
                     onClick={() => social.deleteSocialLink(l.id)}
-                    className="flex size-7 shrink-0 items-center justify-center rounded-md text-ink-faint transition-colors hover:bg-paper hover:text-ember"
+                    className="flex size-7 shrink-0 items-center justify-center rounded-md text-ink-faint transition-colors hover:bg-paper hover:text-ember-ink"
                     title="Remove"
                   >
                     <Trash2 className="size-4" />
@@ -233,7 +234,7 @@ export function YourLinkView({ initialUser, initialProfile, unreadCount }: YourL
             </Button>
           </div>
 
-          {social.error && <p className="mt-3 text-sm font-medium text-destructive">{social.error}</p>}
+          {social.error && <p className="mt-3 text-sm font-medium text-ember-ink">{social.error}</p>}
         </section>
       </div>
     </AppShell>

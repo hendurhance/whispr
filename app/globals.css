@@ -16,6 +16,8 @@
   --color-flame-deep: var(--flame-deep);
   --color-ember: var(--ember);
   --color-ember-deep: var(--ember-deep);
+  --color-ember-ink: var(--ember-ink);
+  --color-mint-ink: var(--mint-ink);
   --color-ultra: var(--ultra);
   --color-ultra-deep: var(--ultra-deep);
 
@@ -47,6 +49,9 @@
   --flame-ink: var(--flame);
   --ember: #ff4d2e;
   --ember-deep: #e03a1c;
+  /* Bright ember/mint fail 4.5:1 as text on paper; these pass. */
+  --ember-ink: #c4250f;
+  --mint-ink: #0f7a5f;
   --ultra: #2330c9;
   --ultra-deep: #1a24a3;
 
@@ -109,6 +114,8 @@
   --border: #2e2e39;
   --input: #2e2e39;
   --flame-ink: #7280e8;
+  --ember-ink: var(--ember);
+  --mint-ink: var(--mint);
   --ultra: #7280e8;
   --overprint: #a878bd;
 }

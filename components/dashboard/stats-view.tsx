@@ -1,9 +1,12 @@
 'use client'
 
+import { toast } from 'react-hot-toast'
+import { Copy } from 'lucide-react'
 import type { User } from '@supabase/supabase-js'
 import type { Profile } from '@/types'
 import type { WhisprStats } from '@/types/whispr'
 import { APP_URL_CLEAN } from '@/configs'
+import { Button } from '@/components/ui/button'
 import { AppShell } from './app-shell'
 
 interface StatsViewProps {
@@ -38,6 +41,15 @@ export function StatsView({ user, profile, stats, recentDates }: StatsViewProps)
   const max = Math.max(...days.map((d) => d.count), 1)
   const weekTotal = days.reduce((a, d) => a + d.count, 0)
 
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(`https://${profileUrl}`)
+      toast.success('Link copied')
+    } catch {
+      toast.error('Could not copy')
+    }
+  }
+
   return (
     <AppShell username={username} displayName={displayName} avatarUrl={avatarUrl} profileUrl={profileUrl} unreadCount={unread}>
       <header className="border-b border-border px-5 py-3.5">
@@ -53,9 +65,14 @@ export function StatsView({ user, profile, stats, recentDates }: StatsViewProps)
         </div>
 
         <div className="mt-6 rounded-xl border border-border bg-paper p-5 shadow-sm">
-          <p className="text-sm font-semibold text-ink">Whisprs · last 7 days</p>
+          <h2 className="font-display text-base font-bold text-ink">Whisprs · last 7 days</h2>
           {weekTotal === 0 ? (
-            <p className="py-10 text-center text-sm text-ink-faint">No whisprs in the last 7 days yet.</p>
+            <div className="flex flex-col items-center py-10 text-center">
+              <p className="text-sm text-ink-faint">No whisprs in the last 7 days yet. Share your link to get some.</p>
+              <Button variant="flame" className="mt-4" onClick={copyLink}>
+                <Copy /> Copy your link
+              </Button>
+            </div>
           ) : (
             <div className="mt-6 flex h-44 gap-3">
               {days.map((d, i) => (
@@ -67,7 +84,7 @@ export function StatsView({ user, profile, stats, recentDates }: StatsViewProps)
                       title={`${d.count} whispr${d.count === 1 ? '' : 's'}`}
                     />
                   </div>
-                  <span className="font-voice text-[11px] text-ink-faint">{d.label}</span>
+                  <span className="font-voice text-xs text-ink-faint">{d.label}</span>
                 </div>
               ))}
             </div>

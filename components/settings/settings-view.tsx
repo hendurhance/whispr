@@ -65,7 +65,7 @@ export function SettingsView({ initialUser, initialProfile, unreadCount }: Setti
 
       <div className="mx-auto w-full max-w-3xl space-y-6 px-5 py-6">
         <form onSubmit={s.handleSubmit} className="rounded-xl border border-border bg-paper p-5 shadow-sm">
-          <p className="text-sm font-semibold text-ink">Profile</p>
+          <h2 className="font-display text-base font-bold text-ink">Profile</h2>
 
           <div className="mt-4 flex items-center gap-4">
             {s.avatarUrl ? (
@@ -86,9 +86,9 @@ export function SettingsView({ initialUser, initialProfile, unreadCount }: Setti
               {s.isCheckingUsername ? (
                 <Hint><Loader2 className="size-3 animate-spin" /> checking…</Hint>
               ) : s.isUsernameAvailable === true ? (
-                <Hint className="text-spot-mint"><Check className="size-3" /> available</Hint>
+                <Hint className="text-mint-ink"><Check className="size-3" /> available</Hint>
               ) : s.isUsernameAvailable === false ? (
-                <Hint className="text-ember"><X className="size-3" /> taken or invalid</Hint>
+                <Hint className="text-ember-ink"><X className="size-3" /> taken or invalid</Hint>
               ) : null}
             </Field>
 
@@ -109,7 +109,7 @@ export function SettingsView({ initialUser, initialProfile, unreadCount }: Setti
             </Field>
           </div>
 
-          {s.error && <p className="mt-4 rounded-md border border-ember/30 bg-ember/10 px-3 py-2 text-sm font-medium text-destructive">{s.error}</p>}
+          {s.error && <p className="mt-4 rounded-md border border-ember/30 bg-ember/10 px-3 py-2 text-sm font-medium text-ember-ink">{s.error}</p>}
           {s.successMessage && <p className="mt-4 rounded-md border border-spot-mint/30 bg-spot-mint/10 px-3 py-2 text-sm font-medium text-ink">{s.successMessage}</p>}
 
           <Button type="submit" variant="flame" className="mt-5" disabled={s.isSubmitting}>
@@ -118,13 +118,13 @@ export function SettingsView({ initialUser, initialProfile, unreadCount }: Setti
                 <Loader2 className="animate-spin" /> Saving…
               </>
             ) : (
-              'Save changes'
+              'Save profile'
             )}
           </Button>
         </form>
 
         <section className="rounded-xl border border-border bg-paper p-5 shadow-sm">
-          <p className="text-sm font-semibold text-ink">Email</p>
+          <h2 className="font-display text-base font-bold text-ink">Email</h2>
           <div className="mt-3">
             <p className="font-voice text-sm text-ink">{initialUser.email}</p>
             <p className="mt-1 text-xs text-ink-faint">Email changes aren&apos;t supported yet — contact support if you need to switch.</p>
@@ -143,7 +143,7 @@ export function SettingsView({ initialUser, initialProfile, unreadCount }: Setti
         <ThemeToggle />
 
         <section className="rounded-xl border border-border bg-paper p-5 shadow-sm">
-          <p className="text-sm font-semibold text-ink">Account</p>
+          <h2 className="font-display text-base font-bold text-ink">Account</h2>
 
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
             <div>
@@ -157,7 +157,7 @@ export function SettingsView({ initialUser, initialProfile, unreadCount }: Setti
 
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-medium text-destructive">Delete account</p>
+              <p className="text-sm font-medium text-ember-ink">Delete account</p>
               <p className="text-xs text-ink-faint">Permanently deletes your profile and all whisprs.</p>
             </div>
             {confirmDelete ? (
@@ -170,7 +170,7 @@ export function SettingsView({ initialUser, initialProfile, unreadCount }: Setti
                 </Button>
               </div>
             ) : (
-              <Button variant="outline" size="sm" className="border-ember/40 text-ember hover:bg-ember/10" onClick={() => setConfirmDelete(true)}>
+              <Button variant="outline" size="sm" className="border-ember/40 text-ember-ink hover:bg-ember/10" onClick={() => setConfirmDelete(true)}>
                 Delete…
               </Button>
             )}
@@ -191,5 +191,5 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 }
 
 function Hint({ children, className }: { children: ReactNode; className?: string }) {
-  return <span className={`flex items-center gap-1 font-voice text-[11px] text-ink-faint ${className ?? ''}`}>{children}</span>
+  return <span className={`flex items-center gap-1 font-voice text-xs text-ink-faint ${className ?? ''}`}>{children}</span>
 }

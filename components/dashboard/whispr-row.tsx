@@ -41,31 +41,38 @@ export function WhisprRow({ whispr, selected, busy, onSelect, onShare, onMarkRea
       <div className="min-w-0 flex-1">
         <div className="mb-1.5 flex items-center gap-2">
           <WhisprTypeBadge type={whispr.type} />
-          <span className="ml-auto shrink-0 font-voice text-[11px] text-ink-faint">{formatDate(whispr.createdAt, true)}</span>
+          <span className="ml-auto shrink-0 font-voice text-xs text-ink-faint">{formatDate(whispr.createdAt, true)}</span>
         </div>
 
-        <p className={cn('font-voice text-[13.5px] leading-relaxed', whispr.isRead ? 'text-ink-faint' : 'text-ink')}>
+        <p className={cn('font-voice text-[13px] leading-relaxed', whispr.isRead ? 'text-ink-faint' : 'text-ink')}>
           {whispr.content}
         </p>
 
-        <div
-          className="mt-2 flex items-center gap-0.5 opacity-60 transition-opacity group-hover:opacity-100"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <Button variant="ghost" size="icon" className="size-8 text-ink-faint hover:text-flame-ink" disabled={busy} title="Make share card" onClick={() => onShare(whispr)}>
+        <div className="mt-2 flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-8 text-ink-faint hover:text-flame-ink pointer-coarse:size-11"
+            disabled={busy}
+            title="Make share card"
+            aria-label="Make share card"
+            onClick={() => onShare(whispr)}
+          >
             <Share2 />
           </Button>
-          {!whispr.isRead && (
-            <Button variant="ghost" size="icon" className="size-8 text-ink-faint hover:text-ink" title="Mark read" onClick={() => onMarkRead(whispr)}>
-              <Check />
+          <div className="hidden items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 pointer-fine:flex">
+            {!whispr.isRead && (
+              <Button variant="ghost" size="icon" className="size-8 text-ink-faint hover:text-ink" title="Mark read" aria-label="Mark read" onClick={() => onMarkRead(whispr)}>
+                <Check />
+              </Button>
+            )}
+            <Button variant="ghost" size="icon" className="size-8 text-ink-faint hover:text-ember-ink" title="Delete" aria-label="Delete" onClick={() => onDelete(whispr)}>
+              <Trash2 />
             </Button>
-          )}
-          <Button variant="ghost" size="icon" className="size-8 text-ink-faint hover:text-ember" title="Delete" onClick={() => onDelete(whispr)}>
-            <Trash2 />
-          </Button>
-          <Button variant="ghost" size="icon" className="size-8 text-ink-faint hover:text-ember" title="Report" onClick={() => onReport(whispr)}>
-            <Flag />
-          </Button>
+            <Button variant="ghost" size="icon" className="size-8 text-ink-faint hover:text-ember-ink" title="Report" aria-label="Report" onClick={() => onReport(whispr)}>
+              <Flag />
+            </Button>
+          </div>
         </div>
       </div>
     </div>

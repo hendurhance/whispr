@@ -21,7 +21,7 @@ export function ThemeToggle() {
 
   return (
     <section className="rounded-xl border border-border bg-paper p-5 shadow-sm">
-      <p className="text-sm font-semibold text-ink">Appearance</p>
+      <h2 className="font-display text-base font-bold text-ink">Dashboard theme</h2>
       <div className="mt-4 flex items-center justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-ink">Dark mode</p>

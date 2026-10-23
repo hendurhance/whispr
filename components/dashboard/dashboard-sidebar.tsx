@@ -63,7 +63,7 @@ export function DashboardSidebar({ username, displayName, avatarUrl, profileUrl,
               <Icon className="size-[18px] shrink-0" />
               {label}
               {label === 'Inbox' && unreadCount > 0 && (
-                <span className="ml-auto rounded-full bg-flame px-1.5 py-0.5 font-voice text-[11px] font-semibold leading-none text-white">
+                <span className="ml-auto rounded-full bg-flame px-1.5 py-0.5 font-voice text-xs font-semibold leading-none text-white">
                   {unreadCount}
                 </span>
               )}
@@ -83,7 +83,7 @@ export function DashboardSidebar({ username, displayName, avatarUrl, profileUrl,
           )}
           <div className="min-w-0 flex-1">
             <p className="truncate text-[13px] font-semibold text-ink">@{username}</p>
-            <p className="truncate font-voice text-[10.5px] text-ink-faint">{profileUrl}</p>
+            <p className="truncate font-voice text-xs text-ink-faint">{profileUrl}</p>
           </div>
           <button
             onClick={copyLink}

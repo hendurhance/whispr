@@ -43,7 +43,7 @@ export function PushToggle() {
     <div className="rounded-xl border border-border bg-paper p-5 shadow-sm">
       <div className="flex items-center justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-ink">Push notifications</p>
+          <h2 className="font-display text-base font-bold text-ink">Push notifications</h2>
           <p className="mt-1 text-sm text-ink-faint">
             {supported
               ? 'Get a notification on this device when a new whispr lands — even when Whispr is closed.'

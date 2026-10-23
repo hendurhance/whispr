@@ -24,7 +24,7 @@ export function MobileTabBar() {
             key={t.href}
             href={t.href}
             className={cn(
-              'flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[10px] font-medium transition-colors',
+              'flex flex-1 flex-col items-center gap-0.5 py-2.5 text-xs font-medium transition-colors',
               active ? 'text-flame-ink' : 'text-ink-faint hover:text-ink',
             )}
           >

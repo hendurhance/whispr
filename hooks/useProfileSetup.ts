@@ -145,7 +145,7 @@ export const useProfileSetup = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!isAvailable || !username || !user) return;
+    if (!isAvailable || !username || !user || isSubmitting) return;
 
     const normalizedUsername = username.toLowerCase().trim();
     const usernameValidation = validateUsername(normalizedUsername);
@@ -177,13 +177,31 @@ export const useProfileSetup = () => {
           }
         ]);
 
-      if (profileError) throw profileError;
+      let savedProfile = { username: normalizedUsername, avatar_url: avatarUrl };
+
+      // 23505 is either our own profile from an earlier attempt (continue) or a username someone else just took.
+      if (profileError?.code === '23505') {
+        const { data: ownProfile } = await supabase
+          .from('profiles')
+          .select('username, avatar_url')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (!ownProfile) {
+          setIsAvailable(false);
+          setError('That username was just taken. Please pick another.');
+          return;
+        }
+        savedProfile = ownProfile;
+      } else if (profileError) {
+        throw profileError;
+      }
 
       const { error: updateError } = await supabase.auth.updateUser({
         data: {
           profile_setup: true,
-          username: username.toLowerCase(),
-          avatar_url: avatarUrl
+          username: savedProfile.username,
+          avatar_url: savedProfile.avatar_url
         }
       });
 

@@ -1,7 +1,8 @@
 import { cache } from 'react';
-import { unstable_cache } from 'next/cache';
 import { createClient } from '@/utils/supabase/server';
 import { Profile } from '@/types';
+import type { Whispr, WhisprStats } from '@/types/whispr';
+import { EMPTY_STATS, INBOX_PAGE_SIZE, WHISPR_COLUMNS, toWhispr, type WhisprRecord } from '@/lib/inbox';
 
 export const getUserSession = cache(async () => {
   const supabase = await createClient();
@@ -20,71 +21,48 @@ export const getProfileData = cache(async (): Promise<Profile | null> => {
   if (!user) return null;
 
   const supabase = await createClient();
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('user_id', user.id)
+    .maybeSingle();
 
-  try {
-    const getCachedProfile = unstable_cache(
-      async (userId: string) => {
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', userId)
-          .single();
-
-        if (profileError) {
-          if (profileError.code === 'PGRST116') {
-            return null;
-          }
-          throw profileError;
-        }
-
-        return profile as Profile;
-      },
-      ['profile-data'],
-      {
-        revalidate: 60,
-        tags: ['profile'],
-      },
-    );
-
-    return await getCachedProfile(user.id);
-  } catch {
-    return null;
-  }
+  if (error) return null;
+  return profile as Profile | null;
 });
 
-export const getWhisprsData = cache(async () => {
-  const user = await getUserSession();
-  if (!user) return { whisprs: [], user: null };
-
+export const getInboxPage = cache(async (userId: string): Promise<Whispr[]> => {
   const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('whisprs')
+    .select(WHISPR_COLUMNS)
+    .eq('user_id', userId)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+    .limit(INBOX_PAGE_SIZE);
 
-  try {
-    const getCachedWhisprs = unstable_cache(
-      async (userId: string) => {
-        const { data: whisprs, error: whisprsError } = await supabase
-          .from('whisprs')
-          .select('*')
-          .eq('user_id', userId)
-          .eq('status', 'active')
-          .order('created_at', { ascending: false });
+  if (error || !data) return [];
+  return (data as WhisprRecord[]).map(toWhispr);
+});
 
-        if (whisprsError) {
-          return [];
-        }
+export const getInboxSummary = cache(async (): Promise<WhisprStats> => {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc('get_inbox_summary');
 
-        return whisprs || [];
-      },
-      ['whisprs-data'],
-      {
-        revalidate: 30,
-        tags: ['whisprs'],
-      },
-    );
+  if (error || !data) return EMPTY_STATS;
+  return data as WhisprStats;
+});
 
-    const whisprs = await getCachedWhisprs(user.id);
+export const getWhisprDatesSince = cache(async (userId: string, since: string): Promise<string[]> => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('whisprs')
+    .select('created_at')
+    .eq('user_id', userId)
+    .eq('status', 'active')
+    .gte('created_at', since)
+    .order('created_at', { ascending: false });
 
-    return { whisprs, user };
-  } catch {
-    return { whisprs: [], user: null };
-  }
+  if (error || !data) return [];
+  return data.map((w) => w.created_at as string);
 });

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { cache } from 'react';
 import { PublicProfile } from '@/components/public-profile/public-profile';
 import { createClient } from '@/utils/supabase/server';
 import { FUNCTIONS, APP_URL } from '@/configs';
@@ -7,7 +8,8 @@ type Props = {
   params: Promise<{ username: string }>;
 };
 
-async function fetchProfileData(username: string) {
+// cache() shares one query between generateMetadata and the page render.
+const fetchProfileData = cache(async (username: string) => {
   const supabase = await createClient();
 
   try {
@@ -65,7 +67,7 @@ async function fetchProfileData(username: string) {
     console.error('Error fetching profile data:', error);
     return null;
   }
-}
+});
 
 async function updateProfileViews(username: string) {
   try {

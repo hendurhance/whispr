@@ -7,8 +7,7 @@ import type { User } from '@supabase/supabase-js'
 import type { Profile } from '@/types'
 import { type Whispr, type WhisprType, type WhisprStats, getWhisprTypeLabel } from '@/types/whispr'
 import { markWhisprAsRead, deleteWhisprById, reportWhisprById } from '@/lib/client/whisprs'
-import { useWhisprFiltering } from '@/hooks/useWhisprFiltering'
-import { useInboxPolling } from '@/hooks/useInboxPolling'
+import { useInbox } from '@/hooks/useInbox'
 import { downloadShareCard, shareShareCard } from '@/lib/client/share-card'
 import { APP_URL_CLEAN } from '@/configs'
 import { Input } from '@/components/ui/input'
@@ -23,19 +22,13 @@ import { ReportDialog } from '@/components/ui/report-dialog'
 import { AppBadge } from '@/components/pwa/app-badge'
 
 interface DashboardProps {
-  initialWhisprs: Array<{
-    id: string
-    content: string
-    type: string
-    created_at: string
-    is_read: boolean
-    metadata?: Record<string, unknown>
-  }>
+  initialWhisprs: Whispr[]
+  initialStats: WhisprStats
   initialUser: User
   initialProfile: Profile | null
 }
 
-export function Dashboard({ initialWhisprs, initialUser, initialProfile }: DashboardProps) {
+export function Dashboard({ initialWhisprs, initialStats, initialUser, initialProfile }: DashboardProps) {
   const username = initialProfile?.username || (initialUser?.user_metadata?.username as string) || 'user'
   const displayName = initialProfile?.display_name || (initialUser?.user_metadata?.username as string) || 'there'
   const avatarUrl = initialProfile?.avatar_url || (initialUser?.user_metadata?.avatar_url as string) || ''
@@ -43,41 +36,23 @@ export function Dashboard({ initialWhisprs, initialUser, initialProfile }: Dashb
   const accentInk = initialProfile?.selected_theme || 'flame'
   const paperMode = initialProfile?.selected_background || 'light'
 
-  const [whisprs, setWhisprs] = useState<Whispr[]>(() =>
-    initialWhisprs.map((w) => ({
-      id: w.id,
-      content: w.content,
-      type: w.type as WhisprType,
-      createdAt: w.created_at,
-      isRead: w.is_read,
-      metadata: w.metadata || {},
-    })),
-  )
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
-  const stats = useMemo<WhisprStats>(() => {
-    const byType = whisprs.reduce((acc, w) => {
-      acc[w.type] = (acc[w.type] || 0) + 1
-      return acc
-    }, {} as Record<WhisprType, number>)
-    return { total: whisprs.length, unread: whisprs.filter((w) => !w.isRead).length, byType }
-  }, [whisprs])
-
-  const { selectedType, setSelectedType, searchTerm, setSearchTerm, filteredWhisprs, resetFilters, isFiltered } =
-    useWhisprFiltering({ whisprs })
-
-  useInboxPolling(initialUser?.id ?? '', (latest) => {
-    const knownIds = new Set(whisprs.map((w) => w.id))
-    const fresh = latest.filter((w) => !knownIds.has(w.id))
-    if (fresh.length === 0) return
-    toast.success(fresh.length === 1 ? 'New whispr just landed' : `${fresh.length} new whisprs landed`)
-    setWhisprs((prev) => {
-      const prevIds = new Set(prev.map((w) => w.id))
-      const toAdd = fresh.filter((w) => !prevIds.has(w.id))
-      if (toAdd.length === 0) return prev
-      return [...toAdd, ...prev].sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-    })
-  })
+  const {
+    whisprs,
+    stats,
+    hasMore,
+    isLoading,
+    selectedType,
+    setSelectedType,
+    searchTerm,
+    setSearchTerm,
+    resetFilters,
+    isFiltered,
+    loadMore,
+    markReadLocal,
+    removeLocal,
+  } = useInbox({ userId: initialUser.id, initialWhisprs, initialStats })
 
   const [busy, setBusy] = useState(false)
   const [pendingDelete, setPendingDelete] = useState<Whispr | null>(null)
@@ -87,9 +62,7 @@ export function Dashboard({ initialWhisprs, initialUser, initialProfile }: Dashb
 
   const markRead = async (w: Whispr) => {
     if (w.isRead) return
-    if (await markWhisprAsRead(w.id)) {
-      setWhisprs((prev) => prev.map((x) => (x.id === w.id ? { ...x, isRead: true } : x)))
-    }
+    if (await markWhisprAsRead(w.id)) markReadLocal(w.id)
   }
 
   const requestDelete = (w: Whispr) => setPendingDelete(w)
@@ -97,7 +70,7 @@ export function Dashboard({ initialWhisprs, initialUser, initialProfile }: Dashb
     const w = pendingDelete
     if (!w) return
     if (await deleteWhisprById(w.id)) {
-      setWhisprs((prev) => prev.filter((x) => x.id !== w.id))
+      removeLocal(w)
       setSelectedId((id) => (id === w.id ? null : id))
       toast.success('Whispr deleted')
     }
@@ -109,7 +82,7 @@ export function Dashboard({ initialWhisprs, initialUser, initialProfile }: Dashb
     const w = pendingReport
     if (!w) return
     if (await reportWhisprById(w.id, reason)) {
-      setWhisprs((prev) => prev.filter((x) => x.id !== w.id))
+      removeLocal(w)
       setSelectedId((id) => (id === w.id ? null : id))
       toast.success('Reported — we’ll take a look')
     }
@@ -197,9 +170,15 @@ export function Dashboard({ initialWhisprs, initialUser, initialProfile }: Dashb
               ))}
             </div>
 
-            {filteredWhisprs.length > 0 ? (
-              <div className="overflow-hidden rounded-xl border border-border bg-paper shadow-sm">
-                {filteredWhisprs.map((w) => (
+            {whisprs.length > 0 ? (
+              <div
+                className={cn(
+                  'overflow-hidden rounded-xl border border-border bg-paper shadow-sm transition-opacity',
+                  isLoading && 'opacity-60',
+                )}
+                aria-busy={isLoading}
+              >
+                {whisprs.map((w) => (
                   <WhisprRow
                     key={w.id}
                     whispr={w}
@@ -214,7 +193,15 @@ export function Dashboard({ initialWhisprs, initialUser, initialProfile }: Dashb
                 ))}
               </div>
             ) : (
-              <EmptyState isFiltered={isFiltered} onReset={resetFilters} profileUrl={profileUrl} onCopy={copyLink} />
+              !isLoading && <EmptyState isFiltered={isFiltered} onReset={resetFilters} profileUrl={profileUrl} onCopy={copyLink} />
+            )}
+
+            {hasMore && whisprs.length > 0 && (
+              <div className="mt-4 flex justify-center">
+                <Button variant="outline" onClick={loadMore} disabled={isLoading}>
+                  {isLoading ? 'Loading…' : 'Load older whisprs'}
+                </Button>
+              </div>
             )}
           </section>
 

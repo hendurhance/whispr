@@ -2,23 +2,25 @@
 
 import type { User } from '@supabase/supabase-js'
 import type { Profile } from '@/types'
+import type { WhisprStats } from '@/types/whispr'
 import { APP_URL_CLEAN } from '@/configs'
 import { AppShell } from './app-shell'
 
 interface StatsViewProps {
   user: User
   profile: Profile | null
-  whisprs: Array<{ is_read: boolean; created_at?: string }>
+  stats: WhisprStats
+  recentDates: string[]
 }
 
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
-export function StatsView({ user, profile, whisprs }: StatsViewProps) {
+export function StatsView({ user, profile, stats, recentDates }: StatsViewProps) {
   const username = profile?.username || (user.user_metadata?.username as string) || 'user'
   const displayName = profile?.display_name || username
   const avatarUrl = profile?.avatar_url || (user.user_metadata?.avatar_url as string) || ''
   const profileUrl = `${APP_URL_CLEAN}/${username}`
-  const unread = whisprs.filter((w) => !w.is_read).length
+  const unread = stats.unread
 
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -27,9 +29,8 @@ export function StatsView({ user, profile, whisprs }: StatsViewProps) {
     d.setDate(today.getDate() - (6 - i))
     return { label: DAY_LABELS[d.getDay()], key: d.toDateString(), count: 0 }
   })
-  for (const w of whisprs) {
-    if (!w.created_at) continue
-    const d = new Date(w.created_at)
+  for (const createdAt of recentDates) {
+    const d = new Date(createdAt)
     d.setHours(0, 0, 0, 0)
     const bucket = days.find((x) => x.key === d.toDateString())
     if (bucket) bucket.count++
@@ -45,7 +46,7 @@ export function StatsView({ user, profile, whisprs }: StatsViewProps) {
 
       <div className="mx-auto w-full max-w-4xl px-5 py-6">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatTile label="Total whisprs" value={whisprs.length} />
+          <StatTile label="Total whisprs" value={stats.total} />
           <StatTile label="Unread" value={unread} />
           <StatTile label="Profile views" value={profile?.total_views ?? 0} />
           <StatTile label="This week" value={weekTotal} />

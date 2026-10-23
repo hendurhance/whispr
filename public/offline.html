@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Offline · Whispr</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      display: flex; align-items: center; justify-content: center; min-height: 100dvh;
+      background: #f4eee2; color: #1c1812; padding: 24px; text-align: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .card { max-width: 22rem; }
+    .mark { width: 56px; height: 56px; margin: 0 auto 20px; }
+    h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
+    p { margin-top: 10px; color: #5c5648; line-height: 1.5; }
+    button {
+      margin-top: 24px; cursor: pointer; font-weight: 800; font-size: 15px; color: #fff;
+      background: #2433cc; border: 2px solid #1c1812; border-radius: 4px; padding: 12px 22px;
+      box-shadow: 4px 4px 0 #1c1812; transition: transform .1s, box-shadow .1s;
+    }
+    button:active { transform: translate(4px, 4px); box-shadow: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <svg class="mark" viewBox="0 0 370 370" aria-hidden="true">
+      <rect width="370" height="370" rx="50" fill="#2433cc" />
+      <path d="M94.0092 117.73C125.609 94.13 137.843 100.563 140.009 106.73C129.609 161.533 130.676 204.896 132.509 219.727L160.509 172.227C180.909 124.227 194.676 108.562 199.009 106.73C232.609 97.93 234.009 108.394 230.509 114.727C204.509 209.127 217.343 235.727 227.009 237.227C246.209 236.827 249.676 184.727 249.009 158.727C247.809 128.727 265.176 116.893 274.009 114.727C290.809 123.127 281.009 176.227 274.009 201.727C267.343 223.06 245.309 266.527 210.509 269.727C175.709 272.927 171.343 222.06 173.509 196.227L157.009 226.727C131.009 267.527 113.843 269.727 108.509 265.727C76.5092 239.727 85.5092 156.229 94.0092 117.73Z" fill="#fff" />
+    </svg>
+    <h1>You're offline</h1>
+    <p>No connection right now. Your inbox and link are waiting — try again when you're back online.</p>
+    <button onclick="location.reload()">Try again</button>
+  </div>
+</body>
+</html>

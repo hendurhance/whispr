@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
-import { getWhisprsData, getProfileData } from '@/lib/server/profile-data'
+import { getUserSession, getProfileData, getInboxSummary } from '@/lib/server/profile-data'
 import { SettingsView } from '@/components/settings/settings-view'
 
 export const metadata: Metadata = {
@@ -12,14 +12,13 @@ export const metadata: Metadata = {
 export const revalidate = 60
 
 export default async function SettingsRoute() {
-  const { whisprs, user } = await getWhisprsData()
-  const profile = await getProfileData()
+  const user = await getUserSession()
 
   if (!user) {
     redirect('/auth')
   }
 
-  const unread = (whisprs as Array<{ is_read: boolean }>).filter((w) => !w.is_read).length
+  const [stats, profile] = await Promise.all([getInboxSummary(), getProfileData()])
 
-  return <SettingsView initialUser={user} initialProfile={profile} unreadCount={unread} />
+  return <SettingsView initialUser={user} initialProfile={profile} unreadCount={stats.unread} />
 }

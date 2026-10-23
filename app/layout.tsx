@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 import { AppToaster } from "@/components/ui/toaster";
 import { ServiceWorker } from "@/components/pwa/service-worker";
 import "./globals.css";
@@ -163,6 +164,7 @@ export default function RootLayout({
           {children}
           <AppToaster />
           <ServiceWorker />
+          <Analytics />
         </div>
       </body>
     </html>

@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (error) console.error('auth/confirm code exchange failed:', error.code, error.message);
 
     if (!error) {
       const { data: { user } } = await supabase.auth.getUser();
@@ -48,6 +49,7 @@ export async function GET(request: NextRequest) {
       type,
       token_hash,
     });
+    if (error) console.error('auth/confirm verifyOtp failed:', error.code, error.message);
 
     if (!error) {
       const { data: { user } } = await supabase.auth.getUser();
@@ -72,6 +74,9 @@ export async function GET(request: NextRequest) {
 
   redirectTo.pathname = '/auth';
   redirectTo.searchParams.set('error', 'auth_callback_error');
-  redirectTo.searchParams.set('error_description', 'Could not verify authentication token');
+  redirectTo.searchParams.set(
+    'error_description',
+    'This sign-in link has expired, was already used, or was opened in a different browser. Request a new link and open it in the same browser.',
+  );
   return NextResponse.redirect(redirectTo);
 }

@@ -20,6 +20,7 @@ export interface Whispr {
   type: WhisprType;
   createdAt: string;
   isRead: boolean;
+  answer?: string | null;
   metadata?: Record<string, unknown>;
 }
 

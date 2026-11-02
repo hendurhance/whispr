@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 }
 
 const VALUE = [
-  { icon: Sparkles, title: 'Audience-sourced content, on tap', body: 'One link turns your audience into an endless content queue — questions to answer on camera, roasts and hot takes to react to, confessions to read out. Make a share card from the best ones and every screenshot carries your link back, so the next batch is already on the way.' },
+  { icon: Sparkles, title: 'Audience-sourced content, on tap', body: 'One link turns your audience into an endless content queue — questions to answer on camera, roasts and hot takes to react to, confessions to read out. Answer the best ones on a share card. Every card you post carries your link, so the next batch is already on its way.' },
   { icon: SlidersHorizontal, title: 'You control everything', body: 'Your inbox is private — no public pile-on, no comment wall. Pause incoming whenever, delete anything instantly, and hide your page from search in one tap. You decide what (if anything) ever gets posted.' },
   { icon: ShieldCheck, title: 'Trust your audience can verify', body: 'Whispr is open-source and ad-free, so anonymity isn’t a promise — it’s auditable. No dark patterns, no paywalled “who sent this.” That’s why it’s a tool you can actually put your name behind.' },
   { icon: BarChart3, title: 'Simple, private insights', body: 'See your whispr counts by type, your last-7-days activity, and profile views — enough to know what’s landing, never anything that breaks sender anonymity.' },

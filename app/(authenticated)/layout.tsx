@@ -8,7 +8,7 @@ export default async function AuthenticatedLayout({
   children: React.ReactNode;
 }) {
   const user = await getUserSession();
-  const profile = await getProfileData();
+  const profile = await getProfileData().catch(() => null);
 
   if (!user) {
     redirect('/auth');

@@ -2,8 +2,8 @@ import { Reveal } from './reveal'
 
 const STEPS = [
   { n: '01', title: 'Claim your link', body: 'Sign up in seconds and pick a username. You get trywhispr.me/you.' },
-  { n: '02', title: 'Share it everywhere', body: 'Drop your link on Instagram, TikTok, X — wherever your people are.' },
-  { n: '03', title: 'Read & share', body: 'Anonymous whisprs land in your inbox. Turn the best into a printed card and post it to your story.' },
+  { n: '02', title: 'Share it everywhere', body: 'Put it in your bio and your stories. Out of ideas? Post a prompt card and let it do the asking.' },
+  { n: '03', title: 'Answer out loud', body: 'Whisprs land in your private inbox. Pick a good one, type your answer, and it prints straight onto a card for your story.' },
 ]
 
 export function LandingSteps() {

@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
   redirectTo.searchParams.set('error', 'auth_callback_error');
   redirectTo.searchParams.set(
     'error_description',
-    'This sign-in link has expired, was already used, or was opened in a different browser. Request a new link and open it in the same browser.',
+    'That sign-in link didn’t work. It may have expired or already been used. Send yourself a new one below.',
   );
   return NextResponse.redirect(redirectTo);
 }

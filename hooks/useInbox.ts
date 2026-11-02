@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { createClient } from '@/utils/supabase/client'
+import { deleteWhisprById } from '@/lib/client/whisprs'
 import { INBOX_PAGE_SIZE, WHISPR_COLUMNS, escapeLikePattern, toWhispr, type WhisprRecord } from '@/lib/inbox'
 import type { Whispr, WhisprStats, WhisprType } from '@/types/whispr'
 
 const POLL_INTERVAL_MS = 25000
 const SEARCH_DEBOUNCE_MS = 300
+export const UNDO_WINDOW_MS = 5000
 
 export function useInbox({ userId, initialWhisprs, initialStats }: UseInboxProps) {
   const [whisprs, setWhisprs] = useState(initialWhisprs)
@@ -20,6 +22,10 @@ export function useInbox({ userId, initialWhisprs, initialStats }: UseInboxProps
   const newestCreatedAtRef = useRef(initialWhisprs[0]?.createdAt ?? new Date(0).toISOString())
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  const pendingDeletesRef = useRef(new Map<string, PendingDelete>())
+
+  const withoutPendingDeletes = (list: Whispr[]) => list.filter((w) => !pendingDeletesRef.current.has(w.id))
+
   const runQuery = useCallback(
     async (query: InboxQuery) => {
       const requestId = ++requestIdRef.current
@@ -28,10 +34,10 @@ export function useInbox({ userId, initialWhisprs, initialStats }: UseInboxProps
       try {
         const page = await fetchInboxPage({ userId, ...query })
         if (requestId !== requestIdRef.current) return
-        setWhisprs(page)
+        setWhisprs(withoutPendingDeletes(page))
         setHasMore(page.length === INBOX_PAGE_SIZE)
       } catch {
-        if (requestId === requestIdRef.current) toast.error('Could not load whisprs')
+        if (requestId === requestIdRef.current) toast.error('Could not load whisprs. Check your connection and try again.')
       } finally {
         if (requestId === requestIdRef.current) setIsLoading(false)
       }
@@ -68,10 +74,10 @@ export function useInbox({ userId, initialWhisprs, initialStats }: UseInboxProps
     try {
       const page = await fetchInboxPage({ userId, ...appliedQueryRef.current, before: oldest.createdAt })
       if (requestId !== requestIdRef.current) return
-      setWhisprs((prev) => [...prev, ...page])
+      setWhisprs((prev) => [...prev, ...withoutPendingDeletes(page)])
       setHasMore(page.length === INBOX_PAGE_SIZE)
     } catch {
-      if (requestId === requestIdRef.current) toast.error('Could not load more whisprs')
+      if (requestId === requestIdRef.current) toast.error('Could not load more whisprs. Try again.')
     } finally {
       if (requestId === requestIdRef.current) setIsLoading(false)
     }
@@ -85,6 +91,59 @@ export function useInbox({ userId, initialWhisprs, initialStats }: UseInboxProps
   const removeLocal = (whispr: Whispr) => {
     setWhisprs((prev) => prev.filter((w) => w.id !== whispr.id))
     setStats((prev) => applyToStats(prev, [whispr], -1))
+  }
+
+  const restoreLocal = useCallback((whispr: Whispr) => {
+    setWhisprs((prev) => {
+      if (prev.some((w) => w.id === whispr.id)) return prev
+      const index = prev.findIndex((w) => w.createdAt < whispr.createdAt)
+      return index === -1 ? [...prev, whispr] : [...prev.slice(0, index), whispr, ...prev.slice(index)]
+    })
+    setStats((prev) => applyToStats(prev, [whispr], 1))
+  }, [])
+
+  const commitDelete = useCallback(
+    async (id: string) => {
+      const pending = pendingDeletesRef.current.get(id)
+      if (!pending || pending.isCommitting) return
+      clearTimeout(pending.timer)
+      pending.isCommitting = true
+      const isDeleted = await deleteWhisprById(id)
+      pendingDeletesRef.current.delete(id)
+      if (!isDeleted) restoreLocal(pending.whispr)
+    },
+    [restoreLocal],
+  )
+
+  const scheduleDelete = (whispr: Whispr): (() => boolean) => {
+    removeLocal(whispr)
+    const timer = setTimeout(() => void commitDelete(whispr.id), UNDO_WINDOW_MS)
+    pendingDeletesRef.current.set(whispr.id, { whispr, timer, isCommitting: false })
+    return () => {
+      const pending = pendingDeletesRef.current.get(whispr.id)
+      if (!pending || pending.isCommitting) return false
+      clearTimeout(pending.timer)
+      pendingDeletesRef.current.delete(whispr.id)
+      restoreLocal(whispr)
+      return true
+    }
+  }
+
+  useEffect(() => {
+    const pendingDeletes = pendingDeletesRef.current
+    const flush = () => pendingDeletes.forEach((_, id) => void commitDelete(id))
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') flush()
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibilityChange)
+      flush()
+    }
+  }, [commitDelete])
+
+  const setAnswerLocal = (id: string, answer: string | null) => {
+    setWhisprs((prev) => prev.map((w) => (w.id === id ? { ...w, answer } : w)))
   }
 
   useEffect(() => {
@@ -150,6 +209,8 @@ export function useInbox({ userId, initialWhisprs, initialStats }: UseInboxProps
     loadMore,
     markReadLocal,
     removeLocal,
+    scheduleDelete,
+    setAnswerLocal,
   }
 }
 
@@ -201,6 +262,12 @@ interface InboxQuery {
 interface FetchInboxPageInput extends InboxQuery {
   userId: string
   before?: string
+}
+
+interface PendingDelete {
+  whispr: Whispr
+  timer: ReturnType<typeof setTimeout>
+  isCommitting: boolean
 }
 
 interface UseInboxProps {

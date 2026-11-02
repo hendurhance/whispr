@@ -41,6 +41,18 @@ export const deleteWhisprById = async (whisprId: string): Promise<boolean> => {
   }
 };
 
+export const saveWhisprAnswer = async (whisprId: string, answer: string): Promise<boolean> => {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc('answer_whispr', { whispr_id: whisprId, answer });
+
+  if (error || !data) {
+    toast.error('Could not save your answer. Try again.');
+    return false;
+  }
+
+  return true;
+};
+
 export const reportWhisprById = async (whisprId: string, reason: string): Promise<boolean> => {
   const supabase = createClient();
   try {

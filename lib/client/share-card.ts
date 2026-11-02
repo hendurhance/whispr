@@ -3,50 +3,61 @@ import type { Whispr } from '@/types/whispr'
 
 type CardFormat = 'square' | 'story'
 
-function cardUrl(whispr: Whispr, handle: string, format: CardFormat, accent?: string, mode?: string) {
-  const params = new URLSearchParams({ content: whispr.content, type: whispr.type, handle, format })
-  if (accent) params.set('accent', accent)
-  if (mode) params.set('mode', mode)
+export function cardUrl(whispr: Whispr, format: CardFormat) {
+  const params = new URLSearchParams({ kind: 'whispr', id: whispr.id, format, answer: whispr.answer ?? '' })
   return `/og/whispr?${params.toString()}`
 }
 
-async function fetchCard(whispr: Whispr, handle: string, format: CardFormat, accent?: string, mode?: string): Promise<Blob> {
-  const res = await fetch(cardUrl(whispr, handle, format, accent, mode))
+export function promptCardUrl(promptId: string) {
+  const params = new URLSearchParams({ kind: 'prompt', q: promptId, format: 'story' })
+  return `/og/whispr?${params.toString()}`
+}
+
+async function fetchCard(url: string): Promise<Blob> {
+  const res = await fetch(url)
   if (!res.ok) throw new Error('Could not render share card')
   return res.blob()
 }
 
-function triggerDownload(blob: Blob, whisprId: string) {
+function triggerDownload(blob: Blob, name: string) {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `whispr-${whisprId}.png`
+  a.download = `${name}.png`
   document.body.appendChild(a)
   a.click()
   a.remove()
   URL.revokeObjectURL(url)
 }
 
-export async function downloadShareCard(whispr: Whispr, handle: string, format: CardFormat = 'square', accent?: string, mode?: string) {
+export async function downloadShareCard(whispr: Whispr, format: CardFormat = 'square') {
   try {
-    const blob = await fetchCard(whispr, handle, format, accent, mode)
-    triggerDownload(blob, whispr.id)
+    const blob = await fetchCard(cardUrl(whispr, format))
+    triggerDownload(blob, `whispr-${whispr.id}`)
     toast.success('Card downloaded')
   } catch {
     toast.error('Could not make the card')
   }
 }
 
-export async function shareShareCard(whispr: Whispr, handle: string, format: CardFormat = 'story', accent?: string, mode?: string) {
+export async function shareShareCard(whispr: Whispr, format: CardFormat = 'story') {
+  await shareCardImage(cardUrl(whispr, format), `whispr-${whispr.id}`)
+}
+
+export async function sharePromptCard(promptId: string) {
+  await shareCardImage(promptCardUrl(promptId), 'whispr-ask')
+}
+
+async function shareCardImage(url: string, name: string) {
   let blob: Blob
   try {
-    blob = await fetchCard(whispr, handle, format, accent, mode)
+    blob = await fetchCard(url)
   } catch {
     toast.error('Could not make the card')
     return
   }
 
-  const file = new File([blob], `whispr-${whispr.id}.png`, { type: 'image/png' })
+  const file = new File([blob], `${name}.png`, { type: 'image/png' })
 
   if (typeof navigator !== 'undefined' && navigator.canShare?.({ files: [file] })) {
     try {
@@ -57,6 +68,6 @@ export async function shareShareCard(whispr: Whispr, handle: string, format: Car
     }
   }
 
-  triggerDownload(blob, whispr.id)
+  triggerDownload(blob, name)
   toast.success('Card downloaded')
 }

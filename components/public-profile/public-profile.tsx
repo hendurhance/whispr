@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Check } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { resolveAccent, resolvePaperMode } from '@/lib/accents'
+import type { ResolvedPrompt } from '@/lib/prompts'
 import { WhisprLogo } from '@/components/brand/whispr-mark'
 import { ProfileHeader, type PublicSocialLink } from './profile-header'
 import { SubmissionForm } from './submission-form'
@@ -25,9 +26,10 @@ export interface PublicProfileData {
 interface PublicProfileProps {
   initialProfile: PublicProfileData | null
   username: string
+  prompt?: ResolvedPrompt | null
 }
 
-export function PublicProfile({ initialProfile, username }: PublicProfileProps) {
+export function PublicProfile({ initialProfile, username, prompt }: PublicProfileProps) {
   const [profile, setProfile] = useState(initialProfile)
   const [sent, setSent] = useState(false)
 
@@ -110,7 +112,7 @@ export function PublicProfile({ initialProfile, username }: PublicProfileProps) 
                 </button>
               </div>
             ) : (
-              <SubmissionForm username={profile.username} onSuccess={handleSuccess} onError={handleError} />
+              <SubmissionForm username={profile.username} prompt={prompt} onSuccess={handleSuccess} onError={handleError} />
             ))}
         </div>
       </main>

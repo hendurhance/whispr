@@ -127,7 +127,7 @@ export function YourLinkView({ initialUser, initialProfile, unreadCount }: YourL
 
         <section className="rounded-xl border border-border bg-paper p-5 shadow-sm">
           <h2 className="font-display text-base font-bold text-ink">Controls</h2>
-          <p className="mt-1 text-xs text-ink-faint">Changes save as soon as you flip a switch.</p>
+          <p className="mt-1 text-xs text-ink-faint">Changes save instantly.</p>
           <div className="mt-4 space-y-4">
             <ToggleRow
               title="Accept anonymous messages"
@@ -152,7 +152,7 @@ export function YourLinkView({ initialUser, initialProfile, unreadCount }: YourL
 
         <section className="rounded-xl border border-border bg-paper p-5 shadow-sm">
           <h2 className="font-display text-base font-bold text-ink">Appearance</h2>
-          <p className="mt-1 text-xs text-ink-faint">Personalize your public page and share card. Changes save automatically.</p>
+          <p className="mt-1 text-xs text-ink-faint">Colors for your public page and share cards. Changes save instantly.</p>
 
           <p className="mt-4 text-xs font-medium text-ink-soft">Accent ink</p>
           <div className="mt-2 flex flex-wrap gap-2.5">

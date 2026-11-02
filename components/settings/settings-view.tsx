@@ -38,6 +38,8 @@ export function SettingsView({ initialUser, initialProfile, unreadCount }: Setti
   const profileUrl = `${APP_URL_CLEAN}/${username}`
 
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleteConfirmText, setDeleteConfirmText] = useState('')
+  const canDeleteAccount = deleteConfirmText.trim().toLowerCase() === username.toLowerCase()
   const [signingOut, setSigningOut] = useState(false)
 
   const regenAvatar = () => {
@@ -161,13 +163,35 @@ export function SettingsView({ initialUser, initialProfile, unreadCount }: Setti
               <p className="text-xs text-ink-faint">Permanently deletes your profile and all whisprs.</p>
             </div>
             {confirmDelete ? (
-              <div className="flex gap-2">
-                <Button variant="destructive" size="sm" onClick={s.handleDeleteAccount} disabled={s.isDeleting}>
-                  {s.isDeleting ? 'Deleting…' : 'Yes, delete'}
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => setConfirmDelete(false)} disabled={s.isDeleting}>
-                  Cancel
-                </Button>
+              <div className="flex w-full flex-col gap-2">
+                <label htmlFor="delete-confirm" className="text-sm text-ink">
+                  Type <span className="font-voice font-semibold">{username}</span> to confirm
+                </label>
+                <Input
+                  id="delete-confirm"
+                  value={deleteConfirmText}
+                  onChange={(e) => setDeleteConfirmText(e.target.value)}
+                  autoComplete="off"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  disabled={s.isDeleting}
+                />
+                <div className="flex gap-2">
+                  <Button variant="destructive" size="sm" onClick={s.handleDeleteAccount} disabled={!canDeleteAccount || s.isDeleting}>
+                    {s.isDeleting ? 'Deleting…' : 'Delete my account'}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setConfirmDelete(false)
+                      setDeleteConfirmText('')
+                    }}
+                    disabled={s.isDeleting}
+                  >
+                    Cancel
+                  </Button>
+                </div>
               </div>
             ) : (
               <Button variant="outline" size="sm" className="border-ember/40 text-ember-ink hover:bg-ember/10" onClick={() => setConfirmDelete(true)}>

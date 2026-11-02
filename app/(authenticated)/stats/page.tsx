@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
-import { redirect } from 'next/navigation'
-import { getUserSession, getProfileData, getInboxSummary, getWhisprDatesSince } from '@/lib/server/profile-data'
+import { requireProfile, getInboxSummary, getWhisprDatesSince } from '@/lib/server/profile-data'
 import { StatsView } from '@/components/dashboard/stats-view'
 
 export const metadata: Metadata = {
@@ -14,18 +13,10 @@ export const revalidate = 60
 const RECENT_WINDOW_MS = 8 * 24 * 60 * 60 * 1000
 
 export default async function StatsRoute() {
-  const user = await getUserSession()
-
-  if (!user) {
-    redirect('/auth')
-  }
+  const { user, profile } = await requireProfile()
 
   const since = new Date(Date.now() - RECENT_WINDOW_MS).toISOString()
-  const [stats, recentDates, profile] = await Promise.all([
-    getInboxSummary(),
-    getWhisprDatesSince(user.id, since),
-    getProfileData(),
-  ])
+  const [stats, recentDates] = await Promise.all([getInboxSummary(), getWhisprDatesSince(user.id, since)])
 
   return <StatsView user={user} profile={profile} stats={stats} recentDates={recentDates} />
 }

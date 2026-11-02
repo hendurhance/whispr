@@ -1,9 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import { Download, Share2, Check, Trash2, Copy, Flag, ImageDown, Loader2 } from 'lucide-react'
+import { Download, Share2, Check, Trash2, Copy, Flag, Loader2 } from 'lucide-react'
 import { type Whispr, formatDate } from '@/types/whispr'
+import { cardUrl } from '@/lib/client/share-card'
+import { ANSWER_MAX_LENGTH } from '@/lib/inbox'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { WhisprTypeBadge } from './whispr-type-badge'
@@ -11,36 +13,25 @@ import { WhisprTypeBadge } from './whispr-type-badge'
 type CardFormat = 'square' | 'story'
 
 interface ShareStudioProps {
-  whispr: Whispr | null
-  handle: string
-  accent: string
-  mode: string
+  whispr: Whispr
   busy?: boolean
   onDownload: (whispr: Whispr, format: CardFormat) => void
   onShare: (whispr: Whispr, format: CardFormat) => void
   onMarkRead: (whispr: Whispr) => void
   onDelete: (whispr: Whispr) => void
   onReport: (whispr: Whispr) => void
+  onSaveAnswer: (whispr: Whispr, answer: string) => Promise<boolean>
 }
 
-export function ShareStudio({ whispr, handle, accent, mode, busy, onDownload, onShare, onMarkRead, onDelete, onReport }: ShareStudioProps) {
+export function ShareStudio({ whispr, busy, onDownload, onShare, onMarkRead, onDelete, onReport, onSaveAnswer }: ShareStudioProps) {
   const [format, setFormat] = useState<CardFormat>('square')
   const [loadedSrc, setLoadedSrc] = useState<string | null>(null)
   const [pending, setPending] = useState<'share' | 'download' | null>(null)
+  const [draftAnswer, setDraftAnswer] = useState(whispr.answer ?? '')
+  const [previewAnswer, setPreviewAnswer] = useState(whispr.answer ?? '')
+  const savedAnswerRef = useRef(whispr.answer ?? '')
 
-  if (!whispr) {
-    return (
-      <div className="flex h-full min-h-[20rem] flex-col items-center justify-center px-6 text-center">
-        <div className="mb-3 flex size-12 items-center justify-center rounded-full bg-secondary">
-          <ImageDown className="size-5 text-ink-faint" />
-        </div>
-        <p className="font-display text-sm font-semibold text-ink">Share studio</p>
-        <p className="mt-1 max-w-[15rem] text-xs text-ink-faint">Select a whispr to turn it into a share card for your story.</p>
-      </div>
-    )
-  }
-
-  const cardSrc = `/og/whispr?content=${encodeURIComponent(whispr.content)}&type=${whispr.type}&handle=${encodeURIComponent(handle)}&format=${format}&accent=${encodeURIComponent(accent)}&mode=${encodeURIComponent(mode)}`
+  const cardSrc = cardUrl({ ...whispr, answer: previewAnswer || null }, format)
   const isLoading = loadedSrc !== cardSrc
 
   const copyText = async () => {
@@ -51,6 +42,30 @@ export function ShareStudio({ whispr, handle, accent, mode, busy, onDownload, on
       toast.error('Could not copy')
     }
   }
+
+  const commitAnswer = (): Whispr => {
+    const answer = draftAnswer.trim()
+    setPreviewAnswer(answer)
+    const previous = savedAnswerRef.current
+    if (answer !== previous) {
+      savedAnswerRef.current = answer
+      void onSaveAnswer(whispr, answer).then((isSaved) => {
+        if (!isSaved) savedAnswerRef.current = previous
+      })
+    }
+    return { ...whispr, answer: answer || null }
+  }
+
+  const share = () => {
+    setPending('share')
+    onShare(commitAnswer(), format)
+  }
+
+  const download = () => {
+    setPending('download')
+    onDownload(commitAnswer(), format)
+  }
+
   return (
     <div className="flex flex-col gap-5 p-5">
       <p className="font-display text-xs font-semibold uppercase tracking-wide text-ink-faint">Share studio</p>
@@ -59,6 +74,25 @@ export function ShareStudio({ whispr, handle, accent, mode, busy, onDownload, on
         <WhisprTypeBadge type={whispr.type} className="mb-3" />
         <p className="font-voice text-sm leading-relaxed text-ink">{whispr.content}</p>
         <p className="mt-3 font-voice text-xs text-ink-faint">received {formatDate(whispr.createdAt)} · anonymous</p>
+      </div>
+
+      <div>
+        <label htmlFor={`answer-${whispr.id}`} className="mb-2 block text-xs font-semibold text-ink-soft">
+          Your answer <span className="font-normal text-ink-faint">(printed on the card)</span>
+        </label>
+        <textarea
+          id={`answer-${whispr.id}`}
+          value={draftAnswer}
+          onChange={(e) => setDraftAnswer(e.target.value)}
+          onBlur={commitAnswer}
+          maxLength={ANSWER_MAX_LENGTH}
+          rows={3}
+          placeholder="Type your answer…"
+          className="w-full resize-none rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/35"
+        />
+        <p className="mt-1 text-right font-voice text-xs text-ink-faint">
+          {draftAnswer.length}/{ANSWER_MAX_LENGTH}
+        </p>
       </div>
 
       <div>
@@ -101,10 +135,10 @@ export function ShareStudio({ whispr, handle, accent, mode, busy, onDownload, on
       </div>
 
       <div className="flex flex-col gap-2">
-        <Button variant="flame" disabled={busy} onClick={() => { setPending('share'); onShare(whispr, format) }}>
+        <Button variant="flame" disabled={busy} onClick={share}>
           <Share2 /> {busy && pending === 'share' ? 'Preparing…' : 'Share to story'}
         </Button>
-        <Button variant="outline" disabled={busy} onClick={() => { setPending('download'); onDownload(whispr, format) }}>
+        <Button variant="outline" disabled={busy} onClick={download}>
           <Download /> {busy && pending === 'download' ? 'Preparing…' : 'Download PNG'}
         </Button>
       </div>

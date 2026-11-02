@@ -35,11 +35,6 @@ export const useProfileSetup = () => {
     const checkUserAndRedirect = async () => {
       if (authUser) {
         setUser(authUser);
-
-        if (authUser.user_metadata?.profile_setup) {
-          router.replace('/dashboard');
-          return;
-        }
       } else {
         const { data, error } = await supabase.auth.getUser();
 
@@ -49,10 +44,6 @@ export const useProfileSetup = () => {
         }
 
         setUser(data.user);
-
-        if (data.user.user_metadata?.profile_setup) {
-          router.replace('/dashboard');
-        }
       }
     };
 
@@ -189,7 +180,7 @@ export const useProfileSetup = () => {
 
         if (!ownProfile) {
           setIsAvailable(false);
-          setError('That username was just taken. Please pick another.');
+          setError('Someone just took that username. Try another one.');
           return;
         }
         savedProfile = ownProfile;

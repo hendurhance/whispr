@@ -2,12 +2,12 @@
 
 import { useMemo, useState, type ReactNode } from 'react'
 import { toast } from 'react-hot-toast'
-import { Search, Copy, X } from 'lucide-react'
+import { Search, Copy, X, MessageCircleQuestion } from 'lucide-react'
 import type { User } from '@supabase/supabase-js'
 import type { Profile } from '@/types'
 import { type Whispr, type WhisprType, type WhisprStats, getWhisprTypeLabel } from '@/types/whispr'
-import { markWhisprAsRead, deleteWhisprById, reportWhisprById } from '@/lib/client/whisprs'
-import { useInbox } from '@/hooks/useInbox'
+import { markWhisprAsRead, reportWhisprById, saveWhisprAnswer } from '@/lib/client/whisprs'
+import { useInbox, UNDO_WINDOW_MS } from '@/hooks/useInbox'
 import { downloadShareCard, shareShareCard } from '@/lib/client/share-card'
 import { APP_URL_CLEAN } from '@/configs'
 import { Input } from '@/components/ui/input'
@@ -16,8 +16,8 @@ import { cn } from '@/lib/utils'
 import { DashboardSidebar } from './dashboard-sidebar'
 import { WhisprRow } from './whispr-row'
 import { ShareStudio } from './share-studio'
+import { PromptStudio } from './prompt-studio'
 import { MobileTabBar } from './mobile-tab-bar'
-import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { ReportDialog } from '@/components/ui/report-dialog'
 import { AppBadge } from '@/components/pwa/app-badge'
 
@@ -33,8 +33,6 @@ export function Dashboard({ initialWhisprs, initialStats, initialUser, initialPr
   const displayName = initialProfile?.display_name || (initialUser?.user_metadata?.username as string) || 'there'
   const avatarUrl = initialProfile?.avatar_url || (initialUser?.user_metadata?.avatar_url as string) || ''
   const profileUrl = `${APP_URL_CLEAN}/${username}`
-  const accentInk = initialProfile?.selected_theme || 'flame'
-  const paperMode = initialProfile?.selected_background || 'light'
 
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
@@ -52,10 +50,12 @@ export function Dashboard({ initialWhisprs, initialStats, initialUser, initialPr
     loadMore,
     markReadLocal,
     removeLocal,
+    scheduleDelete,
+    setAnswerLocal,
   } = useInbox({ userId: initialUser.id, initialWhisprs, initialStats })
 
   const [busy, setBusy] = useState(false)
-  const [pendingDelete, setPendingDelete] = useState<Whispr | null>(null)
+  const [isPromptOpen, setIsPromptOpen] = useState(false)
   const [pendingReport, setPendingReport] = useState<Whispr | null>(null)
 
   const selected = whisprs.find((w) => w.id === selectedId) ?? null
@@ -65,16 +65,32 @@ export function Dashboard({ initialWhisprs, initialStats, initialUser, initialPr
     if (await markWhisprAsRead(w.id)) markReadLocal(w.id)
   }
 
-  const requestDelete = (w: Whispr) => setPendingDelete(w)
-  const confirmDelete = async () => {
-    const w = pendingDelete
-    if (!w) return
-    if (await deleteWhisprById(w.id)) {
-      removeLocal(w)
-      setSelectedId((id) => (id === w.id ? null : id))
-      toast.success('Whispr deleted')
-    }
-    setPendingDelete(null)
+  const deleteWithUndo = (w: Whispr) => {
+    const undo = scheduleDelete(w)
+    setSelectedId((id) => (id === w.id ? null : id))
+    toast(
+      (t) => (
+        <span className="flex items-center gap-3">
+          Whispr deleted
+          <button
+            className="font-semibold underline underline-offset-4"
+            onClick={() => {
+              toast.dismiss(t.id)
+              if (!undo()) toast.error('Already deleted')
+            }}
+          >
+            Undo
+          </button>
+        </span>
+      ),
+      { duration: UNDO_WINDOW_MS },
+    )
+  }
+
+  const saveAnswer = async (w: Whispr, answer: string) => {
+    const isSaved = await saveWhisprAnswer(w.id, answer)
+    if (isSaved) setAnswerLocal(w.id, answer || null)
+    return isSaved
   }
 
   const requestReport = (w: Whispr) => setPendingReport(w)
@@ -97,7 +113,7 @@ export function Dashboard({ initialWhisprs, initialStats, initialUser, initialPr
     void markRead(w)
     setBusy(true)
     try {
-      await shareShareCard(w, username, fmt, accentInk, paperMode)
+      await shareShareCard(w, fmt)
     } finally {
       setBusy(false)
     }
@@ -105,7 +121,7 @@ export function Dashboard({ initialWhisprs, initialStats, initialUser, initialPr
   const download = async (w: Whispr, fmt: 'square' | 'story' = 'square') => {
     setBusy(true)
     try {
-      await downloadShareCard(w, username, fmt, accentInk, paperMode)
+      await downloadShareCard(w, fmt)
     } finally {
       setBusy(false)
     }
@@ -146,9 +162,14 @@ export function Dashboard({ initialWhisprs, initialStats, initialUser, initialPr
               aria-label="Search whisprs"
             />
           </div>
-          <Button variant="flame" className="ml-auto" onClick={copyLink}>
-            <Copy /> Copy your link
-          </Button>
+          <div className="ml-auto flex gap-2">
+            <Button variant="outline" className="xl:hidden" onClick={() => setIsPromptOpen(true)}>
+              <MessageCircleQuestion /> Ask followers
+            </Button>
+            <Button variant="flame" onClick={copyLink}>
+              <Copy /> Copy your link
+            </Button>
+          </div>
         </header>
 
         <div className="grid min-h-0 flex-1 overflow-hidden xl:grid-cols-[1fr_360px]">
@@ -189,7 +210,7 @@ export function Dashboard({ initialWhisprs, initialStats, initialUser, initialPr
                     onSelect={select}
                     onShare={share}
                     onMarkRead={markRead}
-                    onDelete={requestDelete}
+                    onDelete={deleteWithUndo}
                     onReport={requestReport}
                   />
                 ))}
@@ -208,66 +229,71 @@ export function Dashboard({ initialWhisprs, initialStats, initialUser, initialPr
           </section>
 
           <aside className="hidden overflow-y-auto border-l border-border bg-paper xl:block">
-            <ShareStudio
-              whispr={selected}
-              handle={username}
-              accent={accentInk}
-              mode={paperMode}
-              busy={busy}
-              onDownload={download}
-              onShare={share}
-              onMarkRead={markRead}
-              onDelete={requestDelete}
-              onReport={requestReport}
-            />
+            {selected ? (
+              <ShareStudio
+                key={selected.id}
+                whispr={selected}
+                busy={busy}
+                onDownload={download}
+                onShare={share}
+                onMarkRead={markRead}
+                onDelete={deleteWithUndo}
+                onReport={requestReport}
+                onSaveAnswer={saveAnswer}
+              />
+            ) : (
+              <PromptStudio profileUrl={profileUrl} />
+            )}
           </aside>
         </div>
       </main>
 
       {selected && (
-        <div className="fixed inset-0 z-50 xl:hidden">
-          <button className="absolute inset-0 bg-black/40" onClick={() => setSelectedId(null)} aria-label="Close" tabIndex={-1} />
-          <div className="absolute inset-x-0 bottom-0 flex max-h-[85vh] flex-col rounded-t-2xl border-t-2 border-border bg-paper">
-            <div className="flex items-center justify-between border-b border-border px-4 py-3">
-              <span className="font-display text-sm font-bold text-ink">Share studio</span>
-              <button
-                onClick={() => setSelectedId(null)}
-                className="flex size-8 items-center justify-center rounded-md text-ink-faint transition-colors hover:bg-secondary hover:text-ink"
-                aria-label="Close"
-              >
-                <X className="size-4" />
-              </button>
-            </div>
-            <div className="overflow-y-auto">
-              <ShareStudio
-                whispr={selected}
-                handle={username}
-                accent={accentInk}
-                mode={paperMode}
-                busy={busy}
-                onDownload={download}
-                onShare={share}
-                onMarkRead={markRead}
-                onDelete={requestDelete}
-                onReport={requestReport}
-              />
-            </div>
-          </div>
-        </div>
+        <BottomSheet title="Share studio" onClose={() => setSelectedId(null)}>
+          <ShareStudio
+            key={selected.id}
+            whispr={selected}
+            busy={busy}
+            onDownload={download}
+            onShare={share}
+            onMarkRead={markRead}
+            onDelete={deleteWithUndo}
+            onReport={requestReport}
+            onSaveAnswer={saveAnswer}
+          />
+        </BottomSheet>
       )}
 
-      <ConfirmDialog
-        open={!!pendingDelete}
-        title="Delete this whispr?"
-        description="This permanently removes it from your inbox and can't be undone."
-        confirmLabel="Delete"
-        onConfirm={confirmDelete}
-        onCancel={() => setPendingDelete(null)}
-      />
+      {isPromptOpen && (
+        <BottomSheet title="Ask your followers" onClose={() => setIsPromptOpen(false)}>
+          <PromptStudio profileUrl={profileUrl} />
+        </BottomSheet>
+      )}
 
       <ReportDialog open={!!pendingReport} onConfirm={confirmReport} onCancel={() => setPendingReport(null)} />
 
       <MobileTabBar />
+    </div>
+  )
+}
+
+function BottomSheet({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
+  return (
+    <div className="fixed inset-0 z-50 xl:hidden" role="dialog" aria-modal="true" aria-label={title}>
+      <button className="absolute inset-0 bg-black/40" onClick={onClose} aria-label="Close" tabIndex={-1} />
+      <div className="absolute inset-x-0 bottom-0 flex max-h-[85vh] flex-col rounded-t-2xl border-t-2 border-border bg-paper">
+        <div className="flex items-center justify-between border-b border-border px-4 py-3">
+          <span className="font-display text-sm font-bold text-ink">{title}</span>
+          <button
+            onClick={onClose}
+            className="flex size-8 items-center justify-center rounded-md text-ink-faint transition-colors hover:bg-secondary hover:text-ink"
+            aria-label="Close"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+        <div className="overflow-y-auto">{children}</div>
+      </div>
     </div>
   )
 }

@@ -1,4 +1,5 @@
 import { cache } from 'react';
+import { redirect } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
 import { Profile } from '@/types';
 import type { Whispr, WhisprStats } from '@/types/whispr';
@@ -27,9 +28,17 @@ export const getProfileData = cache(async (): Promise<Profile | null> => {
     .eq('user_id', user.id)
     .maybeSingle();
 
-  if (error) return null;
+  if (error) throw new Error('Could not load your profile');
   return profile as Profile | null;
 });
+
+export async function requireProfile() {
+  const user = await getUserSession();
+  if (!user) redirect('/auth');
+  const profile = await getProfileData();
+  if (!profile) redirect('/setup-profile');
+  return { user, profile };
+}
 
 export const getInboxPage = cache(async (userId: string): Promise<Whispr[]> => {
   const supabase = await createClient();

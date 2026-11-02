@@ -68,7 +68,7 @@ export function StatsView({ user, profile, stats, recentDates }: StatsViewProps)
           <h2 className="font-display text-base font-bold text-ink">Whisprs · last 7 days</h2>
           {weekTotal === 0 ? (
             <div className="flex flex-col items-center py-10 text-center">
-              <p className="text-sm text-ink-faint">No whisprs in the last 7 days yet. Share your link to get some.</p>
+              <p className="text-sm text-ink-faint">Quiet week. Share your link and this chart fills up.</p>
               <Button variant="flame" className="mt-4" onClick={copyLink}>
                 <Copy /> Copy your link
               </Button>

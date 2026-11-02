@@ -1,6 +1,6 @@
 'use client'
 
-import { Share2, Check, Trash2, Flag } from 'lucide-react'
+import { Share2, Check, Trash2, Flag, MessageSquareReply } from 'lucide-react'
 import { type Whispr, formatDate } from '@/types/whispr'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -41,6 +41,11 @@ export function WhisprRow({ whispr, selected, busy, onSelect, onShare, onMarkRea
       <div className="min-w-0 flex-1">
         <div className="mb-1.5 flex items-center gap-2">
           <WhisprTypeBadge type={whispr.type} />
+          {whispr.answer && (
+            <span className="inline-flex items-center gap-1 text-xs font-medium text-mint-ink">
+              <MessageSquareReply className="size-3.5" /> Answered
+            </span>
+          )}
           <span className="ml-auto shrink-0 font-voice text-xs text-ink-faint">{formatDate(whispr.createdAt, true)}</span>
         </div>
 

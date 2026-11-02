@@ -12,7 +12,7 @@ export function LandingHero() {
           <span className="text-flame">Anonymously.</span>
         </h1>
         <p className="mt-6 max-w-md text-lg leading-relaxed text-ink-soft">
-          Share your link and collect anonymous questions, confessions, roasts and real feedback — then turn the best into a printed card for your story.
+          Drop your link and collect the questions, confessions and roasts people won’t say to your face. Answer the good ones on a card made for your story.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <PressLink href="/auth">Get your free link →</PressLink>

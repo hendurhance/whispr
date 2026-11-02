@@ -54,19 +54,21 @@ interface ShareCardProps {
   content: string
   type: WhisprType
   handle: string
-  kind: 'whispr' | 'profile'
+  kind: 'whispr' | 'profile' | 'prompt'
+  answer?: string
   format: OgFormat
   accent?: string
   accentFg?: string
   mode?: 'light' | 'dark'
 }
 
-export function ShareCard({ content, type, handle, kind, format, accent = DEFAULT_ACCENT, accentFg = DEFAULT_ACCENT_FG, mode = 'light' }: ShareCardProps) {
+export function ShareCard({ content, type, handle, kind, answer, format, accent = DEFAULT_ACCENT, accentFg = DEFAULT_ACCENT_FG, mode = 'light' }: ShareCardProps) {
   const { width, height } = OG_SIZES[format]
   const s = SIZES[format]
   const p = PALETTE[mode]
   const len = content.length
-  const quoteSize = Math.round(s.quote * (len > 220 ? 0.62 : len > 140 ? 0.78 : len > 80 ? 0.9 : 1))
+  const quoteSize = Math.round(s.quote * lengthScale(len) * (answer ? 0.62 : 1))
+  const answerSize = Math.round(s.quote * lengthScale(answer?.length ?? 0) * 0.72)
   const stickerColor = WHITE_TEXT.includes(type) ? STICKER_LIGHT : STICKER_DARK
 
   return (
@@ -103,6 +105,24 @@ export function ShareCard({ content, type, handle, kind, format, accent = DEFAUL
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: Math.round(s.pad * 0.4), fontSize: s.anon, color: p.faint }}>
                 — anonymous
               </div>
+              {answer && (
+                <div style={{ display: 'flex', flexDirection: 'column', marginTop: Math.round(s.pad * 0.5), borderLeft: `${s.border * 2}px solid ${accent}`, paddingLeft: Math.round(s.pad * 0.4) }}>
+                  <div style={{ display: 'flex', fontSize: s.anon, color: p.faint }}>@{handle} answered</div>
+                  <div style={{ display: 'flex', fontFamily: 'Bricolage', fontWeight: 800, fontSize: answerSize, lineHeight: 1.15, letterSpacing: -0.5, color: p.ink, marginTop: Math.round(s.pad * 0.15) }}>
+                    {answer}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : kind === 'prompt' ? (
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', fontSize: s.anon, color: p.faint, letterSpacing: 2 }}>@{handle.toUpperCase()} ASKS</div>
+              <div style={{ display: 'flex', fontFamily: 'Bricolage', fontWeight: 800, fontSize: Math.round(s.quote * lengthScale(len) * 1.05), lineHeight: 1.1, letterSpacing: -1, color: p.ink, marginTop: Math.round(s.pad * 0.3) }}>
+                {content}
+              </div>
+              <div style={{ display: 'flex', fontFamily: 'Fraunces', fontStyle: 'italic', fontWeight: 500, fontSize: Math.round(s.anon * 1.3), color: p.ink, marginTop: Math.round(s.pad * 0.5) }}>
+                tap the link to answer anonymously ↓
+              </div>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -133,10 +153,17 @@ export function ShareCard({ content, type, handle, kind, format, accent = DEFAUL
               fontSize: s.sticker,
             }}
           >
-            {kind === 'whispr' ? getWhisprTypeLabel(type) : 'ANON MESSAGE'}
+            {kind === 'whispr' ? getWhisprTypeLabel(type) : kind === 'prompt' ? 'ASK ME' : 'ANON MESSAGE'}
           </div>
         </div>
       </div>
     </div>
   )
+}
+
+function lengthScale(length: number): number {
+  if (length > 220) return 0.62
+  if (length > 140) return 0.78
+  if (length > 80) return 0.9
+  return 1
 }

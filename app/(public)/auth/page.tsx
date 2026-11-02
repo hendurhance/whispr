@@ -20,8 +20,8 @@ export const metadata: Metadata = {
 export default async function Auth() {
   const user = await getUserSession();
   if (user) {
-    const profile = await getProfileData();
-    redirect(profile ? '/dashboard' : '/setup-profile');
+    const profile = await getProfileData().catch(() => undefined);
+    redirect(profile === null ? '/setup-profile' : '/dashboard');
   }
 
   return (

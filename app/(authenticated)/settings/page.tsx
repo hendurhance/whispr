@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
-import { redirect } from 'next/navigation'
-import { getUserSession, getProfileData, getInboxSummary } from '@/lib/server/profile-data'
+import { requireProfile, getInboxSummary } from '@/lib/server/profile-data'
 import { SettingsView } from '@/components/settings/settings-view'
 
 export const metadata: Metadata = {
@@ -12,13 +11,8 @@ export const metadata: Metadata = {
 export const revalidate = 60
 
 export default async function SettingsRoute() {
-  const user = await getUserSession()
-
-  if (!user) {
-    redirect('/auth')
-  }
-
-  const [stats, profile] = await Promise.all([getInboxSummary(), getProfileData()])
+  const { user, profile } = await requireProfile()
+  const stats = await getInboxSummary()
 
   return <SettingsView initialUser={user} initialProfile={profile} unreadCount={stats.unread} />
 }

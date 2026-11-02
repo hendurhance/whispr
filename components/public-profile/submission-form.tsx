@@ -4,6 +4,7 @@ import { Dices } from 'lucide-react'
 import { getWhisprTypeIcon, getWhisprTypeLabel, type WhisprType } from '@/types/whispr'
 import { useWhisprSubmission } from '@/hooks/useWhisprSubmission'
 import { submitWhispr } from '@/lib/client/whisprs'
+import type { ResolvedPrompt } from '@/lib/prompts'
 import { cn } from '@/lib/utils'
 
 const STICKER: Record<WhisprType, string> = {
@@ -20,11 +21,12 @@ const STICKER: Record<WhisprType, string> = {
 
 interface SubmissionFormProps {
   username: string
+  prompt?: ResolvedPrompt | null
   onSuccess: () => void
   onError: (error: unknown) => void
 }
 
-export function SubmissionForm({ username, onSuccess, onError }: SubmissionFormProps) {
+export function SubmissionForm({ username, prompt, onSuccess, onError }: SubmissionFormProps) {
   const {
     content,
     selectedType,
@@ -38,15 +40,30 @@ export function SubmissionForm({ username, onSuccess, onError }: SubmissionFormP
     handleSubmit,
     whisprTypes,
     maxChars,
-  } = useWhisprSubmission({ username, onSuccess, onError: (e) => onError(e), customSubmitFunction: submitWhispr })
+  } = useWhisprSubmission({
+    username,
+    onSuccess,
+    onError: (e) => onError(e),
+    customSubmitFunction: submitWhispr,
+    initialType: prompt?.type,
+  })
 
   return (
     <form
       onSubmit={handleSubmit}
       className="rounded-[4px] border-2 border-ink bg-paper-2 p-5 shadow-[6px_6px_0_0_var(--color-ink)]"
     >
-      <h2 className="font-display text-lg font-extrabold leading-tight text-ink">send me something — anonymously</h2>
-      <p className="mt-1 font-voice text-[11px] text-ink-faint">to @{username}</p>
+      {prompt ? (
+        <>
+          <p className="font-voice text-xs text-ink-faint">@{username} asks</p>
+          <h2 className="mt-1 font-display text-lg font-extrabold leading-tight text-ink">{prompt.text}</h2>
+        </>
+      ) : (
+        <>
+          <h2 className="font-display text-lg font-extrabold leading-tight text-ink">send me something — anonymously</h2>
+          <p className="mt-1 font-voice text-[11px] text-ink-faint">to @{username}</p>
+        </>
+      )}
 
       <div
         ref={typeScrollContainerRef}

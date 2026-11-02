@@ -167,3 +167,35 @@ export const PROMPT_PACKS: Record<string, PromptPack> = {
 
 export const PROMPT_PACK_SLUGS = Object.keys(PROMPT_PACKS)
 export const ALL_PROMPT_PACKS = Object.values(PROMPT_PACKS)
+
+// Prompt ids are "<pack-slug>.<text hash>". Links carry ids, never free text, so nobody can put words
+// in a creator's mouth. Hashing the text (not its position) keeps old links stable when packs are reordered.
+export const ALL_PROMPTS: ResolvedPrompt[] = ALL_PROMPT_PACKS.flatMap((pack) =>
+  pack.prompts.map((text) => ({ id: `${pack.slug}.${hashText(text)}`, text, type: pack.type })),
+)
+
+const PROMPTS_BY_ID = new Map(ALL_PROMPTS.map((prompt) => [prompt.id, prompt]))
+
+export function resolvePrompt(id: string | null | undefined): ResolvedPrompt | null {
+  return (id && PROMPTS_BY_ID.get(id)) || null
+}
+
+export function getRandomPrompt(excludeId?: string): ResolvedPrompt {
+  const candidates = ALL_PROMPTS.filter((prompt) => prompt.id !== excludeId)
+  return candidates[Math.floor(Math.random() * candidates.length)]
+}
+
+function hashText(text: string): string {
+  let hash = 0x811c9dc5
+  for (let i = 0; i < text.length; i++) {
+    hash ^= text.charCodeAt(i)
+    hash = Math.imul(hash, 0x01000193)
+  }
+  return (hash >>> 0).toString(36)
+}
+
+export interface ResolvedPrompt {
+  id: string
+  text: string
+  type: WhisprType
+}

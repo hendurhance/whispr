@@ -89,17 +89,19 @@ interface UseWhisprSubmissionProps {
   onSuccess?: () => void;
   onError?: (error: Error) => void;
   customSubmitFunction?: (username: string, content: string, type: string) => Promise<Whispr> | void;
+  initialType?: WhisprType;
 }
 
 export const useWhisprSubmission = ({
   username,
   onSuccess,
   onError,
-  customSubmitFunction
+  customSubmitFunction,
+  initialType = 'question'
 }: UseWhisprSubmissionProps) => {
   const supabase = createClient();
   const [content, setContent] = useState('');
-  const [selectedType, setSelectedType] = useState<WhisprType>('question');
+  const [selectedType, setSelectedType] = useState<WhisprType>(initialType);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDiceRolling, setIsDiceRolling] = useState(false);
   const typeScrollContainerRef = useRef<HTMLDivElement>(null);

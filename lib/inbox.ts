@@ -1,7 +1,8 @@
 import type { Whispr, WhisprStats, WhisprType } from '@/types/whispr'
 
 export const INBOX_PAGE_SIZE = 50
-export const WHISPR_COLUMNS = 'id, content, type, created_at, is_read, metadata'
+export const ANSWER_MAX_LENGTH = 280
+export const WHISPR_COLUMNS = 'id, content, type, created_at, is_read, answer, metadata'
 export const EMPTY_STATS: WhisprStats = { total: 0, unread: 0, byType: {} }
 
 export function toWhispr(row: WhisprRecord): Whispr {
@@ -11,6 +12,7 @@ export function toWhispr(row: WhisprRecord): Whispr {
     type: row.type as WhisprType,
     createdAt: row.created_at,
     isRead: !!row.is_read,
+    answer: row.answer,
     metadata: row.metadata || {},
   }
 }
@@ -25,5 +27,6 @@ export interface WhisprRecord {
   type: string
   created_at: string
   is_read: boolean | null
+  answer: string | null
   metadata: Record<string, unknown> | null
 }

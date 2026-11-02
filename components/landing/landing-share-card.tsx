@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import { Reveal } from './reveal'
 import { PressLink } from './press-link'
 
-function DemoCard({ content, type, className }: { content: string; type: WhisprType; className?: string }) {
+function DemoCard({ content, type, answer, className }: { content: string; type: WhisprType; answer?: string; className?: string }) {
   return (
     <div className={cn('w-72 rounded-[4px] border-2 border-ink bg-paper-2 p-5 shadow-[8px_8px_0_0_var(--color-ink)]', className)}>
       <div className="flex items-center justify-between border-b-2 border-ink pb-2.5">
@@ -17,6 +17,12 @@ function DemoCard({ content, type, className }: { content: string; type: WhisprT
       </div>
       <p className="my-4 font-serif text-lg italic leading-snug">“{content}”</p>
       <p className="text-right font-voice text-[10px] text-ink-faint">— anonymous</p>
+      {answer && (
+        <div className="mt-3 border-l-4 border-flame pl-3">
+          <p className="font-voice text-[10px] text-ink-faint">@alex answered</p>
+          <p className="font-display text-sm font-extrabold leading-snug">{answer}</p>
+        </div>
+      )}
       <div className="mt-3 flex items-center justify-between border-t-2 border-ink pt-2.5">
         <span className="font-voice text-[10px]">trywhispr.me/alex</span>
         <WhisprSticker type={type} className="text-[10px]" />
@@ -33,7 +39,7 @@ export function LandingShareCard() {
           <p className="font-voice text-xs uppercase tracking-[0.2em] text-flame">the billboard</p>
           <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight sm:text-4xl">Made to be screenshotted.</h2>
           <p className="mt-4 max-w-md text-lg leading-relaxed text-ink-soft">
-            Every whispr becomes a printed card — paper, ink, your @handle. Post it to your story and the link rides along, so the next message is one tap away.
+            Every whispr prints as a card: their words, your answer, your @handle. Post it and your link rides along, so the next message is one tap away.
           </p>
           <div className="mt-7">
             <PressLink href="/auth">Make your first card →</PressLink>
@@ -52,7 +58,12 @@ export function LandingShareCard() {
               type="confession"
               className="absolute translate-x-12 -translate-y-3 rotate-6"
             />
-            <DemoCard content="your tweets are so dry they need a hydration sponsor." type="roast" className="relative z-10" />
+            <DemoCard
+              content="your tweets are so dry they need a hydration sponsor."
+              type="roast"
+              answer="and yet you read every single one."
+              className="relative z-10"
+            />
           </div>
         </Reveal>
       </div>

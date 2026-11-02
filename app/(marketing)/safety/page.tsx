@@ -27,7 +27,7 @@ const FAQS = [
 
 const PRINCIPLES = [
   { icon: EyeOff, title: 'How anonymity actually works', body: 'When someone sends you a whispr, there’s no name or account attached — sending requires no sign-up. You see the message and its type, never the sender. To keep the system safe from spam and abuse, we record minimal technical signals on submission; those are used only for abuse-prevention and are never shown to you or published.' },
-  { icon: Lock, title: 'Your messages stay private', body: 'Everything you receive lives in your inbox and is visible only to you. There’s no public feed and no in-app replies — nothing you receive is ever published. If you want to respond, you choose a message and turn it into a share card to post on your own socials. You decide what, if anything, ever leaves your inbox.' },
+  { icon: Lock, title: 'Your messages stay private', body: 'Everything you receive lives in your inbox and is visible only to you. There’s no public feed and no in-app replies — nothing you receive is ever published. Want to respond? Type your answer onto a share card and post it yourself. Your answers stay in your inbox until you choose to share them. You decide what, if anything, ever leaves your inbox.' },
   { icon: SlidersHorizontal, title: 'You’re always in control', body: 'Pause your inbox to stop new whisprs instantly. Delete any message permanently. Hide your public page from search engines in one tap. These controls live in your dashboard and take effect immediately.' },
   { icon: Code2, title: 'Open by design', body: 'Whispr is open-source (AGPL) — anyone can read exactly how anonymity and data handling work. No ads, no paywalled “who sent this” hints, no dark patterns. Trust you can verify, not just a promise.' },
 ]

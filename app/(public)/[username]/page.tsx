@@ -3,9 +3,11 @@ import { cache } from 'react';
 import { PublicProfile } from '@/components/public-profile/public-profile';
 import { createClient } from '@/utils/supabase/server';
 import { FUNCTIONS, APP_URL } from '@/configs';
+import { resolvePrompt } from '@/lib/prompts';
 
 type Props = {
   params: Promise<{ username: string }>;
+  searchParams: Promise<{ q?: string | string[] }>;
 };
 
 // cache() shares one query between generateMetadata and the page render.
@@ -151,8 +153,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function Page({ params }: Props) {
+export default async function Page({ params, searchParams }: Props) {
   const { username } = await params;
+  const { q } = await searchParams;
+  const prompt = resolvePrompt(typeof q === 'string' ? q : null);
 
   const profile = await fetchProfileData(username);
 
@@ -181,7 +185,7 @@ export default async function Page({ params }: Props) {
       {jsonLd && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
       )}
-      <PublicProfile initialProfile={profile} username={username} />
+      <PublicProfile initialProfile={profile} username={username} prompt={prompt} />
     </>
   );
 }
